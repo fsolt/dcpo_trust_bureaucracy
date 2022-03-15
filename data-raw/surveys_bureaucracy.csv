@@ -1,117 +1,118 @@
-survey,item,variable,values,question_text, response_categories
-aes1993,PT_official_right_4,h3,c(1:4),,
-aes1996,PT_official_right_4,c5,c(1:4),,
-aes1998,PT_official_right_4,c5,c(1:4),,
-aes2001,PT_official_right_4,c8,c(1:4),,
-aes2004,PT_official_right_4,c8,c(1:4),,
-aes2007,PT_official_right_4,c8,c(1:4),,
-aes2010,PT_official_right_4,c9,c(1:4),,
-aes2013,PT_official_right_4,c5,c(1:4),,
-aes2016,PT_official_right_4,c6,c(1:4),,
-aes2019,PT_official_right_4,c6,c(1:4),,
-afrob5,PT_tax_4,q59d,c(0:3),,
-afrob6,PT_tax_4,q52d,c(0:3),,
-amb_brazil2016,PT_official_health_7,braminh5,c(1:7),,
-amb_colombia2018,PT_admin_7,colb67,c(1:7),,
-amb_combo,PT_admin_ministry_7,b15,c(1:7),,
-amb_combo,PT_tax_7,b42,c(1:7),,
-amb_suriname2010,PT_admin_7,b17,c(1:7),,
-anpas1969,PT_official_right_2,trustgov,"c(5,1)",,
-anpas1979,PT_official_right_3,trusgv79,"c(5,6,1)",,
-arabb5,PT_cvlservice_4,q201c_32,c(4:1),,
-ases2000,PT_cvlservice_4,v0051,c(4:1),,
-asianb1,PT_cvlservice_4,q011,c(1:4),,
-asianb1,PT_official_4,q131,c(4:1),,
-asianb2,PT_cvlservice_4,q12,c(1:4),,
-asianb2,PT_official_4,q130,c(4:1),,
-asianb3,PT_cvlservice_4,q12,c(4:1),,
-asianb3,PT_official_4,q136,c(4:1),,
-asianb4,PT_cvlservice_4,q12,c(4:1),,
-asianb4,PT_official_4,q137,c(4:1),,
-bsa_combo,PT_cvlservice_5,civsconf,c(5:1),,
-bsa1994,PT_cvlservice_agstgov_4,cstrust,c(4:1),,
-bsa1996,PT_cvlservice_agstgov_4,cstrust,c(4:1),,
-bsa2000,PT_cvlservice_agstgov_4,cstrust,c(4:1),,
-bsa2014,PT_cvlservice_4,trstcs,c(4:1),,
-bsa2014,PT_admin_stat_4,trststat,c(4:1),,
-bsa2016,PT_cvlservice_4,trstcs,c(4:1),,
-bsa2016,PT_admin_stat_4,trststat,c(4:1),,
-bsa2018,PT_cvlservice_4,trstcs,c(4:1),,
-bsa2018,PT_admin_stat_4,trststat,c(4:1),,
-cceb2002,PT_cvlservice_2,q13_10,c(2:1),,
-cceb2003_11,PT_cvlservice_2,q10_10,c(2:1),,
-cceb2003_5,PT_cvlservice_2,q9_10,c(2:1),,
-cgss2010,PT_official_5,d2e,c(1:5),,
-cgss2012,PT_centerofficial_4,n1613,c(4:1),,
-eass_w2,PT_centerofficial_4,v83,c(4:1),,
-eb419,PT_admin_4,q2_12,c(4:1),,
-eb48,PT_cvlservice_2,v55,c(2:1),,
-eb51,PT_cvlservice_2,v53,c(2:1),,
-eb541,PT_cvlservice_2,v321,c(2:1),,
-eb551,PT_cvlservice_2,v83,c(2:1),,
-eb562,PT_cvlservice_2,v185,c(2:1),,
-eb571,PT_cvlservice_2,v62,c(2:1),,
-eb852,PT_admin_2,qa8a_4,c(2:1),,
-eb862,PT_admin_2,qa8a_9,c(2:1),,
-eb873,PT_admin_2,qa8a_4,c(2:1),,
-eb883,PT_admin_2,qa8a_10,c(2:1),,
-eb891,PT_admin_2,qa8a_6,c(2:1),,
-eb903,PT_admin_2,qa8a_10,c(2:1),,
-eb915,PT_admin_2,qa6a_6,c(2:1),,
-eb923,PT_admin_2,qa6a_10,c(2:1),,
-eb931,PT_admin_2,qa6a_6,c(2:1),,
-eb931,PT_admin_2,qa6b_3,c(2:1),,
-evs_combo,PT_cvlservice_4,e069_08,c(4:1),,
-evs_greece2017,PT_cvlservice_4,v122,c(4:1),,
-evs1999fin,PT_cvlservice_4,v207,c(4:1),,
-evs1999tur,PT_cvlservice_4,v207,c(4:1),,
-evs2017,PT_cvlservice_4,v122,c(4:1),,
-fsdelection_combo,PT_official_11,fnes301,c(0:10),,
-fsdelection2019,PT_official_11,k32_8,c(0:10),,
-fsdeva2018,PT_official_5,q5_9,c(5:1),,
-fsdtrust2000,PT_admin_5,q4_3,c(5:1),,
-issp1991,PT_cvlservice_5,v22,c(5:1),How much confidence do you have in: The Civil Service?,1 Complete confidence / 5 No confidence at all
-issp1996,PT_cvlservice_5,v54,c(5:1),Most government administrators (civil servants) can be trusted to do what is best for the country,1 Strongly agree / 5 Strongly disagree
-issp2004,PT_official_right_5,v43,c(5:1),Most of the time we can trust people in government to do what is right. ,1 Strongly agree / 5 Strongly disagree
-issp2006,PT_cvlservice_5,v50,c(5:1),Most civil servants can be trusted to do what is best for the country,1 Strongly agree / 5 Strongly disagree
-issp2010,PT_official_right_5,v13,c(5:1),Most of the time we can trust people in government to do what is right. ,1 Strongly agree / 5 Strongly disagree
-issp2014,PT_official_right_5,v49,c(5:1),Most of the time we can trust people in government to do what is right ,1 Strongly agree / 5 Strongly disagree
-issp2016,PT_official_best_5,v50,c(5:1),Most civil servants can be trusted to do what is best for the country. ,1 Strongly agree / 5 Strongly disagree
-jgss,PT_admin_3,tr3bcraz,c(3:1),,
-jgss2005,PT_admin_3,tr3bcraz,c(3:1),,
-jgss2006,PT_admin_3,tr3bcraz,c(3:1),,
-jgss2008,PT_admin_3,tr3bcraz,c(3:1),,
-jgss2010,PT_admin_3,tr3bcraz,c(3:1),,
-jgss2012,PT_admin_3,tr3bcraz,c(3:1),,
-jgss2012,PT_centerofficial_4,tr4cntgv,c(4:1),,
-jgss2015,PT_admin_3,tr3bcraz,c(3:1),,
-kgss,PT_cvlservice_5,poleff6,c(5:1),,
-kgss,PT_official_fair_5,offequit,c(5:1),,
-kgss,PT_centerofficial_4,pertrt13,c(4:1),,
-lb1995,PT_admin_4,p27g,c(4:1),,
-lb1996,PT_admin_4,p33g,c(4:1),,
-lb2001,PT_admin_4,p63stb,c(4:1),,
-lb2003,PT_cvlservice_4,p38nd,c(4:1),,
-lb2003,PT_cvlservice_4,p38nf,c(4:1),,
-lb2005,PT_cvlservice_4,p47sta,c(4:1),,
-lb2005,PT_admin_4,p45stf,c(4:1),,
-lb2006,PT_cvlservice_4,p35st_a,c(4:1),,
-lb2007,PT_cvlservice_4,p24st_g,c(4:1),,
-lb2008,PT_admin_4,p28st_e,c(4:1),,
-lb2009,PT_admin_4,p26st_e,c(4:1),,
-lb2010,PT_admin_4,p20st_e,c(4:1),,
-lb2011,PT_admin_4,p22st_e,c(4:1),,
-lb2013,PT_admin_4,p26tgb_f,c(4:1),,
-neb_combo,PT_official_7,a4g,c(1:7),,
-sasianb1,PT_cvlservice_4,c13d,c(4:1),,
-sasianb2,PT_cvlservice_4,gb7h,c(4:1),,
-tcmeg2004,PT_cvlservice_5,m301o,c(5:1),,
-usgss,PT_official_many_5,polefy17,c(1:5),,
-usgss,PT_official_best_5,poleff17,c(5:1),,
-usgss,PT_official_right_5,govdook,c(5:1),,
-usgss,PT_admin_5,congovt,c(5:1),,
-usgss,PT_admin_3,confed,c(3:1),,
-usgss,PT_admin_7,confedy,c(7:1),,
-wvs_combo,PT_cvlservice_4,e069_08,c(4:1),,
-wvs4_swe,PT_cvlservice_4,v156,c(4:1),,
-wvs7,PT_cvlservice_4,q74,c(4:1),,
+survey,item,variable,values,question_text, response_categories,old_item
+aes1993,right4a,h3,c(1:4),"In general, do you feel that the people in government are too often interested in looking after themselves, or do you feel that they can be trusted to do the right thing nearly all the time?",1 Usually look after themselves / 2 Sometimes look after themselves / 3 Sometimes can be trusted to do the right thing / 4 Usually can be trusted to do the right thing,PT_official_right_4
+aes1996,right4a,c5,c(1:4),"In general, do you feel that the people in government are too often interested in looking after themselves, or do you feel that they can be trusted to do the right thing nearly all the time?",1 Usually look after themselves / 2 Sometimes look after themselves / 3 Sometimes can be trusted to do the right thing / 4 Usually can be trusted to do the right thing,PT_official_right_4
+aes1998,right4a,c5,c(1:4),"In general, do you feel that the people in government are too often interested in looking after themselves, or do you feel that they can be trusted to do the right thing nearly all the time?",1 Usually look after themselves / 2 Sometimes look after themselves / 3 Sometimes can be trusted to do the right thing / 4 Usually can be trusted to do the right thing,PT_official_right_4
+aes2001,right4a,c8,c(1:4),"In general, do you feel that the people in government are too often interested in looking after themselves, or do you feel that they can be trusted to do the right thing nearly all the time?",1 Usually look after themselves / 2 Sometimes look after themselves / 3 Sometimes can be trusted to do the right thing / 4 Usually can be trusted to do the right thing,PT_official_right_4
+aes2004,right4a,c8,c(1:4),"In general, do you feel that the people in government are too often interested in looking after themselves, or do you feel that they can be trusted to do the right thing nearly all the time?",1 Usually look after themselves / 2 Sometimes look after themselves / 3 Sometimes can be trusted to do the right thing / 4 Usually can be trusted to do the right thing,PT_official_right_4
+aes2007,right4a,c8,c(1:4),"In general, do you feel that the people in government are too often interested in looking after themselves, or do you feel that they can be trusted to do the right thing nearly all the time?",1 Usually look after themselves / 2 Sometimes look after themselves / 3 Sometimes can be trusted to do the right thing / 4 Usually can be trusted to do the right thing,PT_official_right_4
+aes2010,right4a,c9,c(1:4),"In general, do you feel that the people in government are too often interested in looking after themselves, or do you feel that they can be trusted to do the right thing nearly all the time?",1 Usually look after themselves / 2 Sometimes look after themselves / 3 Sometimes can be trusted to do the right thing / 4 Usually can be trusted to do the right thing,PT_official_right_4
+aes2013,right4a,c5,c(1:4),"In general, do you feel that the people in government are too often interested in looking after themselves, or do you feel that they can be trusted to do the right thing nearly all the time?",1 Usually look after themselves / 2 Sometimes look after themselves / 3 Sometimes can be trusted to do the right thing / 4 Usually can be trusted to do the right thing,PT_official_right_4
+aes2016,right4a,c6,c(1:4),"In general, do you feel that the people in government are too often interested in looking after themselves, or do you feel that they can be trusted to do the right thing nearly all the time?",1 Usually look after themselves / 2 Sometimes look after themselves / 3 Sometimes can be trusted to do the right thing / 4 Usually can be trusted to do the right thing,PT_official_right_4
+aes2019,right4a,c6,c(1:4),"In general, do you feel that the people in government are too often interested in looking after themselves, or do you feel that they can be trusted to do the right thing nearly all the time?",1 Usually look after themselves / 2 Sometimes look after themselves / 3 Sometimes can be trusted to do the right thing / 4 Usually can be trusted to do the right thing,PT_official_right_4
+afrob5,trust_tax4,q59d,c(0:3),"How much do you trust each of the following, or haven’t you heard enough about them to say: The [Tax Department]?",0 Not at all / 1 Just a little /  2 Somewhat / 3 A lot ,PT_tax_4
+afrob6,trust_tax4,q52d,c(0:3),"How much do you trust each of the following, or haven’t you heard enough about them to say: The [Tax Department]?",0 Not at all / 1 Just a little /  2 Somewhat / 3 A lot ,PT_tax_4
+amb_brazil2016,PT_official_health_7,braminh5,c(1:7),,,PT_official_health_7
+amb_colombia2018,trust_cab7,colb67,c(1:7),To what extent do you trust the Community Action Board?,1 Not at all / 7 A lot,PT_admin_7
+amb_combo,trust_tax7,b42,c(1:7),To what extent do you trust the [National Tax Service],1 Not at all / 7 A lot,PT_tax_7
+amb_suriname2010,trust_bla7,b17,c(1:7),To what extent do you trust the Bureau for Legal Assistance?,1 Not at all / 7 A lot,PT_admin_7
+anpas1979,right2a,trusgv79,"c(5,1)","In general, do you feel that the people in government are too often interested in looking after themselves, or do you feel that they can be trusted to do the right thing nearly all the time?",1 Do right thing / 5 Look after self,PT_official_right_2
+arabb5,trust4,q201c_32,c(4:1),And how much trust do you have in... Civil service / public administration,1 A great deal of trust / 2 Quite a lot of trust / 3 Not a lot of trust / 4 No trust at all,PT_cvlservice_4
+ases2000,trust4,v0051,c(4:1),"Now, could you tell me how much confidence you have in each of the following? ",1 A great deal / 2 Quite a lot / 3 Not very much / 4 None at all,PT_cvlservice_4
+asianb1,trust4,q011,c(1:4),"I am going to name a number of institutions. For each one, could you tell me how much trust you have in them. Is it a great deal of trust, some trust, not very much trust or none at all? Civil service",1 Not at all / 2 Not very much / 3 Quite a lot / 4 A great deal,PT_cvlservice_4
+asianb1,right4,q131,c(4:1),You can generally trust the people who run our government to do what is right.,1 Strongly agree / 4 Strongly disagree,PT_official_4
+asianb2,trust4,q12,c(1:4),"I am going to name a number of institutions. For each one, could you tell me how much trust you have in them. Is it a great deal of trust, some trust, not very much trust or none at all? Civil service",1 Not at all / 2 Not very much / 3 Quite a lot / 4 A great deal,PT_cvlservice_4
+asianb2,right4,q130,c(4:1),You can generally trust the people who run our government to do what is right.,1 Strongly agree / 4 Strongly disagree,PT_official_4
+asianb3,trust4,q12,c(4:1),"I am going to name a number of institutions. For each one, could you tell me how much trust you have in them. Is it a great deal of trust, some trust, not very much trust or none at all? Civil service",1 A great deal / 2 Quite a lot / 3 Not very much / 4 None at all,PT_cvlservice_4
+asianb3,right4,q136,c(4:1),You can generally trust the people who run our government to do what is right.,1 Strongly agree / 4 Strongly disagree,PT_official_4
+asianb4,trust4,q12,c(4:1),"I am going to name a number of institutions. For each one, could you tell me how much trust you have in them. Is it a great deal of trust, some trust, not very much trust or none at all? Civil service",1 A great deal / 2 Quite a lot / 3 Not very much / 4 None at all,PT_cvlservice_4
+asianb4,right4,q137,c(4:1),You can generally trust the people who run our government to do what is right.,1 Strongly agree / 4 Strongly disagree,PT_official_4
+bsa_combo,trust5,civsconf,c(5:1),Confidence in the Civil Service?,1 Complete confidence / 2 A great deal of confidence / 3 Some confidence / 4 Very little confidence / 5 No confidence at all,PT_cvlservice_5
+bsa1994,trust_agstgov4,cstrust,c(4:1),And how much do you trust top civil servants to stand firm against a minister who wants to provide false information to parliament?,1 Just about always / 2 Most of the time / 3 Only some of the time / 4 Almost never,PT_cvlservice_agstgov_4
+bsa1996,trust_agstgov4,cstrust,c(4:1),And how much do you trust top civil servants to stand firm against a minister who wants to provide false information to parliament?,1 Just about always / 2 Most of the time / 3 Only some of the time / 4 Almost never,PT_cvlservice_agstgov_4
+bsa2000,trust_agstgov4,cstrust,c(4:1),And how much do you trust top civil servants to stand firm against a minister who wants to provide false information to parliament?,1 Just about always / 2 Most of the time / 3 Only some of the time / 4 Almost never,PT_cvlservice_agstgov_4
+bsa2014,trust4,trstcs,c(4:1),"I will name a list of institutions. For each, please indicate whether you tend to trust it or tend not to trust it. The civil service?",1 Trust it a great deal / 2 Tend to trust it / 3 Tend to distrust it / 4 Distrust it greatly,PT_cvlservice_4
+bsa2014,trust_stat4,trststat,c(4:1),Do you tend to trust or tend not to trust the ONS [Office of National Statistics]? ,1 Trust it a great deal / 2 Tend to trust it / 3 Tend to distrust it / 4 Distrust it greatly,PT_admin_stat_4
+bsa2016,trust4,trstcs,c(4:1),"I will name a list of institutions. For each, please indicate whether you tend to trust it or tend not to trust it. The civil service?",1 Trust it a great deal / 2 Tend to trust it / 3 Tend to distrust it / 4 Distrust it greatly,PT_cvlservice_4
+bsa2016,trust_stat4,trststat,c(4:1),Do you tend to trust or tend not to trust the ONS [Office of National Statistics]? ,1 Trust it a great deal / 2 Tend to trust it / 3 Tend to distrust it / 4 Distrust it greatly,PT_admin_stat_4
+bsa2018,trust4,trstcs,c(4:1),"I will name a list of institutions. For each, please indicate whether you tend to trust it or tend not to trust it. The civil service?",1 Trust it a great deal / 2 Tend to trust it / 3 Tend to distrust it / 4 Distrust it greatly,PT_cvlservice_4
+bsa2018,trust_stat4,trststat,c(4:1),Do you tend to trust or tend not to trust the ONS [Office of National Statistics]? ,1 Trust it a great deal / 2 Tend to trust it / 3 Tend to distrust it / 4 Distrust it greatly,PT_admin_stat_4
+cceb2001_10,trust2,q13_10,c(2:1),"I would like to ask you a question about how much trust you have in certain institutions. For each of the following institutions, please tell me if you tend to trustit or tend not to trust it? Civil service",1 Tend to trust / 2 Tend not to trust,PT_cvlservice_2
+cceb2002,trust2,q13_10,c(2:1),"I would like to ask you a question about how much trust you have in certain institutions. For each of the following institutions, please tell me if you tend to trustit or tend not to trust it? Civil service",1 Tend to trust / 2 Tend not to trust,PT_cvlservice_2
+cceb2003_11,trust2,q10_10,c(2:1),"I would like to ask you a question about how much trust you have in certain institutions. For each of the following institutions, please tell me if you tend to trustit or tend not to trust it? Civil service",1 Tend to trust / 2 Tend not to trust,PT_cvlservice_2
+cceb2003_5,trust2,q9_10,c(2:1),"I would like to ask you a question about how much trust you have in certain institutions. For each of the following institutions, please tell me if you tend to trustit or tend not to trust it? Civil service",1 Tend to trust / 2 Tend not to trust,PT_cvlservice_2
+cgss2010,PT_official_5,d2e,c(1:5),,,PT_official_5
+cgss2012,trust4,n1613,c(4:1),,,PT_centerofficial_4
+eass2012,trust4,v83,c(4:1),How much do you trust the following people? Central govt officials ,1 A great deal / 2 To some extent / 3 Not very much / 4 Not at all,PT_centerofficial_4
+feb419,trust_mun4,q2_12,c(4:1),"Generally speaking, the public administration of [CITY NAME] can be trusted",1 Strongly agree / 4 Strongly disagree,PT_admin_4
+eb48,trust2,v55,c(2:1),"I would like to ask you a question about how much trust you have in certain institutions. For each of the following institutions, please tell me if you tend to trustit or tend not to trust it? Civil service",1 Tend to trust / 2 Tend not to trust,PT_cvlservice_2
+eb51,trust2,v53,c(2:1),"I would like to ask you a question about how much trust you have in certain institutions. For each of the following institutions, please tell me if you tend to trustit or tend not to trust it? Civil service",,PT_cvlservice_2
+eb541,trust2,v321,c(2:1),"I would like to ask you a question about how much trust you have in certain institutions. For each of the following institutions, please tell me if you tend to trustit or tend not to trust it? Civil service",1 Tend to trust / 2 Tend not to trust,PT_cvlservice_2
+eb551,trust2,v83,c(2:1),"I would like to ask you a question about how much trust you have in certain institutions. For each of the following institutions, please tell me if you tend to trustit or tend not to trust it? Civil service",1 Tend to trust / 2 Tend not to trust,PT_cvlservice_2
+eb562,trust2,v185,c(2:1),"I would like to ask you a question about how much trust you have in certain institutions. For each of the following institutions, please tell me if you tend to trustit or tend not to trust it? Civil service",1 Tend to trust / 2 Tend not to trust,PT_cvlservice_2
+eb571,trust2,v62,c(2:1),"I would like to ask you a question about how much trust you have in certain institutions. For each of the following institutions, please tell me if you tend to trustit or tend not to trust it? Civil service",1 Tend to trust / 2 Tend not to trust,PT_cvlservice_2
+eb852,trust2,qa8a_4,c(2:1),"I would like to ask you a question about how much trust you have in certain institutions. For each of the following institutions, please tell me if you tend to trust it or tend not to trust it: Public administration in (OUR COUNTRY)",1 Tend to trust / 2 Tend not to trust,PT_admin_2
+eb862,trust2,qa8a_9,c(2:1),"I would like to ask you a question about how much trust you have in certain institutions. For each of the following institutions, please tell me if you tend to trust it or tend not to trust it: Public administration in (OUR COUNTRY)",1 Tend to trust / 2 Tend not to trust,PT_admin_2
+eb873,trust2,qa8a_4,c(2:1),"I would like to ask you a question about how much trust you have in certain institutions. For each of the following institutions, please tell me if you tend to trust it or tend not to trust it: Public administration in (OUR COUNTRY)",1 Tend to trust / 2 Tend not to trust,PT_admin_2
+eb883,trust2,qa8a_10,c(2:1),"I would like to ask you a question about how much trust you have in certain institutions. For each of the following institutions, please tell me if you tend to trust it or tend not to trust it: Public administration in (OUR COUNTRY)",1 Tend to trust / 2 Tend not to trust,PT_admin_2
+eb891,trust2,qa8a_6,c(2:1),"I would like to ask you a question about how much trust you have in certain institutions. For each of the following institutions, please tell me if you tend to trust it or tend not to trust it: Public administration in (OUR COUNTRY)",1 Tend to trust / 2 Tend not to trust,PT_admin_2
+eb903,trust2,qa8a_10,c(2:1),"I would like to ask you a question about how much trust you have in certain institutions. For each of the following institutions, please tell me if you tend to trust it or tend not to trust it: Public administration in (OUR COUNTRY)",1 Tend to trust / 2 Tend not to trust,PT_admin_2
+eb915,trust2,qa6a_6,c(2:1),"I would like to ask you a question about how much trust you have in certain institutions. For each of the following institutions, please tell me if you tend to trust it or tend not to trust it: Public administration in (OUR COUNTRY)",1 Tend to trust / 2 Tend not to trust,PT_admin_2
+eb923,trust2,qa6a_10,c(2:1),"I would like to ask you a question about how much trust you have in certain institutions. For each of the following institutions, please tell me if you tend to trust it or tend not to trust it: Public administration in (OUR COUNTRY)",1 Tend to trust / 2 Tend not to trust,PT_admin_2
+eb931,trust2,qa6a_6,c(2:1),"I would like to ask you a question about how much trust you have in certain institutions. For each of the following institutions, please tell me if you tend to trust it or tend not to trust it: Public administration in (OUR COUNTRY)",1 Tend to trust / 2 Tend not to trust,PT_admin_2
+eb931,trust2,qa6b_3,c(2:1),"I would like to ask you a question about how much trust you have in certain institutions. For each of the following institutions, please tell me if you tend to trust it or tend not to trust it: Public administration in (OUR COUNTRY)",1 Tend to trust / 2 Tend not to trust,PT_admin_2
+evs_combo,trust4,e069_08,c(4:1),"Please look at this card and tell me, for each item listed, how much confidence you have in them, is it a great deal, quite a lot, not very much or none at all?",1 A great deal / 2 Quite a lot / 3 Not very much / 4 None at all,PT_cvlservice_4
+evs_greece2017,trust4,v122,c(4:1),"Please look at this card and tell me, for each item listed, how much confidence you have in them, is it a great deal, quite a lot, not very much or none at all?",1 A great deal / 2 Quite a lot / 3 Not very much / 4 None at all,PT_cvlservice_4
+evs1999fin,trust4,v207,c(4:1),"Please look at this card and tell me, for each item listed, how much confidence you have in them, is it a great deal, quite a lot, not very much or none at all?",1 A great deal / 2 Quite a lot / 3 Not very much / 4 None at all,PT_cvlservice_4
+evs1999tur,trust4,v207,c(4:1),"Please look at this card and tell me, for each item listed, how much confidence you have in them, is it a great deal, quite a lot, not very much or none at all?",1 A great deal / 2 Quite a lot / 3 Not very much / 4 None at all,PT_cvlservice_4
+evs2017,trust4,v122,c(4:1),"Please look at this card and tell me, for each item listed, how much confidence you have in them, is it a great deal, quite a lot, not very much or none at all?",1 A great deal / 2 Quite a lot / 3 Not very much / 4 None at all,PT_cvlservice_4
+fsdelection_combo,trust11,fnes301,c(0:10),"On a scale of 0 to 10 (where 0 = don’t trust at all, 10 = completely trust), to what extent do you trust/mistrust: Public officials ",0 Don't trust at all / 10 Completely trust,PT_official_11
+fsdelection2019,trust11,k32_8,c(0:10),To what extent do you trust or mistrust the following? Public officials ,0 Don't trust at all / 10 Completely trust,PT_official_11
+fsdeva2018,trust5,q5_9,c(5:1),How much do you trust the following institutions or actors: Government officials? ,1 A great deal / 2 A fair amount / 3 Difficult to say / 4 Not very much / 5 Very little,PT_official_5
+fsdeva2020,trust5,q7_9,c(5:1),How much do you trust the following institutions or actors? State/Government authorities [same Finnish also translated as 'public [or government] officials' elsewhere],1 A great deal / 2 A fair amount / 3 Difficult to say / 4 Not very much / 5 Very little,
+fsdtrust2000,trust5,q4_3,c(5:1),How much do you trust the following institutions? State/Government ministries,1 A great deal / 2 A fair amount / 3 Difficult to say / 4 Not very much / 5 Very little,PT_admin_5
+issp1991,trust5,v22,c(5:1),How much confidence do you have in: The Civil Service?,1 Complete confidence / 5 No confidence at all,PT_cvlservice_5
+issp1996,best5,v54,c(5:1),Most government administrators (civil servants) can be trusted to do what is best for the country,1 Strongly agree / 5 Strongly disagree,PT_cvlservice_5
+issp2000,trust_pollution5,v52,c(5:1),How much trust do you have in each of the following groups to give you correct information about causes of pollution? Government departments,1 A great deal of trust / 2 Quite a lot of trust / 3 Some trust / 4 Not much trust / 5 Hardly any trust,PT_pollution_5
+issp2004,right5,v43,c(5:1),Most of the time we can trust people in government to do what is right. ,1 Strongly agree / 5 Strongly disagree,PT_official_right_5
+issp2006,best5,v50,c(5:1),Most civil servants can be trusted to do what is best for the country,1 Strongly agree / 5 Strongly disagree,PT_cvlservice_5
+issp2010,right5,v13,c(5:1),Most of the time we can trust people in government to do what is right. ,1 Strongly agree / 5 Strongly disagree,PT_official_right_5
+issp2014,right5,v49,c(5:1),Most of the time we can trust people in government to do what is right ,1 Strongly agree / 5 Strongly disagree,PT_official_right_5
+issp2016,best5,v50,c(5:1),Most civil servants can be trusted to do what is best for the country. ,1 Strongly agree / 5 Strongly disagree,PT_official_best_5
+jgss,trust3,tr3bcraz,c(3:1),Trust in Ministries and Government Agencies ,1 Very much / 2 Some / 3 Not very much,PT_admin_3
+jgss2005,trust3,tr3bcraz,c(3:1),Trust in Ministries and Government Agencies ,1 Very much / 2 Some / 3 Not very much,PT_admin_3
+jgss2006,trust3,tr3bcraz,c(3:1),Trust in Ministries and Government Agencies ,1 Very much / 2 Some / 3 Not very much,PT_admin_3
+jgss2008,trust3,tr3bcraz,c(3:1),Trust in Ministries and Government Agencies ,1 Very much / 2 Some / 3 Not very much,PT_admin_3
+jgss2010,trust3,tr3bcraz,c(3:1),Trust in Ministries and Government Agencies ,1 Very much / 2 Some / 3 Not very much,PT_admin_3
+jgss2012,trust3,tr3bcraz,c(3:1),Trust in Ministries and Government Agencies ,1 Very much / 2 Some / 3 Not very much,PT_admin_3
+jgss2012,trust4,tr4cntgv,c(4:1),How much do you trust the following people? Central govt officials ,1 A great deal / 2 To some extent / 3 Not very much / 4 Not at all,PT_centerofficial_4
+jgss2015,trust3,tr3bcraz,c(3:1),Trust in Ministries and Government Agencies ,1 Very much / 2 Some / 3 Not very much,PT_admin_3
+kgss,best5,poleff6,c(5:1),Most civil servants can be trusted to do what is best for the country ,1 Strongly agree / 5 Strongly disagree,PT_cvlservice_5
+kgss,fair5,offequit,c(5:1),"In your opinion, how often do public officials deal fairly with people like you? ",1 Almost always / 2 Often / 3 Occassionally / 4 Seldom / 5 Never,PT_official_fair_5
+kgss,trust4,pertrt13,c(4:1),How much do you trust the following people?... Central govt officials ,1 A great deal / 2 To some extent / 3 Not very much / 4 Not at all,PT_centerofficial_4
+lb1995,trust4,p27g,c(4:1),"Please look at this card and tell me how much confidence you have in each of the following groups, institutions or persons mentioned on the list: a lot, some, a little or no confidence? The Public Administration",1 A lot / 2 Some / 3 A little / 4 None,PT_admin_4
+lb1996,trust4,p33g,c(4:1),"Please look at this card and tell me how much confidence you have in each of the following groups, institutions or persons mentioned on the list: a lot, some, a little or no confidence? The Public Administration",1 A lot / 2 Some / 3 A little / 4 None,PT_admin_4
+lb2001,trust4,p63stb,c(4:1),"Please look at this card and tell me how much confidence you have in each of the following groups, institutions or persons mentioned on the list: a lot, some, a little or no confidence? The Public Administration",1 A lot / 2 Some / 3 A little / 4 None,PT_admin_4
+lb2003,trust_ff4,p38nd,c(4:1),"Please look at this card and tell me how much confidence you have in each of the following groups, institutions or persons mentioned on the list: a lot, some, a little or no confidence? Firefighters",1 A lot / 2 Some / 3 A little / 4 None,PT_cvlservice_4
+lb2003,trust_mun4,p38nf,c(4:1),"Please look at this card and tell me how much confidence you have in each of the following groups, institutions or persons mentioned on the list: a lot, some, a little or no confidence? Officials in your municipality",1 A lot / 2 Some / 3 A little / 4 None,PT_cvlservice_4
+lb2005,trust_ff4,p47sta,c(4:1),"Please look at this card and tell me how much confidence you have in each of the following groups, institutions or persons mentioned on the list: a lot, some, a little or no confidence? Firefighters",1 A lot / 2 Some / 3 A little / 4 None,PT_cvlservice_4
+lb2005,trust4,p45stf,c(4:1),"Please look at this card and tell me how much confidence you have in each of the following groups, institutions or persons mentioned on the list: a lot, some, a little or no confidence? The Public Administration",1 A lot / 2 Some / 3 A little / 4 None,PT_admin_4
+lb2006,trust_ff4,p35st_a,c(4:1),"Please look at this card and tell me how much confidence you have in each of the following groups, institutions or persons mentioned on the list: a lot, some, a little or no confidence? Firefighters",1 A lot / 2 Some / 3 A little / 4 None,PT_cvlservice_4
+lb2007,trust_ff4,p24st_g,c(4:1),"Please look at this card and tell me how much confidence you have in each of the following groups, institutions or persons mentioned on the list: a lot, some, a little or no confidence? Firefighters",1 A lot / 2 Some / 3 A little / 4 None,PT_cvlservice_4
+lb2008,trust4,p28st_e,c(4:1),"Please look at this card and tell me how much confidence you have in each of the following groups, institutions or persons mentioned on the list: a lot, some, a little or no confidence? The Public Administration",1 A lot / 2 Some / 3 A little / 4 None,PT_admin_4
+lb2009,trust4,p26st_e,c(4:1),"Please look at this card and tell me how much confidence you have in each of the following groups, institutions or persons mentioned on the list: a lot, some, a little or no confidence? The Public Administration",1 A lot / 2 Some / 3 A little / 4 None,PT_admin_4
+lb2010,trust4,p20st_e,c(4:1),"Please look at this card and tell me how much confidence you have in each of the following groups, institutions or persons mentioned on the list: a lot, some, a little or no confidence? The Public Administration",1 A lot / 2 Some / 3 A little / 4 None,PT_admin_4
+lb2011,trust4,p22st_e,c(4:1),"Please look at this card and tell me how much confidence you have in each of the following groups, institutions or persons mentioned on the list: a lot, some, a little or no confidence? The Public Administration",1 A lot / 2 Some / 3 A little / 4 None,PT_admin_4
+lb2013,trust4,p26tgb_f,c(4:1),"Please look at this card and tell me how much confidence you have in each of the following groups, institutions or persons mentioned on the list: a lot, some, a little or no confidence? The Public Administration",1 A lot / 2 Some / 3 A little / 4 None,PT_admin_4
+neb_combo,interests7,a4g,c(1:7),To what extent do you trust each of these political institutions to look after your interests? Civil servants,1 No trust / 7 Great trust,PT_official_7
+sasianb1,trust4,c13d,c(4:1),"I am going to name a number of institutions. For each one, could you tell me how much trust you have in them. Is it a great deal of trust, some trust, not very much trust or none at all? Civil service",1 A great deal / 2 Quite a lot / 3 Not very much / 4 None at all,PT_cvlservice_4
+sasianb2,trust4,gb7h,c(4:1),"I am going to name a number of institutions. For each one, could you tell me how much trust you have in them. Is it a great deal of trust, some trust, not very much trust or none at all? Civil service",1 A great deal / 2 Quite a lot / 3 Not very much / 4 None at all,PT_cvlservice_4
+tcmeg2004,trust4,m301o,c(4:1),"I’m going to name a number of institutions. For each one, please tell me how much trust you have in them. Is it a great deal of trust, quite a lot of trust, not very much trust, or none at all? Civil service",1 A great deal / 2 Quite a lot / 3 Very little / 4 None at all,PT_cvlservice_5
+usgss,many5,polefy17,c(1:5),"How many government administrators can be trusted to do what is best for the country: None, a few, some, most, or all? ",1 None / 2 A few / 3 Some / 4 Most / 5 All,PT_official_many_5
+usgss,best5,poleff17,c(5:1),Most government administrators can be trusted to do what is best for the country ,1 Strongly agree / 5 Strongly disagree,PT_official_best_5
+usgss,right5,govdook,c(5:1),Most of the time we can trust people in government to do what is right ,1 Strongly agree / 5 Strongly disagree,PT_official_right_5
+usgss,trust5,congovt,c(5:1),How much confidence do you have in. . . Government departments,1 Complete confidence / 2 A great deal of confidence / 3 Some confidence / 4 Very little confidence / 5 No confidence at all,PT_admin_5
+usgss,trust3,confed,c(3:1),"I am going to name some institutions in this country. As far as the people running these institutions are concerned, would you say you have a great deal of confidence, only some confidence, or hardly any confidence at all in them? Executive branch of the federal government",1 A great deal / 2 Only some / 3 Hardly any,PT_admin_3
+usgss,trust7,confedy,c(7:1),"I am going to name some institutions in this country. Some people have complete confidence in the people running these institutions. Suppose these people are at one end of the scale at point number 1. Other people have no confidence at all in the people running these institutions. Suppose these people are at the other end, at point 7. And, of course, other people have opinions somewhere in between at point 2, 3, 4, 5 or 6. Where would you place yourself on this scale for . . . Executive branch of the federal government",1 Complete confidence / 7 No confidence at all,PT_admin_7
+wvs_combo,trust4,e069_08,c(4:1),"I am going to name a number of organizations. For each one, could you tell me how much confidence you have in them: is it a great deal of confidence, quite a lot of confidence, not very much confidence or none at all?  The Civil Services",1 A great deal / 2 Quite a lot / 3 Not very much / 4 None at all,PT_cvlservice_4
+wvs4_swe,trust4,v156,c(4:1),"I am going to name a number of organizations. For each one, could you tell me how much confidence you have in them: is it a great deal of confidence, quite a lot of confidence, not very much confidence or none at all?  The Civil Services",1 A great deal / 2 Quite a lot / 3 Not very much / 4 None at all,PT_cvlservice_4
+wvs7,trust4,q74,c(4:1),"I am going to name a number of organizations. For each one, could you tell me how much confidence you have in them: is it a great deal of confidence, quite a lot of confidence, not very much confidence or none at all?  The Civil Services",1 A great deal / 2 Quite a lot / 3 Not very much / 4 None at all,PT_cvlservice_4
