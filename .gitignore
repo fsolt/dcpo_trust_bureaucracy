@@ -15,6 +15,6 @@ dev/*
 framed.sty
 paper/*cache/*
 paper/lit/
-data/tb*.rda
+data/1000/
 
 
