@@ -54,6 +54,7 @@ library(cmdstanr)
 library(countrycode)
 library(patchwork)
 library(rsdmx)
+library(osfr)
 
 set.seed(324)
 ```
@@ -424,11 +425,20 @@ dcpo_output$save_output_files(dir = results_path,
 ```
 
 ```{r dcpo_results, cache=TRUE}
-if (!exists("results_path")) {
-  results_path <- "/Users/fredsolt/Documents/Projects/dcpo_trust_bureaucracy/data/1000/202203201905"
-  dcpo_output <- as_cmdstan_fit(here::here(results_path,
-                                        list.files(results_path, pattern = "csv$")))
+latest <- "202203210942"
+results_path <- here::here("data", "1000", latest)
+
+# Define OSF_PAT in .Renviron: https://docs.ropensci.org/osfr/articles/auth
+if (!file.exists(file.path(results_path, paste0("dcpo-", latest, "-1.csv")))) {
+  dir.create(results_path, showWarnings = FALSE, recursive = TRUE)
+  osf_retrieve_node("82w36") %>% 
+    osf_ls_files() %>% 
+    filter(name == latest) %>% 
+    osf_download(path = here::here("data", "1000"))
 }
+
+dcpo_output <- as_cmdstan_fit(here::here(results_path,
+                                         list.files(results_path, pattern = "csv$")))
 
 load(file = here::here("data", "dcpo_input.rda"))
 ```
