@@ -425,16 +425,18 @@ dcpo_output$save_output_files(dir = results_path,
 ```
 
 ```{r dcpo_results, cache=TRUE}
-latest <- "202203210942"
-results_path <- here::here("data", "1000", latest)
-
-# Define OSF_PAT in .Renviron: https://docs.ropensci.org/osfr/articles/auth
-if (!file.exists(file.path(results_path, paste0("dcpo-", latest, "-1.csv")))) {
-  dir.create(results_path, showWarnings = FALSE, recursive = TRUE)
-  osf_retrieve_node("82w36") %>% 
-    osf_ls_files() %>% 
-    filter(name == latest) %>% 
-    osf_download(path = here::here("data", "1000"))
+if (!exists(results_path)) {
+  latest <- "202203210942"
+  results_path <- here::here("data", "1000", latest)
+  
+  # Define OSF_PAT in .Renviron: https://docs.ropensci.org/osfr/articles/auth
+  if (!file.exists(file.path(results_path, paste0("dcpo-", latest, "-1.csv")))) {
+    dir.create(results_path, showWarnings = FALSE, recursive = TRUE)
+    osf_retrieve_node("82w36") %>% 
+      osf_ls_files() %>% 
+      filter(name == latest) %>% 
+      osf_download(path = here::here("data", "1000"))
+  }
 }
 
 dcpo_output <- as_cmdstan_fit(here::here(results_path,
