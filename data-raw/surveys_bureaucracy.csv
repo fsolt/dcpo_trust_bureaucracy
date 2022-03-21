@@ -36,12 +36,12 @@ bsa2016,trust4,trstcs,c(4:1),"I will name a list of institutions. For each, plea
 bsa2016,trust_stat4,trststat,c(4:1),Do you tend to trust or tend not to trust the ONS [Office of National Statistics]? ,1 Trust it a great deal / 2 Tend to trust it / 3 Tend to distrust it / 4 Distrust it greatly,PT_admin_stat_4
 bsa2018,trust4,trstcs,c(4:1),"I will name a list of institutions. For each, please indicate whether you tend to trust it or tend not to trust it. The civil service?",1 Trust it a great deal / 2 Tend to trust it / 3 Tend to distrust it / 4 Distrust it greatly,PT_cvlservice_4
 bsa2018,trust_stat4,trststat,c(4:1),Do you tend to trust or tend not to trust the ONS [Office of National Statistics]? ,1 Trust it a great deal / 2 Tend to trust it / 3 Tend to distrust it / 4 Distrust it greatly,PT_admin_stat_4
+bes2005_pre,trust11,cq15b,c(0:10),"Now, thinking about institutions like Parliament, please use the scale of 0 to 10 to indicate how much trust you have for each of the following, where 0 is no trust and 10 is a great deal of trust:",0 No trust / 10 A great deal of trust,
 cceb2001_10,trust2,q13_10,c(2:1),"I would like to ask you a question about how much trust you have in certain institutions. For each of the following institutions, please tell me if you tend to trustit or tend not to trust it? Civil service",1 Tend to trust / 2 Tend not to trust,PT_cvlservice_2
 cceb2002,trust2,q13_10,c(2:1),"I would like to ask you a question about how much trust you have in certain institutions. For each of the following institutions, please tell me if you tend to trustit or tend not to trust it? Civil service",1 Tend to trust / 2 Tend not to trust,PT_cvlservice_2
 cceb2003_11,trust2,q10_10,c(2:1),"I would like to ask you a question about how much trust you have in certain institutions. For each of the following institutions, please tell me if you tend to trustit or tend not to trust it? Civil service",1 Tend to trust / 2 Tend not to trust,PT_cvlservice_2
 cceb2003_5,trust2,q9_10,c(2:1),"I would like to ask you a question about how much trust you have in certain institutions. For each of the following institutions, please tell me if you tend to trustit or tend not to trust it? Civil service",1 Tend to trust / 2 Tend not to trust,PT_cvlservice_2
 cgss2010,PT_official_5,d2e,c(1:5),,,PT_official_5
-cgss2012,trust4,n1613,c(4:1),,,PT_centerofficial_4
 eass2012,trust4,v83,c(4:1),How much do you trust the following people? Central govt officials ,1 A great deal / 2 To some extent / 3 Not very much / 4 Not at all,PT_centerofficial_4
 feb419,trust_mun4,q2_12,c(4:1),"Generally speaking, the public administration of [CITY NAME] can be trusted",1 Strongly agree / 4 Strongly disagree,PT_admin_4
 eb48,trust2,v55,c(2:1),"I would like to ask you a question about how much trust you have in certain institutions. For each of the following institutions, please tell me if you tend to trustit or tend not to trust it? Civil service",1 Tend to trust / 2 Tend not to trust,PT_cvlservice_2
@@ -94,7 +94,6 @@ jgss2006,trust3,tr3bcraz,c(3:1),Trust in Ministries and Government Agencies ,1 V
 jgss2008,trust3,tr3bcraz,c(3:1),Trust in Ministries and Government Agencies ,1 Very much / 2 Some / 3 Not very much,PT_admin_3
 jgss2010,trust3,tr3bcraz,c(3:1),Trust in Ministries and Government Agencies ,1 Very much / 2 Some / 3 Not very much,PT_admin_3
 jgss2012,trust3,tr3bcraz,c(3:1),Trust in Ministries and Government Agencies ,1 Very much / 2 Some / 3 Not very much,PT_admin_3
-jgss2012,trust4,tr4cntgv,c(4:1),How much do you trust the following people? Central govt officials ,1 A great deal / 2 To some extent / 3 Not very much / 4 Not at all,PT_centerofficial_4
 jgss2015,trust3,tr3bcraz,c(3:1),Trust in Ministries and Government Agencies ,1 Very much / 2 Some / 3 Not very much,PT_admin_3
 kgss,best5,poleff6,c(5:1),Most civil servants can be trusted to do what is best for the country ,1 Strongly agree / 5 Strongly disagree,PT_cvlservice_5
 kgss,fair5,offequit,c(5:1),"In your opinion, how often do public officials deal fairly with people like you? ",1 Almost always / 2 Often / 3 Occassionally / 4 Seldom / 5 Never,PT_official_fair_5
