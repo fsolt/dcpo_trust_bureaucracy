@@ -85,11 +85,11 @@ Specifically, the lack of comparative data on trust on bureaucracy makes it impo
 surveys_tb <- read_csv(here::here("data-raw", "surveys_bureaucracy.csv"),
                        col_types = "cccccc")
 
-# dcpo_input_raw <- DCPOtools::dcpo_setup(vars = surveys_tb,
-#                                          datapath = here::here("..",
-#                                                                "data", "dcpo_surveys"),
-#                                          file = here::here("data",
-#                                                            "dcpo_input_raw.csv"))
+ dcpo_input_raw <- DCPOtools::dcpo_setup(vars = surveys_tb,
+                                          datapath = here::here("..",
+                                                                "data", "dcpo_surveys"),
+                                          file = here::here("data",
+                                                            "dcpo_input_raw.csv"))
 ```
 
 ```{r tb_summary_stats, cache = TRUE, cache.extra = tools::md5sum(here::here("data-raw", "dcpo_input_raw.csv"))}
@@ -382,10 +382,10 @@ Country coverage reached its peak in `r y_peak_year`, when respondents in `r y_p
 In the next section, we describe how we are able to make use of all of this sparse and incomparable survey data to generate complete, comparable time-series TCS scores using a latent variable model.
 
 ```{r dcpo_input}
-# dcpo_input <- DCPOtools::format_dcpo(dcpo_input_raw1,
-#                                      scale_q = "trust4",
-#                                      scale_cp = 2)
-# save(dcpo_input, file = here::here("data", "dcpo_input.rda"))
+dcpo_input <- DCPOtools::format_dcpo(dcpo_input_raw1,
+                                      scale_q = "trust4",
+                                      scale_cp = 2)
+save(dcpo_input, file = here::here("data", "dcpo_input.rda"))
 ```
 
 # Estimating trust in civil servants
@@ -446,22 +446,22 @@ evaluate <- TRUE
 ```
 
 ```{r dcpo_results, cache=TRUE}
-#  if (!exists(results_path)) {
-#    latest <- "202203210942"
-#    results_path <- here::here("data", "1000", latest)
-#    
-#    # Define OSF_PAT in .Renviron: https://docs.ropensci.org/osfr/articles/auth
-#    if (!file.exists(file.path(results_path, paste0("dcpo-", latest, "-1.csv")))) {
-#      dir.create(results_path, showWarnings = FALSE, recursive = TRUE)
-#      osf_retrieve_node("82w36") %>% 
-#        osf_ls_files() %>% 
-#        filter(name == latest) %>% 
-#        osf_download(path = here::here("data", "1000"))
-#    }
-# }
-#  
-#  dcpo_output <- as_cmdstan_fit(here::here(results_path,
-#                                           list.files(results_path, pattern = "csv$")))
+  if (!exists(results_path)) {
+    latest <- "202203210942"
+    results_path <- here::here("data", "1000", latest)
+    
+    # Define OSF_PAT in .Renviron: https://docs.ropensci.org/osfr/articles/auth
+    if (!file.exists(file.path(results_path, paste0("dcpo-", latest, "-1.csv")))) {
+      dir.create(results_path, showWarnings = FALSE, recursive = TRUE)
+      osf_retrieve_node("82w36") %>% 
+        osf_ls_files() %>% 
+        filter(name == latest) %>% 
+        osf_download(path = here::here("data", "1000"))
+    }
+ }
+  
+  dcpo_output <- as_cmdstan_fit(here::here(results_path,
+                                           list.files(results_path, pattern = "csv$")))
  
 
 ```
@@ -481,7 +481,7 @@ res_c <- theta_results %>%
   unique() %>% 
   length()
 
-#save(theta_results, file = here::here("data","theta_results.rda"))
+save(theta_results, file = here::here("data","theta_results.rda"))
 ```
 
 
@@ -549,7 +549,7 @@ The result is estimates, in all `r res_cy` country-years spanned by the source d
 Figure&nbsp;\ref{cs_mry} displays the most recent available TCS score for each of the `r res_c` countries and territories in the dataset.
 
 [The Scandinavian countries, Finland and Denmark which have high quality of governance, and Asian countries, China, India and Singapore which have e history of meritocracy, are at the top of the list.]
-<!--Niger in input date only has two time points. The question is about tax.2015's data of trust in institutions  was higher than data in later years https://bti-project.org/en/reports/country-report/NER -->
+<!--Niger in input date only has two time points. The question is about tax.2015's data of trust in institutions  was higher than data in later years https://bti-project.org/en/reports/country-report/NER. Most African countries in top 20 only have trust_tax at two time points from Afro5 and 6, including Niger, Namibia, Senegal, Botswana, Malawi, Mauritius, and Mozambique. -->
 The latest scores for `r bottom5` have them as the places where the public has the lowest trust toward civil servants.
 
 ```{r ts_plots, fig.cap="TCS Scores Over Time Within Selected Countries \\label{ts}", fig.height=3.5}
@@ -873,7 +873,7 @@ internal_plot + internal_cs_plot + internal_us_plot  +
 ```
 
 # Construct Validations
-```{r construct_validation_survey, cache = TRUE, cache.extra = tools::md5sum(here::here("data", "tcs.rda")), fig.cap="Construct Validation: Correlations Between TCS Scores and Individual Trust in Institutions Survey Items \\label{surv_const_plot}", fig.height=4}
+```{r construct_validation_survey, cache = TRUE, cache.extra = tools::md5sum(here::here("data", "tcs.rda")), fig.cap="Construct Validation: Correlations Between TCS Scores and Other Variables \\label{surv_const_plot}", fig.height = 4.5,fig.width= 8}
 load(here::here("data","tnatgov.rda"))
 
 tngov <- tnatgov %>% 
@@ -972,8 +972,8 @@ tcourt_plot <- trustcourt %>%
         plot.title = element_text(hjust = 0.5, size = 10)) +
   coord_cartesian(ylim=c(0,100)) +
   labs(x = "TCS Score", 
-       y = '% Expressing That "Trust Court"') + 
-  ggtitle("EVS, LB, \nAsian Barometer,African Barometer") +
+       y = '% Expressing "Trust Court"') + 
+  ggtitle("EVS, LB, \nAsianB,AfriB") +
   geom_label(data = tcourt_label, aes(label = label), size = 3)
 
 #tcourt_plot
@@ -1029,7 +1029,7 @@ tcs_de_plot <- court_de %>%
                    y = prop_90, yend = prop_10),
                na.rm = TRUE,
                alpha = .2) +
-  annotate("text", x = 2008, y = .30, size = 2,
+  annotate("text", x = 2009, y = .30, size = 2,
            label = 'EB Proportion of "Tend to trust court"') +
   annotate("text", x = 2005, y = .66, size = 2,
            label = "TCS") +
@@ -1042,12 +1042,6 @@ tcs_de_plot <- court_de %>%
         plot.title = element_text(hjust = 0.5, size = 11)) +
   ggtitle("Germany") +
   geom_label(data = tcs_de_label, aes(label = label), size = 3)
-
-
-
-```
-
-```{r construct_val, fig.height = 5,fig.width= 8, fig.cap = "Construct Validation for Trust Civil Servants . \\label{tcs_ev}"}
 
 tcs_corruption <-  read.csv(here::here("data","voter_corruption_all.csv")) %>%  
   transmute(country = country, 
@@ -1094,15 +1088,13 @@ tcs_cor_plot <- ggplot(tcs_corruption,
                      plot.title = element_text(hjust = 0.5, size = 10)) +
   coord_cartesian(xlim=c(0, 1)) +
   labs(x = "Trust Civil Servants, 2017", y = '% Agreeing That "There is Fairly \nWidespread Corruption in the country",\n2017') +
-  ggtitle("EB 88.2,CSES5, \nWVS7")  +
+  ggtitle("EB 88.2,CSES5,WVS7")  +
   geom_label(data = tcs_cor_label, aes(label = label), size = 3)
 
 
 
 #tcs_cor_plot
 
- 
-# inteff_us_plot
 
 #Performance Satisfactions 
 wvs7_sat <- read.csv(here::here("data","satisfy_all.csv"))
@@ -1155,7 +1147,9 @@ tcs_sat_plot <- ggplot(sat_tcs,
 
 
 tnatgov_plot | ((tcourt_plot + tcs_de_plot)/(tcs_cor_plot + tcs_sat_plot)) +
- patchwork::plot_annotation(caption = "Note: Gray whiskers and shading represent 80% credible intervals.")
+ patchwork::plot_annotation(tag_levels = 'A', 
+                            caption = "Note: Gray whiskers and shading represent 80% credible intervals.")  #why tag does not work. 
+
 
 
 
