@@ -85,11 +85,11 @@ Specifically, the lack of comparative data on trust on bureaucracy makes it impo
 surveys_tb <- read_csv(here::here("data-raw", "surveys_bureaucracy.csv"),
                        col_types = "cccccc")
 
- dcpo_input_raw <- DCPOtools::dcpo_setup(vars = surveys_tb,
-                                         datapath = here::here("..",
-                                                               "data", "dcpo_surveys"),
-                                         file = here::here("data",
-                                                           "dcpo_input_raw.csv"))
+# dcpo_input_raw <- DCPOtools::dcpo_setup(vars = surveys_tb,
+#                                          datapath = here::here("..",
+#                                                                "data", "dcpo_surveys"),
+#                                          file = here::here("data",
+#                                                            "dcpo_input_raw.csv"))
 ```
 
 ```{r tb_summary_stats, cache = TRUE, cache.extra = tools::md5sum(here::here("data-raw", "dcpo_input_raw.csv"))}
@@ -417,51 +417,51 @@ evaluate <- TRUE
 
 
 ```{r dcpo, eval=evaluate, cache=evaluate, include=FALSE, results=FALSE}
- iter <- 1000
- 
- dcpo <- cmdstan_model("~/Documents/Projects/DCPO/inst/stan/dcpo.stan")
- dcpo_output <- dcpo$sample(
-   data = dcpo_input[1:13], 
-   max_treedepth = 14,
-   adapt_delta = 0.99,
-   step_size = 0.005,
-   seed = 324, 
-   chains = 4, 
-   parallel_chains = 4,
-   iter_warmup = iter/2,
-   iter_sampling = iter/2,
-   refresh = iter/50
- )
- results_path <- here::here(file.path("data", 
-                                      iter, 
-                                      {str_replace_all(Sys.time(), "[- :]", "") %>%
-                                          str_replace("\\d{2}$", "")}))
- dir.create(results_path, 
-            showWarnings = FALSE, 
-            recursive = TRUE)
- dcpo_output$save_data_file(dir = results_path,
-                            random = FALSE)
- dcpo_output$save_output_files(dir = results_path,
-                               random = FALSE)
+ # iter <- 1000
+ # 
+ # dcpo <- cmdstan_model("~/Documents/Projects/DCPO/inst/stan/dcpo.stan")
+ # dcpo_output <- dcpo$sample(
+ #   data = dcpo_input[1:13], 
+ #   max_treedepth = 14,
+ #   adapt_delta = 0.99,
+ #   step_size = 0.005,
+ #   seed = 324, 
+ #   chains = 4, 
+ #   parallel_chains = 4,
+ #   iter_warmup = iter/2,
+ #   iter_sampling = iter/2,
+ #   refresh = iter/50
+ # )
+ # results_path <- here::here(file.path("data", 
+ #                                      iter, 
+ #                                      {str_replace_all(Sys.time(), "[- :]", "") %>%
+ #                                          str_replace("\\d{2}$", "")}))
+ # dir.create(results_path, 
+ #            showWarnings = FALSE, 
+ #            recursive = TRUE)
+ # dcpo_output$save_data_file(dir = results_path,
+ #                            random = FALSE)
+ # dcpo_output$save_output_files(dir = results_path,
+ #                               random = FALSE)
 ```
 
 ```{r dcpo_results, cache=TRUE}
- if (!exists(results_path)) {
-   latest <- "202203210942"
-   results_path <- here::here("data", "1000", latest)
-   
-   # Define OSF_PAT in .Renviron: https://docs.ropensci.org/osfr/articles/auth
-   if (!file.exists(file.path(results_path, paste0("dcpo-", latest, "-1.csv")))) {
-     dir.create(results_path, showWarnings = FALSE, recursive = TRUE)
-     osf_retrieve_node("82w36") %>% 
-       osf_ls_files() %>% 
-       filter(name == latest) %>% 
-       osf_download(path = here::here("data", "1000"))
-   }
-}
- 
- dcpo_output <- as_cmdstan_fit(here::here(results_path,
-                                          list.files(results_path, pattern = "csv$")))
+#  if (!exists(results_path)) {
+#    latest <- "202203210942"
+#    results_path <- here::here("data", "1000", latest)
+#    
+#    # Define OSF_PAT in .Renviron: https://docs.ropensci.org/osfr/articles/auth
+#    if (!file.exists(file.path(results_path, paste0("dcpo-", latest, "-1.csv")))) {
+#      dir.create(results_path, showWarnings = FALSE, recursive = TRUE)
+#      osf_retrieve_node("82w36") %>% 
+#        osf_ls_files() %>% 
+#        filter(name == latest) %>% 
+#        osf_download(path = here::here("data", "1000"))
+#    }
+# }
+#  
+#  dcpo_output <- as_cmdstan_fit(here::here(results_path,
+#                                           list.files(results_path, pattern = "csv$")))
  
 
 ```
@@ -481,11 +481,13 @@ res_c <- theta_results %>%
   unique() %>% 
   length()
 
-save(theta_results, file = here::here("data","theta_results.rda"))
+#save(theta_results, file = here::here("data","theta_results.rda"))
 ```
 
 
 ```{r cs_plot, fig.cap="TCS Scores, Most Recent Available Year \\label{cs_mry}", fig.height=10, fig.width=8}
+
+#load(here::here("data","theta_results.rda"))
 
 n_panes <- 2
 axis_text_size <- 10
@@ -644,10 +646,13 @@ theta_res <- array(unlist(theta_df), dim=c(2000, 49, 136)) %>%
         })
 tcs <- theta_res
 save(tcs, file = here::here("data", "tcs.rda"))
+
 ```
 
 # Convergence Validations
 ```{r tcs_internal_val, fig.height = 4, fig.width= 8.5, fig.cap = "Internal Validation for Trust Civil Servants. \\label{tcs_iv}"}
+
+#load(here::here("data", "tcs.rda"))
 
 internal_dat <- dcpo_input$data %>% 
   filter(item == "trust4 3 or higher") %>%  
@@ -964,7 +969,7 @@ tcourt_plot <- trustcourt %>%
   theme(legend.position="none",
         axis.text  = element_text(size=8),
         axis.title = element_text(size=9),
-        plot.title = element_text(hjust = 0.5, size = 11)) +
+        plot.title = element_text(hjust = 0.5, size = 10)) +
   coord_cartesian(ylim=c(0,100)) +
   labs(x = "TCS Score", 
        y = '% Expressing That "Trust Court"') + 
@@ -1002,7 +1007,7 @@ tcs_de_cor <- map(tcs_de, function(x)
   round(2) %>% 
   paste0("R = ", .)  #0.8
 
-tcs_de_label <- tibble(year = 2000, mean = .8, label = tcs_de_cor)
+tcs_de_label <- tibble(year = 2016, mean = .8, label = tcs_de_cor)
 tcs_de_plot <- court_de %>% 
   ggplot(aes(x = year,
              y = mean)) +
@@ -1024,12 +1029,12 @@ tcs_de_plot <- court_de %>%
                    y = prop_90, yend = prop_10),
                na.rm = TRUE,
                alpha = .2) +
-  annotate("text", x = 2010, y = .30, size = 2,
-           label = 'Eurobarometer') +
+  annotate("text", x = 2008, y = .30, size = 2,
+           label = 'EB Proportion of "Tend to trust court"') +
   annotate("text", x = 2005, y = .66, size = 2,
            label = "TCS") +
   labs(x = "Year", 
-       y = "Score") +
+       y = "TCS Score") +
   theme_bw() +
   theme(legend.position="none",
         axis.text  = element_text(size=8),
@@ -1039,11 +1044,10 @@ tcs_de_plot <- court_de %>%
   geom_label(data = tcs_de_label, aes(label = label), size = 3)
 
 
-tnatgov_plot + tcourt_plot + tcs_de_plot +
-  plot_annotation(caption = "Note: Gray whiskers and shading represent 80% credible intervals.")
+
 ```
 
-```{r construct_val, fig.height = 4,fig.width= 8.5, fig.cap = "Construct Validation for Trust Civil Servants . \\label{tcs_ev}"}
+```{r construct_val, fig.height = 5,fig.width= 8, fig.cap = "Construct Validation for Trust Civil Servants . \\label{tcs_ev}"}
 
 tcs_corruption <-  read.csv(here::here("data","voter_corruption_all.csv")) %>%  
   transmute(country = country, 
@@ -1083,89 +1087,20 @@ tcs_cor_plot <- ggplot(tcs_corruption,
                alpha = .2) +
   geom_text(aes(label = iso2c), size = 2) +
   geom_smooth(method = 'lm', se = FALSE) +
-  theme_bw() + theme(legend.position="none",
+  theme_bw() + 
+  theme(legend.position="none",
                      axis.text  = element_text(size=8),
-                     axis.title = element_text(size=9)) +
+                     axis.title = element_text(size=9),
+                     plot.title = element_text(hjust = 0.5, size = 10)) +
   coord_cartesian(xlim=c(0, 1)) +
   labs(x = "Trust Civil Servants, 2017", y = '% Agreeing That "There is Fairly \nWidespread Corruption in the country",\n2017') +
-  ggtitle("Eurobarometer 88.2,CSES5, WVS7")  +
-  geom_label(data = tcs_cor_label, aes(label = label))
+  ggtitle("EB 88.2,CSES5, \nWVS7")  +
+  geom_label(data = tcs_cor_label, aes(label = label), size = 3)
+
+
 
 #tcs_cor_plot
 
-
-###voter_efficacy_time
- anes16_eff <- read.csv(here::here("data","anes16_eff.csv"))
- 
- us_int_eff <-  anes16_eff %>%   
-   select(year, int_eff,n) %>%
-   filter(int_eff != 0) %>%
-   mutate(country = "United States") %>%
-   mutate( prop = int_eff/n,
-           se = sqrt((prop*(1-prop))/n),
-           prop_90 = prop + qnorm(0.90)*se,
-           prop_10 = prop - qnorm(0.90)*se) %>%
-   left_join(theta_results %>% 
-               select(-kk, -tt) %>%
-               filter(country == "United States"),
-             by = c("country", "year")) %>%
-   filter(!is.na(mean))
- 
- 
- tcs_inteff_us <- tcs %>% 
-   map(. %>% right_join(us_int_eff %>% 
-                          rowwise() %>% 
-                          transmute(country = country,
-                                    year = year,
-                                    prop = int_eff/n,
-                                    se = sqrt((prop*(1-prop))/n),
-                                    var = rnorm(1, mean = prop, sd = se)),
-                        by = c("country", "year")))
- 
- 
- inteff_us_cor <- map(tcs_inteff_us, function(x) 
-   with(x, cor(tcs_mean, var))) %>%
-   unlist() %>% 
-   mean() %>% 
-   round(2) %>% 
-   paste0("R = ", .)  #0.52 
- 
- 
- inteff_us_label <- tibble(year = 2005, mean = .8, label = inteff_us_cor)
- inteff_us_plot <- us_int_eff %>% 
-   ggplot(aes(x = year,
-              y = mean)) +
-   geom_line() +
-   geom_ribbon(aes(ymin = q10,         
-                   ymax = q90,
-                   linetype = NA),
-               alpha = .2) +
-   geom_point(aes(y = prop),
-              fill = "black",
-              shape = 21,
-              size = .5,
-              na.rm = TRUE) +
-   geom_path(aes(y = prop),
-             linetype = 3,
-             na.rm = TRUE,
-             alpha = .7) +
-   geom_segment(aes(x = year, xend = year,
-                    y = prop_90, yend = prop_10),
-                na.rm = TRUE,
-                alpha = .2) +
-   annotate("text", x = 1984, y = .72, size = 3,
-            label = 'ANES') +
-   annotate("text", x = 1982, y = .36, size = 3,
-            label = "Trus Civil Servants") +
-   labs(x = "Year", 
-        y = "Scores") +
-   theme_bw() +
-   theme(legend.position="none",
-         axis.text  = element_text(size=8),
-         axis.title = element_text(size=9),
-         plot.title = element_text(hjust = 0.5, size = 11)) +
-   ggtitle("United States")  +
-   geom_label(data = inteff_us_label, aes(label = label)) #, size = 3
  
 # inteff_us_plot
 
@@ -1195,7 +1130,7 @@ tcs_sat_cor <- map(tcs_sat, function(x)
   round(2) %>% 
   paste0("R = ", .)  #0.67
 
-tcs_sat_label <- tibble(mean = 0.7, prop = 75, label = tcs_sat_cor)
+tcs_sat_label <- tibble(mean = 0.85, prop = 75, label = tcs_sat_cor)
 
 tcs_sat_plot <- ggplot(sat_tcs,
                          aes(x = mean,
@@ -1208,16 +1143,19 @@ tcs_sat_plot <- ggplot(sat_tcs,
   geom_smooth(method = 'lm', se = FALSE) +
   theme_bw() + theme(legend.position="none",
                      axis.text  = element_text(size=8),
-                     axis.title = element_text(size=9)) +
+                     axis.title = element_text(size=9),
+                     plot.title = element_text(hjust = 0.5, size = 11)) +
   coord_cartesian(xlim=c(0, 1)) +
-  labs(x = "Trust Civil Servants", y = "% satisfying with the political system performance,\n WVS7") +
+  labs(x = "Trust Civil Servants", y = "% satisfying with the \npolitical system performance,WVS7") +
   ggtitle("WVS7")  +
-  geom_label(data = tcs_sat_label, aes(label = label))
+  geom_label(data = tcs_sat_label, aes(label = label), size = 3)
+
 
 #tcs_sat_plot
 
- 
-tcs_cor_plot + inteff_us_plot + tcs_sat_plot + patchwork::plot_annotation(caption = "Note: Gray whiskers and shading represent 80% credible intervals.")
+
+tnatgov_plot | ((tcourt_plot + tcs_de_plot)/(tcs_cor_plot + tcs_sat_plot)) +
+ patchwork::plot_annotation(caption = "Note: Gray whiskers and shading represent 80% credible intervals.")
 
 
 
