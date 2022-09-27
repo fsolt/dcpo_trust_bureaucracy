@@ -412,7 +412,7 @@ That is, within each country, each year's value of trust in civil servants is mo
 These dynamic models smooth the estimates of trust in civil servants over time and allow estimation even in years for which little or no survey data is available, albeit at the expense of greater measurement uncertainty.
 
 ```{r dcpo_chunk_options}
-evaluate <- TRUE
+evaluate <- FALSE
 ```
 
 
@@ -446,7 +446,7 @@ evaluate <- TRUE
 ```
 
 ```{r dcpo_results, cache=TRUE}
- if (!exists(results_path)) {
+ if (!exists("results_path")) {
    latest <- "202203210942"
    results_path <- here::here("data", "1000", latest)
    
@@ -468,7 +468,6 @@ evaluate <- TRUE
 
 ```{r dcpo_results_summary, cache=TRUE}
 load(file = here::here("data", "dcpo_input.rda"))
-dcpo_output <- readRDS(here::here("data", "dcpo_out.rds"))
 theta_results <- DCPOtools::summarize_dcpo_results(dcpo_input,
                                                    dcpo_output,
                                                    "theta")
@@ -560,17 +559,17 @@ countries2 <- countries %>%
   str_replace("United States", "U.S.") %>% 
   str_replace("United Kingdom", "U.K.")
 
-alpha_results <- DCPOtools::summarize_dcpo_results(dcpo_input,
-                                                   dcpo_output,
-                                                   "alpha")
-
-c_rawdata <- dcpo_input$data %>% 
-  filter(country %in% countries) %>%
-  mutate(mean = y_r/n_r,
-         country = str_replace(country, "United States", "U.S.") %>% 
-           str_replace("United Kingdom", "U.K.") %>% 
-           factor(levels = countries2)) %>% 
-  left_join(alpha_results %>% select(question, alpha_mean = mean), by = "question")
+# alpha_results <- DCPOtools::summarize_dcpo_results(dcpo_input,
+#                                                    dcpo_output,
+#                                                    "alpha")
+# 
+# c_rawdata <- dcpo_input$data %>% 
+#   filter(country %in% countries) %>%
+#   mutate(mean = y_r/n_r,
+#          country = str_replace(country, "United States", "U.S.") %>% 
+#            str_replace("United Kingdom", "U.K.") %>% 
+#            factor(levels = countries2)) %>% 
+#   left_join(alpha_results %>% select(question, alpha_mean = mean), by = "question")
 
 c_res <- theta_results %>% 
   filter(country %in% countries) %>%
@@ -578,9 +577,10 @@ c_res <- theta_results %>%
            str_replace("United Kingdom", "U.K.") %>% 
            factor(levels = countries2))
 
-ggplot(data = c_rawdata, aes(x = year, y = mean)) +
-  geom_line(aes(color = item, alpha = 1/alpha_mean)) +
-  geom_point(aes(color = item, alpha = 1/alpha_mean)) +
+ggplot(data = c_res, aes(x = year, y = mean)) +
+# ggplot(data = c_rawdata, aes(x = year, y = mean)) +
+#   geom_line(aes(color = item, alpha = 1/alpha_mean)) +
+#   geom_point(aes(color = item, alpha = 1/alpha_mean)) +
   theme_bw() +
   theme(legend.position = "none") +
   coord_cartesian(xlim = c(1980, 2020), ylim = c(0, 1)) +
@@ -597,7 +597,7 @@ ggplot(data = c_rawdata, aes(x = year, y = mean)) +
 ```
 
 We show the changes of TCS over time in sixteen countries in Figure&nbsp;\ref{ts}.
-As displayed in Figure&nbsp;\ref{cs_mry}, the dataset covers a wide range of  geographic breadth, allowing the comparative studies on countries and regions too often neglected [see @Wilson2021].
+As displayed in Figure&nbsp;\ref{cs_mry}, the dataset covers a wide range of geographic breadth, allowing comparative studies of countries and regions too often neglected [see @Wilson2021].
 Figure&nbsp;\ref{ts} also shows that while TCS has risen prominently in some countries, such as Finland and U.K., trusting attitudes have maintained high or low over time in others, like China and Turkey, or fallen steadily, as in U.s. and Mexico. 
 They have advanced and retreated as in Spain or have declined and recovered as in Argentina .
 It is worthwhile to further explore the causes and consequences of these trends.
