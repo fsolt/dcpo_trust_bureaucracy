@@ -381,13 +381,6 @@ The bottom panel counts the countries observed in each year and reveals just how
 Country coverage reached its peak in `r y_peak_year`, when respondents in `r y_peak_nn` countries were asked items about trust in civil servants.
 In the next section, we describe how we are able to make use of all of this sparse and incomparable survey data to generate complete, comparable time-series TCS scores using a latent variable model.
 
-```{r dcpo_input}
-# dcpo_input <- DCPOtools::format_dcpo(dcpo_input_raw1,
-#                                      scale_q = "trust4",
-#                                      scale_cp = 2)
-# save(dcpo_input, file = here::here("data", "dcpo_input.rda"))
-```
-
 # Estimating trust in civil servants
 
 A number of recent studies have developed latent variable models of public opinion based on cross-national survey data [see @Claassen2019; @Caughey2019; @McGann2019; @Kolczynska2020].
@@ -412,9 +405,15 @@ That is, within each country, each year's value of trust in civil servants is mo
 These dynamic models smooth the estimates of trust in civil servants over time and allow estimation even in years for which little or no survey data is available, albeit at the expense of greater measurement uncertainty.
 
 ```{r dcpo_chunk_options}
-evaluate <- FALSE
+evaluate <- TRUE
 ```
 
+```{r dcpo_input, eval=evaluate, cache=evaluate, include=FALSE, results=FALSE}
+dcpo_input <- DCPOtools::format_dcpo(dcpo_input_raw1,
+                                     scale_q = "trust4",
+                                     scale_cp = 2)
+save(dcpo_input, file = here::here("data", "dcpo_input.rda"))
+```
 
 ```{r dcpo, eval=evaluate, cache=evaluate, include=FALSE, results=FALSE}
  iter <- 1000
