@@ -6,7 +6,7 @@ output:
     fig_caption: true
     latex_engine: pdflatex
     template: svm-latex-ms2.tex
-title: "[Trust in Bureaucracy]"
+title: "Trust in Bureaucracy: Public Opinion on Public Servants in Dynamic Comparative Perspective"
 thanks: "Corresponding author: [frederick-solt@uiowa.edu](mailto:frederick-solt@uiowa.edu).  Current version: `r format(Sys.time(), '%B %d, %Y')`."
 author:
 - name: Yuehong 'Cassandra' Tai
@@ -446,7 +446,7 @@ save(dcpo_input, file = here::here("data", "dcpo_input.rda"))
 
 ```{r dcpo_results, cache=TRUE}
  if (!exists("results_path")) {
-   latest <- "202203210942"
+   latest <- "202209282005"
    results_path <- here::here("data", "1000", latest)
    
    # Define OSF_PAT in .Renviron: https://docs.ropensci.org/osfr/articles/auth
