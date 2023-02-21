@@ -42,26 +42,143 @@ header-includes:
 ```{r setup, include=FALSE}
 options(tinytex.verbose = TRUE)
 
-knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
-                      fig.width=7, fig.height=2.5)
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  cache = TRUE,
+  dpi = 600,
+  fig.width=7,
+  fig.height = 2.5,
+  plot = function(x, options)  {
+    hook_plot_tex(x, options)
+  }
+)
 
 # If `DCPOtools` is not yet installed:
 # remotes::install_github("fsolt/DCPOtools")
 
-library(DCPOtools)
-library(tidyverse)
-library(cmdstanr)
-library(countrycode)
-library(patchwork)
-library(rsdmx)
-library(osfr)
+if (!require(pacman)) install.packages("pacman")
+library(pacman)
+# load all the packages you will use below 
+p_load(
+  DCPOtools,
+  cmdstanr,
+  tidyverse,
+  here,
+  countrycode,
+  patchwork,
+  ggthemes,
+  rsdmx,
+  osfr,
+  kableExtra
+) 
+
+# define functions
+validation_plot <- function(v_data_raw,
+                            lab_x = .38, lab_y = 92,
+                            theta_summary, theta_results) {
+    
+    # defaults per https://stackoverflow.com/a/49167744/2620381
+    if ("theta_summary" %in% ls(envir = .GlobalEnv) & missing(theta_summary))
+        theta_summary <- get("theta_summary", envir = .GlobalEnv)
+    if ("theta_results" %in% ls(envir = .GlobalEnv) & missing(theta_results))
+        theta_results <- get("theta_results", envir = .GlobalEnv)
+
+    median_val <- Vectorize(function(x) median(1:x),
+                            vectorize.args = "x")
+    
+    v_vars <- v_data_raw %>% 
+      select(item0 = item) %>% 
+      unique() %>% 
+      mutate(v_val = str_extract(item0, "\\d+") %>% 
+               as.numeric() %>% 
+               {median_val(.) + 1} %>%
+               floor())
+    
+    # v_val <- str_extract(v_vars, "\\d+") %>% 
+    #   as.numeric() %>%
+    #   median(x = 1:.) %>% 
+    #   `+`(1) %>% 
+    #   floor()
+
+    # v_vals <- v_vars %>% 
+    #   mutate(value = str_extract("\\d+") %>% 
+    #            as.numeric(),
+    #          v_var2 = {median_val(value) + 1} %>% floor())
+    
+    validation_summarized <- v_data_raw %>% 
+      DCPOtools::format_dcpo(scale_q = v_vars$item0[[1]], # these arguments are required
+                             scale_cp = 1) %>% # but they don't matter
+      pluck("data") %>% 
+      mutate(item0 = str_remove(item, " \\d or higher"),
+             title = factor(title, 
+                            levels = v_data_raw %>%
+                              pull(title) %>%
+                              unique())) %>% 
+      right_join(v_vars, by = "item0") %>%
+      arrange(title) %>% 
+      filter(str_detect(item, paste(v_val, "or higher"))) %>%
+      mutate(iso2c = countrycode::countrycode(country,
+                                              origin = "country.name",
+                                              destination = "iso2c"),
+             prop = if_else(neg, 1-y_r/n_r, y_r/n_r),
+             se = sqrt((prop*(1-prop))/n),
+             prop_90 = prop + qnorm(.9)*se,
+             prop_10 = prop - qnorm(.9)*se) %>%
+      inner_join(theta_summary %>% select(-kk, -tt), by = c("country", "year"))
+    
+    # if ("title" %in% names(v_data_raw)) {
+    #   v_title <- v_data_raw %>% 
+    #     filter(item == v_var) %>% 
+    #     pull(title) %>% 
+    #     first()
+    # } else {
+    #   v_title <- v_var
+    # } 
+    
+    validation_cor <- theta_results %>%
+      inner_join(validation_summarized %>%
+                   select(country, year, title, prop, se),
+                 by = c("country", "year")) %>% 
+      rowwise() %>% 
+      mutate(sim = rnorm(1, mean = prop, sd = se)) %>% 
+      ungroup() %>% 
+      select(title, theta, sim, draw) %>% 
+      nest(data = c(theta, sim)) %>% 
+      mutate(r = lapply(data, function(df) cor(df) %>% nth(2)) %>% 
+               unlist()) %>%
+      select(-data) %>% 
+      group_by(title) %>% 
+      summarize(r = paste("R =", round(mean(r), 2)))
+
+   
+    validation_summarized %>%
+      ggplot(aes(x = mean,
+                 y = prop * 100)) +
+      geom_segment(aes(x = q10, xend = q90,
+                       y = prop * 100, yend = prop * 100),
+                   na.rm = TRUE,
+                   alpha = .2) +
+      geom_segment(aes(x = mean, xend = mean,
+                       y = prop_90 * 100, yend = prop_10 * 100),
+                   na.rm = TRUE,
+                   alpha = .2) +
+      geom_smooth(method = 'lm', formula = 'y ~ x', se = FALSE) +
+      facet_wrap(~ title, ncol = 4) +
+      geom_label(data = validation_cor, aes(x = lab_x,
+                                            y = lab_y,
+                                            label = r),
+                 size = 2)
+}
 
 set.seed(324)
 ```
 
+
 # Intro
 
-[Y]et the comparative aspects of public administration have largely been ignored, and as long as the study of public administration is not comparative, claims for a “science of public administration” sound rather hollow [@Dahl1947, pp. 8].
+[Y]et the comparative aspects of public administration have largely been ignored, and as long as the study of public administration is not comparative, claims for a "science of public administration" sound rather hollow [@Dahl1947, pp. 8].
 Comparative studies provide novel insights and innovatory concepts but face methodological challenges [@Pollitt2011].
 Measurement equivalence is a critical one of these challenges. 
 Specifically, non-equivalent measures across countries posts a threat to comparative public administration study, yielding biased results, wrong theoretical conclusions, and misleading policy implications [@Jilke2015].
@@ -78,8 +195,8 @@ Agencies and civil servants are agents who implement policies, deliver public se
 With trust in bureaucracy, the public could support "the implementation of policy programs" [@Kim2005, p. 611]. 
 On contrast, without public trust, public officials could struggle in performing their tasks and attaining the public's collaborative responses in emergencies [@Yates1982;@Van2011].
 
-Among few existing studies, data is limited in both regional scale  and time periods [@Morelock2021; @Choi2018;@Houston2016], which severely impedes causal inferences in dynamic relationship between trust in bureaucracy and quality of administration.
-Specifically, the lack of comparative data on trust on bureaucracy makes it impossible to test the competing theories about what affects trusting attitudes, government performance or  quality of governance [@Bouckaert2012;@Kettl2000;@Van2022;@Morelock2021].
+Among few existing studies, data is limited in both regional scale  and time periods [@Morelock2021; @Choi2018; @Houston2016], which severely impedes causal inferences in dynamic relationship between trust in bureaucracy and quality of administration.
+Specifically, the lack of comparative data on trust on bureaucracy makes it impossible to test the competing theories about what affects trusting attitudes, government performance, or the quality of governance [@Bouckaert2012; @Kettl2000; @Van2022; @Morelock2021].
 
 ```{r dcpo_input_raw, include=FALSE, cache = TRUE, cache.extra = tools::md5sum(here::here("data-raw", "surveys_bureaucracy.csv"))}
 surveys_tb <- read_csv(here::here("data-raw", "surveys_bureaucracy.csv"),
@@ -408,14 +525,14 @@ These dynamic models smooth the estimates of trust in civil servants over time a
 evaluate <- TRUE
 ```
 
-```{r dcpo_input, eval=evaluate, cache=evaluate, include=FALSE, results=FALSE}
+```{r dcpo_input, eval=evaluate, cache=TRUE, dependson="dcpo_chunk_options", include=FALSE, results=FALSE}
 dcpo_input <- DCPOtools::format_dcpo(dcpo_input_raw1,
                                      scale_q = "trust4",
                                      scale_cp = 2)
 save(dcpo_input, file = here::here("data", "dcpo_input.rda"))
 ```
 
-```{r dcpo, eval=evaluate, cache=evaluate, include=FALSE, results=FALSE}
+```{r dcpo, eval=evaluate, cache=evaluate, dependson="dcpo_input", include=FALSE, results=FALSE}
  iter <- 1000
  
  dcpo <- cmdstan_model("~/Documents/Projects/DCPO/inst/stan/dcpo.stan")
@@ -446,7 +563,7 @@ save(dcpo_input, file = here::here("data", "dcpo_input.rda"))
 
 ```{r dcpo_results, cache=TRUE}
  if (!exists("results_path")) {
-   latest <- "202209282005"
+   latest <- "202210091514"
    results_path <- here::here("data", "1000", latest)
    
    # Define OSF_PAT in .Renviron: https://docs.ropensci.org/osfr/articles/auth
