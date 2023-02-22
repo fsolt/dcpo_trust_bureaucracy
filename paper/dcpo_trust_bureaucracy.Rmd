@@ -53,6 +53,32 @@ header-includes:
       - \usepackage{titling} #use \maketitle repeatedly  
 ---
 
+\pagenumbering{gobble}
+
+# Authors {.unnumbered}
+
+-   Yuehong Cassandra Tai, ORCID: <https://orcid.org/0000-0001-7303-7443>, Postdoctoral Fellow, Center for Social Data Analytics, Pennsylvania State University, [yhcasstai\@psu.edu](mailto:yhcasstai@psu.edu){.email}
+-   Frederick Solt, corresponding author, ORCID: <https://orcid.org/0000-0002-3154-6132>, Associate Professor, Department of Political Science, University of Iowa, [frederick-solt\@uiowa.edu](mailto:frederick-solt@uiowa.edu){.email}
+
+\pagebreak
+
+```{=tex}
+\renewcommand{\baselinestretch}{1}
+\selectfont
+\maketitle
+\renewcommand{\baselinestretch}{1.5}
+\selectfont
+```
+
+```{=tex}
+\begin{abstract}
+blah blah blah
+\end{abstract}
+```
+\pagebreak
+
+\pagenumbering{arabic}
+
 ```{r setup, include=FALSE}
 options(tinytex.verbose = TRUE)
 
