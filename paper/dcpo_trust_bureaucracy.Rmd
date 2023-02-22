@@ -238,18 +238,18 @@ On contrast, without public trust, public officials could struggle in performing
 Among few existing studies, data is limited in both regional scale  and time periods [@Morelock2021; @Choi2018; @Houston2016], which severely impedes causal inferences in dynamic relationship between trust in bureaucracy and quality of administration.
 Specifically, the lack of comparative data on trust on bureaucracy makes it impossible to test the competing theories about what affects trusting attitudes, government performance, or the quality of governance [@Bouckaert2012; @Kettl2000; @Van2022; @Morelock2021].
 
-```{r dcpo_input_raw, include=FALSE, cache = TRUE, cache.extra = tools::md5sum(here::here("data-raw", "surveys_bureaucracy.csv"))}
+```{r dcpo_input_raw, include=FALSE, cache.extra = tools::md5sum(here::here("data-raw", "surveys_bureaucracy.csv"))}
 surveys_tb <- read_csv(here::here("data-raw", "surveys_bureaucracy.csv"),
                        col_types = "cccccc")
 
- dcpo_input_raw <- DCPOtools::dcpo_setup(vars = surveys_tb,
+dcpo_input_raw <- DCPOtools::dcpo_setup(vars = surveys_tb,
                                          datapath = here::here("..",
                                                                "data", "dcpo_surveys"),
                                          file = here::here("data",
                                                            "dcpo_input_raw.csv"))
 ```
 
-```{r tb_summary_stats, cache = TRUE, cache.extra = tools::md5sum(here::here("data-raw", "dcpo_input_raw.csv"))}
+```{r tb_summary_stats, cache.extra = tools::md5sum(here::here("data-raw", "dcpo_input_raw.csv"))}
 dcpo_input_raw <- read_csv(here::here("data", "dcpo_input_raw.csv"),
                                   col_types = "cdcddcd")
 
