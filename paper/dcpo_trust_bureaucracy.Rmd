@@ -12,7 +12,6 @@ title: |
   | Trust in Bureaucracy: 
   | Public Opinion on Public Servants in
   | Dynamic Comparative Perspective
-thanks: "Corresponding author: [frederick-solt@uiowa.edu](mailto:frederick-solt@uiowa.edu).  Current version: `r format(Sys.time(), '%B %d, %Y')`."
 
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 editor_options: 
@@ -133,19 +132,9 @@ validation_plot <- function(v_data_raw,
       unique() %>% 
       mutate(v_val = str_extract(item0, "\\d+") %>% 
                as.numeric() %>% 
-               {median_val(.) + 1} %>%
-               floor())
-    
-    # v_val <- str_extract(v_vars, "\\d+") %>% 
-    #   as.numeric() %>%
-    #   median(x = 1:.) %>% 
-    #   `+`(1) %>% 
-    #   floor()
-
-    # v_vals <- v_vars %>% 
-    #   mutate(value = str_extract("\\d+") %>% 
-    #            as.numeric(),
-    #          v_var2 = {median_val(value) + 1} %>% floor())
+               median_val(.) %>%
+               {. + .1} %>% 
+               round())
     
     validation_summarized <- v_data_raw %>% 
       DCPOtools::format_dcpo(scale_q = v_vars$item0[[1]], # these arguments are required
@@ -168,15 +157,6 @@ validation_plot <- function(v_data_raw,
              prop_10 = prop - qnorm(.9)*se) %>%
       inner_join(theta_summary %>% select(-kk, -tt), by = c("country", "year"))
     
-    # if ("title" %in% names(v_data_raw)) {
-    #   v_title <- v_data_raw %>% 
-    #     filter(item == v_var) %>% 
-    #     pull(title) %>% 
-    #     first()
-    # } else {
-    #   v_title <- v_var
-    # } 
-    
     validation_cor <- theta_results %>%
       inner_join(validation_summarized %>%
                    select(country, year, title, prop, se),
@@ -192,24 +172,71 @@ validation_plot <- function(v_data_raw,
       group_by(title) %>% 
       summarize(r = paste("R =", round(mean(r), 2)))
 
-   
-    validation_summarized %>%
-      ggplot(aes(x = mean,
-                 y = prop * 100)) +
-      geom_segment(aes(x = q10, xend = q90,
-                       y = prop * 100, yend = prop * 100),
-                   na.rm = TRUE,
-                   alpha = .2) +
-      geom_segment(aes(x = mean, xend = mean,
-                       y = prop_90 * 100, yend = prop_10 * 100),
-                   na.rm = TRUE,
-                   alpha = .2) +
-      geom_smooth(method = 'lm', formula = 'y ~ x', se = FALSE) +
-      facet_wrap(~ title, ncol = 4) +
-      geom_label(data = validation_cor, aes(x = lab_x,
-                                            y = lab_y,
-                                            label = r),
-                 size = 2)
+    if ({validation_summarized %>%
+        pull(country) %>%
+        unique() %>% 
+        length()} > 1) {
+      val_plot <- validation_summarized %>%
+        ggplot(aes(x = mean,
+                   y = prop * 100)) +
+        geom_segment(aes(x = q10, xend = q90,
+                         y = prop * 100, yend = prop * 100),
+                     na.rm = TRUE,
+                     alpha = .2) +
+        geom_segment(aes(x = mean, xend = mean,
+                         y = prop_90 * 100, yend = prop_10 * 100),
+                     na.rm = TRUE,
+                     alpha = .2) +
+        geom_smooth(method = 'lm', formula = 'y ~ x', se = FALSE) +
+        facet_wrap(~ title, ncol = 4) +
+        geom_label(data = validation_cor, aes(x = lab_x,
+                                              y = lab_y,
+                                              label = r),
+                   size = 2)
+    } else {
+      val_plot <- validation_summarized %>%
+        ggplot(aes(x = year,
+                   y = mean)) +
+        geom_line() +
+        geom_ribbon(aes(ymin = q10,
+                        ymax = q90,
+                        linetype = NA),
+                    alpha = .2) +
+        geom_point(aes(y = prop),
+                   fill = "black",
+                   shape = 21,
+                   size = .5,
+                   na.rm = TRUE) +
+        geom_path(aes(y = prop),
+                  linetype = 3,
+                  na.rm = TRUE,
+                  alpha = .7) +
+        geom_segment(aes(x = year, xend = year,
+                         y = prop_90, yend = prop_10),
+                     na.rm = TRUE,
+                     alpha = .2) +
+        facet_wrap(~ title, ncol = 4) +
+        geom_label(data = validation_cor, aes(x = lab_x,
+                                              y = lab_y,
+                                              label = r),
+                   size = 2)
+    }
+    
+    return(val_plot)
+}
+
+covered_share_of_spanned <- function(dcpo_input_raw) {
+  n_cy <- dcpo_input_raw %>%
+    distinct(country, year) %>% 
+    nrow()
+  
+  spanned_cy <- dcpo_input_raw %>% 
+    group_by(country) %>% 
+    summarize(years = max(year) - min(year) + 1) %>% 
+    summarize(n = sum(years)) %>% 
+    pull(n)
+  
+  {(n_cy/spanned_cy) * 100}
 }
 
 set.seed(324)
@@ -224,8 +251,8 @@ Measurement equivalence is a critical one of these challenges.
 Specifically, non-equivalent measures across countries posts a threat to comparative public administration study, yielding biased results, wrong theoretical conclusions, and misleading policy implications [@Jilke2015].
 
 The lack of comparable data is especially prominent in comparative public administrative survey research.
-As a core topic in comparative administration, analyses on trust connect classic administration theories and behavioral perspectives [@Van2011].
-However, studies on trust and public administration in across national analyses are susceptible to lack of comparable data and have to restricted to a small number of country-level unites, mainly focusing on OECD countries [see summary in @Van2022].
+As a core topic in comparative administration, analyses on trust connect classic administration theories and behavioral perspectives [@VanRyzin2011].
+However, studies on trust and public administration in across national analyses are susceptible to lack of comparable data and have to restricted to a small number of country-level unites, mainly focusing on OECD countries [see summary in @VandeWalle2022].
 @Jilke2015 found that ignoring the incaparability of trust measures cross countries can produce misleading conclusions. For example, without accounting for item bias, Swedens have higher trust in public institutions than citizens in Canada and the United States, which is exactly the opposite when non-equivalence caused by item bias is modeled.
 
 The causes and consequences of trust in government, in legislative institutions, and judiciary on democratic governance, legitimacy of legitimacy, direction of public policy, and public compliance in emergencies have been widely discussed over decades [@Easton1975;@Chanley2000;@Rogowski2021;@Goldstein2021].
@@ -233,12 +260,12 @@ However, trust in public administration has long been ignored by scholarly inqui
 Since the public cannot monitor and control agencies and civil servants directly, trust in bureaucracy is required to grant agencies and officials to act in the public’s interest [@Thomas1998].
 Agencies and civil servants are agents who implement policies, deliver public services and goods, and contact with citizens directly and frequently, public trust determines the public's acceptance to delivered goods and compliance with public policies [@Morelock2021]. 
 With trust in bureaucracy, the public could support "the implementation of policy programs" [@Kim2005, p. 611]. 
-On contrast, without public trust, public officials could struggle in performing their tasks and attaining the public's collaborative responses in emergencies [@Yates1982;@Van2011].
+On contrast, without public trust, public officials could struggle in performing their tasks and attaining the public's collaborative responses in emergencies [@Yates1982;@VanRyzin2011].
 
 Among few existing studies, data is limited in both regional scale  and time periods [@Morelock2021; @Choi2018; @Houston2016], which severely impedes causal inferences in dynamic relationship between trust in bureaucracy and quality of administration.
-Specifically, the lack of comparative data on trust on bureaucracy makes it impossible to test the competing theories about what affects trusting attitudes, government performance, or the quality of governance [@Bouckaert2012; @Kettl2000; @Van2022; @Morelock2021].
+Specifically, the lack of comparative data on trust on bureaucracy makes it impossible to test the competing theories about what affects trusting attitudes, government performance, or the quality of governance [@Bouckaert2012; @Kettl2000; @VandeWalle2022; @Morelock2021].
 
-```{r dcpo_input_raw, include=FALSE, cache.extra = tools::md5sum(here::here("data-raw", "surveys_bureaucracy.csv"))}
+```{r dcpo_input_raw, include=FALSE, cache=TRUE}
 surveys_tb <- read_csv(here::here("data-raw", "surveys_bureaucracy.csv"),
                        col_types = "cccccc")
 
@@ -249,16 +276,16 @@ dcpo_input_raw <- DCPOtools::dcpo_setup(vars = surveys_tb,
                                                            "dcpo_input_raw.csv"))
 ```
 
-```{r tb_summary_stats, cache.extra = tools::md5sum(here::here("data-raw", "dcpo_input_raw.csv"))}
+```{r tb_summary_stats, cache=TRUE}
 dcpo_input_raw <- read_csv(here::here("data", "dcpo_input_raw.csv"),
                                   col_types = "cdcddcd")
 
 process_dcpo_input_raw <- function(dcpo_input_raw_df) {
   dcpo_input_raw_df %>% 
-    with_min_yrs(2) %>% 
+    with_min_yrs(3) %>% 
     with_min_cy(5) %>% 
-    with_min_yrs(2) %>% #?
-    filter(year >= 1972 & n > 0) %>% 
+    with_min_yrs(3) %>% #?
+    filter(year >= 1985 & n > 0) %>% 
     group_by(country) %>% 
     mutate(cc_rank = n()) %>% 
     ungroup() %>% 
@@ -287,7 +314,7 @@ n_cy <- dcpo_input_raw1 %>%
 
 n_years <- as.integer(summary(dcpo_input_raw1$year)[6]-summary(dcpo_input_raw1$year)[1])
 
-spanned_cy <- dcpo_input_raw %>% 
+spanned_cy <- dcpo_input_raw1 %>% 
   group_by(country) %>% 
   summarize(years = max(year) - min(year) + 1) %>% 
   summarize(n = sum(years)) %>% 
@@ -313,7 +340,7 @@ back_to_numeric <- function(string_number) {
     as.numeric()
 }
 
-covered_share_of_spanned <- {back_to_numeric(n_cy)/back_to_numeric(spanned_cy) * 100}
+covered_share <- covered_share_of_spanned(dcpo_input_raw1)
 ```
 
 In this letter, we present the trust in civil servants/(bureaucracy/public administration) (TCS) dataset, which is based on the host of national and cross-national survey data available and recent advances in latent variable modeling of public opinion that allow us to make use of this sparse and incomparable data.
@@ -331,10 +358,10 @@ The complete list of trust in civil servants/public administration survey items 
 Together, the survey items in the source data were asked in `r n_countries` different countries in at least two time points over `r n_years` years, `r year_range`, yielding a total of `r n_cyi` country-year-item observations.
 Observations for every year in each country surveyed would number `r total_cy`, and a complete set of country-year-items would encompass `r {n_countries * n_years * n_items} %>% scales::comma()` observations.
 Compared to this complete set of country-year-items, the available data can be seen to be very, very sparse.
-From a more optimistic standpoint, we note there there are `r n_cy` country-years in which we have at least _some_ information about the trust in civil servants of the population, that is, some `r round(covered_share_of_spanned)`% of the `r spanned_cy` country-years spanned by the data we collected.
+From a more optimistic standpoint, we note there there are `r n_cy` country-years in which we have at least _some_ information about the trust in civil servants of the population, that is, some `r round(covered_share)`% of the `r spanned_cy` country-years spanned by the data we collected.
 But there can be no denying that the many different survey items employed renders these data incomparable and difficult to use together.
 
-```{r item_and_country_plots, fig.height = 3.5, fig.cap = "Countries and Years with the Most Observations in the TCS Source Data \\label{item_country_plots}"}
+```{r itemcountry, fig.cap="Countries and Years with the Most Observations in the Source Data \\label{item_country_plots}", fig.height=3.5, fig.pos='h'}
 items_plot <- dcpo_input_raw1 %>%
   distinct(country, year, item) %>%
   count(item) %>%
@@ -498,7 +525,7 @@ n_data_poor <- {data_poorest %>%
 ```
 
 \pagebreak
-```{r obs_by_cy, fig.height = 9, fig.width = 6.5, fig.cap = "Source Data Observations by Country and Year \\label{obs_by_cy}"}
+```{r obs, fig.cap = "Source Data Observations by Country and Year \\label{obs_by_cy}", fig.height = 9}
 dcpo_input_raw1 %>% 
   mutate(country = str_replace(country, "’", "'")) %>% 
   distinct(country, year, item, cc_rank) %>% 
@@ -517,7 +544,7 @@ dcpo_input_raw1 %>%
                     right = FALSE,
                     name = "Observations") +
   labs(x = NULL, y = NULL) +
-  scale_x_continuous(breaks=seq(1972, 2020, 4),
+  scale_x_continuous(breaks=seq(1984, 2024, 4),
                      sec.axis = dup_axis()) +
   scale_y_discrete(position = "right") +
   theme(legend.justification=c(0, 0), 
@@ -530,7 +557,7 @@ Consider the most frequently asked item in the data we collected, which asks res
 Employed by the Arab Barometer,the Asia Europe Survey, the Asian Barometer, the British Social Attitudes Survey, the Latino Barometer, the East Asian Social Survey, the European Values Survey, the Italian National Election Study, the South Asian Barometer, and the World Values Survey, this question was asked in a total of `r trust4_cy` different country-years.
 That this constitutes only `r {trust4_cy*100/(spanned_cy %>% str_replace(",", "") %>% as.numeric())} %>% round()`% of the country-years spanned by our data---and again, this is the _most common_ survey item---again underscores just how sparse and incomparable the available public opinion data is on this topic.
 
-The upper left panel of Figure&nbsp;\ref{item_country_plots} shows the dozen countries with the highest count of country-year-item observations.
+The upper left panel of Figure\nobreakspace{}\@ref(fig:item_and_country_plots) shows the dozen countries with the highest count of country-year-item observations.
 The United States, with `r us_obs` observations, is far and away the best represented country in the source data, followed by `r others`.
 At the other end of the spectrum, `r n_data_poorest` countries`r data_poorest`have only the minimum two observations required to be included in the source dataset at all.
 The upper right panel shows the twelve countries with the most years observed; this group is similar, but with `r adding` joining the list and `r dropping` dropping off.
@@ -561,18 +588,14 @@ To address the sparsity of the source data---the fact that there are gaps in the
 That is, within each country, each year's value of trust in civil servants is modeled as the previous year's estimate plus a random shock.
 These dynamic models smooth the estimates of trust in civil servants over time and allow estimation even in years for which little or no survey data is available, albeit at the expense of greater measurement uncertainty.
 
-```{r dcpo_chunk_options}
-evaluate <- TRUE
-```
-
-```{r dcpo_input, eval=evaluate, cache=TRUE, dependson="dcpo_chunk_options", include=FALSE, results=FALSE}
+```{r dcpo_input, eval=TRUE, include=FALSE, results=FALSE}
 dcpo_input <- DCPOtools::format_dcpo(dcpo_input_raw1,
                                      scale_q = "trust4",
                                      scale_cp = 2)
 save(dcpo_input, file = here::here("data", "dcpo_input.rda"))
 ```
 
-```{r dcpo, eval=evaluate, cache=evaluate, dependson="dcpo_input", include=FALSE, results=FALSE}
+```{r dcpo, eval=TRUE, include=FALSE, results=FALSE}
  iter <- 1000
  
  dcpo <- cmdstan_model("~/Documents/Projects/DCPO/inst/stan/dcpo.stan")
@@ -601,9 +624,9 @@ save(dcpo_input, file = here::here("data", "dcpo_input.rda"))
                                random = FALSE)
 ```
 
-```{r dcpo_results, cache=TRUE}
+```{r dcpo_results}
  if (!exists("results_path")) {
-   latest <- "202210091514"
+   latest <- "202302231615"
    results_path <- here::here("data", "1000", latest)
    
    # Define OSF_PAT in .Renviron: https://docs.ropensci.org/osfr/articles/auth
@@ -622,30 +645,35 @@ save(dcpo_input, file = here::here("data", "dcpo_input.rda"))
 
 ```
 
-```{r dcpo_results_summary, cache=TRUE}
+```{r dcpo_summary}
 load(file = here::here("data", "dcpo_input.rda"))
-theta_results <- DCPOtools::summarize_dcpo_results(dcpo_input,
+theta_summary <- DCPOtools::summarize_dcpo_results(dcpo_input,
                                                    dcpo_output,
                                                    "theta")
 
-res_cy <- nrow(theta_results) %>% 
+res_cy <- nrow(theta_summary) %>% 
   scales::comma()
 
-res_c <- theta_results %>% 
+res_c <- theta_summary %>% 
   pull(country) %>% 
   unique() %>% 
   length()
 
-save(theta_results, file = here::here("data","theta_results.rda"))
+save(theta_summary, file = here::here("data","theta_summary.rda"))
+```
+
+```{r theta_results}
+theta_results <- extract_dcpo_results(dcpo_input,
+                                      dcpo_output,
+                                      par = "theta")
 ```
 
 
 ```{r cs_plot, fig.cap="TCS Scores, Most Recent Available Year \\label{cs_mry}", fig.height=10, fig.width=8}
-
 n_panes <- 2
 axis_text_size <- 10
 
-p1_data <- theta_results %>%
+p1_data <- theta_summary %>%
   group_by(country) %>%
   top_n(1, year) %>%
   ungroup() %>%
@@ -699,13 +727,13 @@ The $\hat{R}$ diagnostic had a maximum value of 1.01, indicating that the model 
 <!--The dispersion parameters of the survey items indicate that all of them load well on the latent variable (see Appendix A).-->
 
 The result is estimates, in all `r res_cy` country-years spanned by the source data, of mean trust in civil servants, what we call TCS scores.
-Figure&nbsp;\ref{cs_mry} displays the most recent available TCS score for each of the `r res_c` countries and territories in the dataset.
+Figure\nobreakspace{}\@ref(fig:cs_mry) displays the most recent available TCS score for each of the `r res_c` countries and territories in the dataset.
 
 [The Scandinavian countries, Finland and Denmark which have high quality of governance, and Asian countries, China, India and Singapore which have e history of meritocracy, are at the top of the list.]
 <!--Niger in input date only has two time points. The question is about tax.2015's data of trust in institutions  was higher than data in later years https://bti-project.org/en/reports/country-report/NER -->
 The latest scores for `r bottom5` have them as the places where the public has the lowest trust toward civil servants.
 
-```{r ts_plots, fig.cap="TCS Scores Over Time Within Selected Countries \\label{ts}", fig.height=3.5}
+```{r ts, fig.cap="TCS Scores Over Time Within Selected Countries \\label{ts_plots}", fig.height=3.5}
 countries <- c("Finland", "China", "Philippines", "Bangladesh",
                "Malaysia", "Turkey", "United Kingdom", "South Korea",
                "Belgium", "Spain", "United States", "Chile", 
@@ -727,7 +755,7 @@ countries2 <- countries %>%
 #            factor(levels = countries2)) %>% 
 #   left_join(alpha_results %>% select(question, alpha_mean = mean), by = "question")
 
-c_res <- theta_results %>% 
+c_res <- theta_summary %>% 
   filter(country %in% countries) %>%
   mutate(country = str_replace(country, "United States", "U.S.") %>% 
            str_replace("United Kingdom", "U.K.") %>% 
@@ -752,631 +780,209 @@ ggplot(data = c_res, aes(x = year, y = mean)) +
   plot_annotation(caption = "Note: Countries are ordered by their TCS scores in their most recent\navailable year; gray shading represents 80% credible intervals.")
 ```
 
-We show the changes of TCS over time in sixteen countries in Figure&nbsp;\ref{ts}.
-As displayed in Figure&nbsp;\ref{cs_mry}, the dataset covers a wide range of geographic breadth, allowing comparative studies of countries and regions too often neglected [see @Wilson2021].
-Figure&nbsp;\ref{ts} also shows that while TCS has risen prominently in some countries, such as Finland and U.K., trusting attitudes have maintained high or low over time in others, like China and Turkey, or fallen steadily, as in U.s. and Mexico. 
+We show the changes of TCS over time in sixteen countries in Figure\nobreakspace{}\@ref(fig:ts_plots).
+As displayed in Figure\nobreakspace{}\@ref(fig:cs_mry), the dataset covers a wide range of geographic breadth, allowing comparative studies of countries and regions too often neglected [see @Wilson2021].
+Figure\nobreakspace{}\@ref(fig:ts_plots) also shows that while TCS has risen prominently in some countries, such as Finland and U.K., trusting attitudes have maintained high or low over time in others, like China and Turkey, or fallen steadily, as in U.s. and Mexico. 
 They have advanced and retreated as in Spain or have declined and recovered as in Argentina .
 It is worthwhile to further explore the causes and consequences of these trends.
 
 
 # Validating Trust in Civil Servants
-```{r extract_res}
-dat <- dcpo_input$data
-qcodes <- dat %>%
-  dplyr::group_by(question) %>%
-  dplyr::summarize(qq = first(qq) %>%
-                     as.numeric())
-kcodes <- dat %>%
-  dplyr::group_by(country) %>%
-  dplyr::summarize(kk = first(kk) %>%
-                     as.numeric())
-tcodes <- dat %>%
-  dplyr::group_by(year) %>%
-  dplyr::summarize(tt = first(tt))
-ktcodes <- dat %>%
-  dplyr::group_by(country) %>%
-  dplyr::summarize(first_yr = min(year),
-                   last_yr = max(year))
 
-theta_df <- dcpo_output$draws(variables = "theta",format = "df") 
-theta_res <- array(unlist(theta_df), dim=c(2000, 49, 136)) %>%
-        purrr::array_branch(1)  %>%
-        purrr::map(function(x) {
-          tibble::as_tibble(x) %>%
-          dplyr::mutate(tt = row_number()) %>%
-            dplyr::left_join(tcodes, by = "tt") %>% #no 1979 and 1985
-            tidyr::pivot_longer(cols = starts_with("V"),
-                                names_to = "kk",
-                                values_to = "tcs_mean") %>%
-            dplyr::mutate(year = if_else(tt == 1,
-                                         as.numeric(year),
-                                         min(year, na.rm = TRUE) + tt - 1),
-                          kk = str_replace(kk, "V", "") %>% as.numeric()) %>%
-            dplyr::left_join(kcodes, by = "kk") %>%
-            dplyr::left_join(ktcodes, by = "country") %>%
-            dplyr::filter(year >= first_yr & year <= last_yr) %>%
-            dplyr::arrange(kk, tt) %>%
-            dplyr::select(country, year, tcs_mean)
-        })
-tcs <- theta_res
-save(tcs, file = here::here("data", "tcs.rda"))
-```
+```{r tcs_internal_val, fig.height = 4, fig.cap = "Convergent Validation: Correlations Between TSC Scores and Individual TSC Source-Data Survey Items"}
 
-# Convergence Validations
-```{r tcs_internal_val, fig.height = 4, fig.width= 8.5, fig.cap = "Internal Validation for Trust Civil Servants. \\label{tcs_iv}"}
+internal_tscs_dat <- dcpo_input_raw1 %>% 
+  filter(item == "trust4") %>%  
+  mutate(title = "All Country-Years",
+         neg = FALSE)
 
-internal_dat <- dcpo_input$data %>% 
-  filter(item == "trust4 3 or higher") %>%  
-  mutate(prop = y_r/n_r,
-         se = sqrt((prop*(1-prop))/n),  
-         prop_90 = prop + qnorm(.9)*se,
-         prop_10 = prop - qnorm(.9)*se) %>% 
-  left_join(theta_results %>% select(-kk, -tt), by = c("country", "year")) ##theta result
+internal_cs_dat <- dcpo_input_raw1 %>% 
+  filter(survey == "eb963") %>%  
+  mutate(title = "Eurobarometer 96.3 (2022)",
+         neg = FALSE)
 
-tcs_cs <- tcs %>% 
-  map(. %>% right_join(dcpo_input$data %>% 
-                         filter(item == "trust4 3 or higher") %>% 
-                         rowwise() %>% 
-                         transmute(country = country,
-                                   year = year,
-                                   prop =  y_r/n_r,
-                                   se = sqrt((prop*(1-prop))/n),
-                                   civilservant = rnorm(1, mean = prop, sd = se)), #randome draw
-                       by = c("country", "year")))
+internal_ts_dat <- dcpo_input_raw1 %>% 
+  filter(survey == "usgss" & item == "trust3") %>%  
+  mutate(title = "United States",
+         neg = FALSE)
 
-internal_cor <- map(tcs_cs, function(x) with(x, cor(tcs_mean, civilservant))) %>% 
-  unlist() %>% 
-  mean() %>% 
-  round(2) %>% 
-  paste0("R = ", .)  #0.94
-
-
-internal_label <- tibble(mean = .90, prop = .96, label = internal_cor)
-
-internal_plot <- internal_dat %>% 
-  ggplot(aes(x = mean,
-             y = prop * 100)) +
-  geom_segment(aes(x = q10, xend = q90,
-                   y = prop * 100, yend = prop * 100),
-               na.rm = TRUE,
-               alpha = .2) +
-  geom_segment(aes(x = mean, xend = mean,
-                   y = prop_90 * 100, yend = prop_10 * 100),
-               na.rm = TRUE,
-               alpha = .2) +
-  geom_smooth(method = 'lm', se = FALSE) +
+internal_tscs_plot <- validation_plot(internal_tscs_dat,
+                                lab_x = .1,
+                                lab_y = 95) +
   theme_bw() +
   theme(legend.position="none",
         axis.text  = element_text(size=8),
         axis.title = element_text(size=9),
-        plot.title = element_text(hjust = 0.5, size = 11)) +
-  coord_cartesian(ylim=c(0,100)) +
-  scale_x_continuous(breaks=seq(.1, .9, 0.2)) +
-  labs(x = "Trust Civil Servants", 
-       y = '% Expressing at least "Have Some Trust in Civil Service"') +
-  ggtitle("All Country-Years") +
-  geom_label(data = internal_label, aes(label = label), size = 3)
+        plot.title = element_text(hjust = 0.5, size = 9),
+        strip.background = element_blank()) +
+  coord_cartesian(xlim = c(0,1), ylim = c(0,100)) +
+  labs(x = "TCS Score",
+       y = "% Expressing at Least Some Trust")
 
-#internal_plot
-
-## Cross-sectional  
-#  dcpo_input[["data"]] %>%
-#    group_by(item, year) %>%
-#    summarize (item.n = n()) %>%
-#    arrange(-item.n)
-# # #trust4 3 or higher	2008	58	
-#  dcpo_input[["data"]] %>%
-#    filter(year == 2008 & item == "trust4 3 or higher") %>% 
-#    select(survey) %>%
-#    unique()
-#evs_combo, lb208, asianb2 wvs_combo
-
-internal_cscs <- dcpo_input$data %>% 
-  filter(item == "trust4 3 or higher" & year == 2008) %>% 
-  mutate(iso2c = countrycode::countrycode(country,
-                                          origin = "country.name",
-                                          destination = "iso2c"),
-         prop = y_r/n_r,
-         se = sqrt((prop*(1-prop))/n),
-         prop_90 = prop + qnorm(.90)*se,
-         prop_10 = prop - qnorm(.90)*se) %>% 
-  left_join(theta_results %>% select(-kk, -tt), by = c("country", "year"))
-
-
-tcs_cscs <- tcs %>% 
-  map(. %>% right_join(dcpo_input$data %>% 
-                         filter(item == "trust4 3 or higher" & year == 2008) %>% 
-                         rowwise() %>% 
-                         transmute(country = country,
-                                   year = year,
-                                   prop = y_r/n_r,
-                                   se = sqrt((prop*(1-prop))/n),
-                                   civilservants = rnorm(1, mean = prop, sd = se)), 
-                       by = c("country", "year")))
-
-
-internal_cs_cor <- map(tcs_cscs, 
-                       function(x) with(x, cor(tcs_mean, civilservants))) %>% 
-  unlist() %>% 
-  mean() %>% 
-  round(2) %>% 
-  paste0("R = ", .) #0.92
-
-
-internal_cs_label <- tibble(mean = .8, prop = .94, label = internal_cs_cor)
-
-internal_cs_plot <- internal_cscs %>% 
-  ggplot(aes(x = mean,
-             y = prop * 100)) +
-  geom_segment(aes(x = q10, xend = q90,
-                   y = prop * 100, yend = prop * 100),
-               na.rm = TRUE,
-               alpha = .2) +
-  geom_segment(aes(x = mean, xend = mean,
-                   y = prop_90 * 100, yend = prop_10 * 100),
-               na.rm = TRUE,
-               alpha = .2) +
-  geom_text(aes(label = iso2c), size = 2) +
-  geom_smooth(method = 'lm', se = FALSE) +
+internal_cs_plot <- validation_plot(internal_cs_dat,
+                                lab_x = .1,
+                                lab_y = 95) +
   theme_bw() +
   theme(legend.position="none",
         axis.text  = element_text(size=8),
         axis.title = element_text(size=9),
-        plot.title = element_text(hjust = 0.5, size = 11)) +
-  labs(x = "Trust Civil Servants", 
-       y = '% Expressing at least "Have Some Trust in Civil Service"') + 
-  ggtitle("WVS, EVS, LB, and Asian Barometer") +
-  geom_label(data = internal_cs_label, aes(label = label), size = 3)
+        plot.title = element_text(hjust = 0.5, size = 9),
+        # strip.text.x = element_text(size=5),
+        strip.background = element_blank()) +
+  coord_cartesian(xlim = c(0,1), ylim = c(0,100)) +
+  labs(x = "TCS Score",
+       y = "% Tending to Trust Public Administration in Country")
 
-
-#internal_cs_plot        
-
-
-
-# Longitudinal
-
- # dcpo_input[["data"]] %>%
- #   group_by(country, item) %>%
- #   summarize (item.n = n()) %>%
- #   arrange(-item.n)
-
-#United States	trust3 2 or higher 31
-
- # dcpo_input[["data"]] %>%
- #   filter(country == "United States" & item == "trust3 2 or higher") %>%
- #   select(survey) %>%
- #   unique() #usgss
-
-internal_us <- dcpo_input$data %>% 
-  filter(item == "trust3 2 or higher" & country == "United States") %>% 
-  mutate(prop = y_r/n_r,
-         se = sqrt((prop*(1-prop))/n),
-         prop_90 = prop + qnorm(.90)*se,
-         prop_10 = prop - qnorm(.90)*se) %>% 
-  right_join(theta_results %>% 
-               select(-kk, -tt) %>%
-               filter(country == "United States"),
-             by = c("country", "year"))
-
-tcs_executive <- tcs %>% 
-  map(. %>% right_join(dcpo_input$data %>% 
-                         filter(item == "trust3 2 or higher") %>% 
-                         rowwise() %>% 
-                         transmute(country = country,
-                                   year = year,
-                                   prop = y_r/n_r,
-                                   se = sqrt((prop*(1-prop))/n),
-                                   executive = rnorm(1, mean = prop, sd = se)),
-                       by = c("country", "year")))
-
-
-internal_us_cor <- map(tcs_executive, function(x) with(x, cor(tcs_mean, executive))) %>%
-  unlist() %>% 
-  mean() %>% 
-  round(2) %>% 
-  paste0("R = ", .)  #0.86 
-
-###
-internal_us_label <- tibble(year = 2018, mean = .92, label = internal_us_cor)
-
-
-internal_us_plot <- internal_us %>% 
-  ggplot(aes(x = year,
-             y = mean)) +
-  geom_line() +
-  geom_ribbon(aes(ymin = q10,
-                  ymax = q90,
-                  linetype = NA),
-              alpha = .2) +
-  geom_point(aes(y = prop),
-             fill = "black",
-             shape = 21,
-             size = .5,
-             na.rm = TRUE) +
-  geom_path(aes(y = prop),
-            linetype = 3,
-            na.rm = TRUE,
-            alpha = .7) +
-  geom_segment(aes(x = year, xend = year,
-                   y = prop_90, yend = prop_10),
-               na.rm = TRUE,
-               alpha = .2) +
-  annotate("text", x = 1977, y = .89, size = 2,
-           label = 'USGSS') + #confidence in executive branch
-  annotate("text", x = 2002, y = .3, size = 2,
-           label = "Trust Civil Servants") +
-  labs(x = "Year", 
+internal_ts_plot <- validation_plot(internal_ts_dat,
+                                    lab_x = 1989,
+                                    lab_y = .95) +
+  theme_bw() +
+  theme(legend.position="none",
+        axis.text  = element_text(size=8),
+        axis.title = element_text(size=9),
+        plot.title = element_text(hjust = 0.5, size = 9),
+        strip.background = element_blank()) +
+  coord_cartesian(ylim = c(0,1)) +
+  labs(x = "Year",
        y = "Score") +
-  theme_bw() +
-  theme(legend.position="none",
-        axis.text  = element_text(size=8),
-        axis.title = element_text(size=9),
-        plot.title = element_text(hjust = 0.5, size = 11)) +
-  ggtitle("U.S") +
-  geom_label(data = internal_us_label, aes(label = label), size = 3)
+  annotate("text", x = 2005, y = .8, size = 2,
+           label = 'U.S. GSS') + #confidence in executive branch
+  annotate("text", x = 2008, y = .32, size = 2,
+           label = "TCS Score")
 
-#internal_us_plot
-
-
-internal_plot + internal_cs_plot + internal_us_plot  +
+internal_tscs_plot + internal_cs_plot + internal_ts_plot  +
   patchwork::plot_annotation(caption = "Note: Gray whiskers and shading represent 80% credible intervals.")
-
 ```
 
-# Construct Validations
-```{r construct_validation_survey, cache = TRUE, cache.extra = tools::md5sum(here::here("data", "tcs.rda")), fig.cap="Construct Validation: Correlations Between TCS Scores and Individual Trust in Institutions Survey Items \\label{surv_const_plot}", fig.height=4}
-load(here::here("data","tnatgov.rda"))
+```{r tcs_ext_val1, fig.cap="Construct Validation: Correlations Between TCS Scores and Trust in Institutions Survey Items", fig.height=4}
 
-tngov <- tnatgov %>% 
-  left_join(theta_results %>% 
-              select(-kk, -tt), by = c("country", "year")) %>% 
-  filter(!is.na(mean))
+ext_wvs_gov_dat <- tibble(survey = c("wvs_combo", "wvs7"),
+                          item = "trust_gov4",
+                          variable = c("e069_11", "q71"),
+                          values = "c(4:1)") %>% 
+  DCPOtools::dcpo_setup() %>%  
+  mutate(title = "World Values Survey",
+         neg = FALSE)
 
-tcs_tngov <- tcs %>% 
-  map(. %>% right_join(tngov %>% 
-                         rowwise() %>% 
-                         transmute(country = country,
-                                   year = year,
-                                   prop =  y_r/n_r,
-                                   se = sqrt((prop*(1-prop))/n),
-                                   tnatgov = rnorm(1, mean = prop, sd = se)), 
-                       by = c("country", "year"))) 
+ext_lb_courts_dat <- read_csv(here:: here("data-raw",
+                                       "surveys_courts.csv")) %>% 
+  DCPOtools::dcpo_setup() %>%  
+  mutate(title = "Latinobarómetro",
+         neg = FALSE) 
 
-tnatgov_cor <- map(tcs_tngov, function(x) 
-  with(x, cor(tcs_mean, tnatgov))) %>% 
-  unlist() %>% 
-  mean() %>% 
-  round(2) %>% 
-  paste0("R = ", .)  #0.71
+ext_evs_parl_dat <- read_csv(here:: here("data-raw",
+                     "surveys_evs_parliament.csv")) %>% 
+    DCPOtools::dcpo_setup() %>%  
+    mutate(title = "European Values Survey",
+           neg = FALSE)
 
-tnatgov_label <- tibble(mean = .76, prop = .97, label = tnatgov_cor)
-tnatgov_plot <- tngov %>% 
-  ggplot(aes(x = mean,
-             y = prop * 100)) +
-  geom_segment(aes(x = q10, xend = q90,
-                   y = prop * 100, yend = prop * 100),
-               na.rm = TRUE,
-               alpha = .2) +
-  geom_segment(aes(x = mean, xend = mean,
-                   y = prop_90 * 100, yend = prop_10 * 100),
-               na.rm = TRUE,
-               alpha = .2) +
-  geom_smooth(method = 'lm', se = FALSE) +
+ext_wvs_gov_plot <- validation_plot(ext_wvs_gov_dat,
+                                    lab_x = .1,
+                                    lab_y = 95) +
   theme_bw() +
   theme(legend.position="none",
         axis.text  = element_text(size=8),
         axis.title = element_text(size=9),
-        plot.title = element_text(hjust = 0.5, size = 11)) +
-  coord_cartesian(ylim=c(0,100)) +
-  labs(x = "TCS Score", 
-       y = '% Agreeing That "Have Confidence on National Government"') + 
-  ggtitle("All Country-Years") +
-  geom_label(data = tnatgov_label, aes(label = label), size = 3)
+        plot.title = element_text(hjust = 0.5, size = 9),
+        strip.background = element_blank()) +
+  coord_cartesian(xlim = c(0,1), ylim = c(0,100)) +
+  labs(x = "TCS Score",
+       y = "% Expressing Quite a Lot of Trust or More\nin National Government")
 
-#tnatgov_plot
-
-# cross-section
-load(here::here("data","tcourt.rda"))
-
-trustcourt <- tcourt %>% 
-  filter(year == 2008) %>%
-   mutate(iso2c = countrycode::countrycode(country,
-                                          origin = "country.name",
-                                          destination = "iso2c")) %>%
-  left_join(theta_results %>% select(-kk, -tt), by = c("country", "year")) %>%
-              filter(!is.na(mean))
-
-tcs_tcourt <- tcs %>% 
-  map(. %>% right_join(trustcourt %>% 
-                         rowwise() %>% 
-                         transmute(country = country,
-                                   year = year,
-                                   prop = y_r/n_r,
-                                   se = sqrt((prop*(1-prop))/n),
-                                   tcourt = rnorm(1, mean = prop, sd = se)), 
-                       by = c("country", "year")))
-tcourt_cor <- map(tcs_tcourt, function(x) 
-  with(x, cor(tcs_mean, tcourt))) %>% 
-  unlist() %>% 
-  mean() %>% 
-  round(2) %>% 
-  paste0("R = ", .)  #0.76
-
-tcourt_label <- tibble(mean = .8, prop = .97, label = tcourt_cor)
-tcourt_plot <- trustcourt %>% 
-  ggplot(aes(x = mean,
-             y = prop * 100)) +
-  geom_segment(aes(x = q10, xend = q90,
-                   y = prop * 100, yend = prop * 100),
-               na.rm = TRUE,
-               alpha = .2) +
-  geom_segment(aes(x = mean, xend = mean,
-                   y = prop_90 * 100, yend = prop_10 * 100),
-               na.rm = TRUE,
-               alpha = .2) +
-  geom_text(aes(label = iso2c), size = 2) +
-  geom_smooth(method = 'lm', se = FALSE) +
+ext_lb_courts_plot <- validation_plot(ext_lb_courts_dat,
+                                      lab_x = .1,
+                                      lab_y = 95) +
   theme_bw() +
   theme(legend.position="none",
         axis.text  = element_text(size=8),
         axis.title = element_text(size=9),
-        plot.title = element_text(hjust = 0.5, size = 11)) +
-  coord_cartesian(ylim=c(0,100)) +
-  labs(x = "TCS Score", 
-       y = '% Expressing That "Trust Court"') + 
-  ggtitle("EVS, LB, \nAsian Barometer,African Barometer") +
-  geom_label(data = tcourt_label, aes(label = label), size = 3)
+        plot.title = element_text(hjust = 0.5, size = 9),
+        strip.background = element_blank()) +
+  coord_cartesian(xlim = c(0,1), ylim = c(0,100)) +
+  labs(x = "TCS Score",
+       y = "% Expressing Some Trust or More\nin Judiciary")
 
-#tcourt_plot
-
-# time series
-load(here::here("data","tcourt2.rda"))
-
-court_de <- tcourt2 %>% 
-  filter(country == "Germany") %>% 
-  right_join(theta_results %>% 
-               select(-kk, -tt) %>%
-               filter(country == "Germany"),
-             by = c("country", "year")) %>%
-  filter(!is.na(mean))  %>%
-  filter(!is.na(prop))
-
-tcs_de <- tcs %>% 
-  map(. %>% right_join(court_de %>% 
-                         rowwise() %>% 
-                         transmute(country = country,
-                                   year = year,
-                                   prop = y_r/n_r,
-                                   se = sqrt((prop*(1-prop))/n),
-                                   tcourt = rnorm(1, mean = prop, sd = se)), 
-                       by = c("country", "year")))
-
-tcs_de_cor <- map(tcs_de, function(x) 
-  with(x, cor(tcs_mean, tcourt, use = "pairwise.complete.obs"))) %>% 
-  unlist() %>% 
-  mean() %>% 
-  round(2) %>% 
-  paste0("R = ", .)  #0.8
-
-tcs_de_label <- tibble(year = 2000, mean = .8, label = tcs_de_cor)
-tcs_de_plot <- court_de %>% 
-  ggplot(aes(x = year,
-             y = mean)) +
-  geom_line() +
-  geom_ribbon(aes(ymin = q10,
-                  ymax = q90,
-                  linetype = NA),
-               alpha = .2) +
-  geom_point(aes(y = prop),
-             fill = "black",
-             shape = 21,
-             size = .5,
-             na.rm = TRUE) +
-  geom_path(aes(y = prop),
-            linetype = 3,
-            na.rm = TRUE,
-            alpha = .7) +
-  geom_segment(aes(x = year, xend = year,
-                   y = prop_90, yend = prop_10),
-               na.rm = TRUE,
-               alpha = .2) +
-  annotate("text", x = 2010, y = .30, size = 2,
-           label = 'Eurobarometer') +
-  annotate("text", x = 2005, y = .66, size = 2,
-           label = "TCS") +
-  labs(x = "Year", 
-       y = "Score") +
+ext_evs_parl_plot <- validation_plot(ext_evs_parl_dat,
+                                       lab_x = .1,
+                                       lab_y = 95) +
   theme_bw() +
   theme(legend.position="none",
         axis.text  = element_text(size=8),
         axis.title = element_text(size=9),
-        plot.title = element_text(hjust = 0.5, size = 11)) +
-  ggtitle("Germany") +
-  geom_label(data = tcs_de_label, aes(label = label), size = 3)
+        plot.title = element_text(hjust = 0.5, size = 9),
+        strip.background = element_blank()) +
+  coord_cartesian(xlim = c(0,1), ylim = c(0,100)) +
+  labs(x = "TCS Score",
+       y = "% Expressing Quite a Lot of Confidence or More\nin Parliament")
 
-
-tnatgov_plot + tcourt_plot + tcs_de_plot +
+ext_wvs_gov_plot + ext_evs_parl_plot + ext_lb_courts_plot +
   plot_annotation(caption = "Note: Gray whiskers and shading represent 80% credible intervals.")
 ```
 
-```{r construct_val, fig.height = 4,fig.width= 8.5, fig.cap = "Construct Validation for Trust Civil Servants . \\label{tcs_ev}"}
+```{r tcs_ext_val2, fig.height = 4, fig.cap = "Construct Validation: Correlations Between TCS Scores and Corruption of Public Servants Survey Items"}
 
-tcs_corruption <-  read.csv(here::here("data","voter_corruption_all.csv")) %>%  
-  transmute(country = country, 
-            year = year,
-            prop_hcor = round(hcor_rate/n*100,2),
-            iso2c = countrycode::countrycode(country,
-                                             origin = "country.name",
-                                             destination = "iso2c")
-  ) %>% 
-  left_join(theta_results %>% 
-              select(-kk, -tt),
-            by = c("country", "year")) %>% 
-  filter(!is.na(mean))  %>% 
-  filter(year == 2017) 
+ext_wvs_cor_dat <- tibble(survey = c("wvs_combo", "wvs7"),
+                          item = "corrupt_state4",
+                          variable = c("e269", "q113"),
+                          values = "c(1:4)") %>% 
+  DCPOtools::dcpo_setup() %>%  
+  mutate(title = "World Values Survey",
+         neg = FALSE)
 
-tcs_voter_cor <- tcs %>% 
-  map(. %>% right_join(tcs_corruption, 
-                       by = c("country", "year")))
+ext_cor_dat <- read_csv(here:: here("data-raw",
+                     "surveys_cor.csv")) %>% 
+  DCPOtools::dcpo_setup() %>%  
+  mutate(title = "Arab, Asian & New Europe Barometers\nand Latinobarómetro",
+         neg = FALSE)
 
+ext_issp_cor_dat <- tibble(survey = c("issp2004", "issp2014"),
+                          item = "corrupt5",
+                          variable = c("v59", "v61"),
+                          values = "c(1:5)") %>% 
+  DCPOtools::dcpo_setup() %>%  
+  mutate(title = "ISSP Citizenship I & II",
+         neg = FALSE)
 
-tcs_cor <- map(tcs_voter_cor, function(x)   
-  with(x, cor(tcs_mean, prop_hcor))) %>% 
-  unlist() %>% 
-  mean() %>% 
-  round(2) %>% 
-  paste0("R = ", .) #-0.71
+ext_wvs_cor_plot <- validation_plot(ext_wvs_cor_dat,
+                                    lab_x = .1,
+                                    lab_y = 95) +
+  theme_bw() +
+  theme(legend.position="none",
+        axis.text  = element_text(size=8),
+        axis.title = element_text(size=9),
+        plot.title = element_text(hjust = 0.5, size = 9),
+        strip.background = element_blank()) +
+  coord_cartesian(xlim = c(0,1), ylim = c(0,100)) +
+  labs(x = "TCS Score",
+       y = "% Saying Most or All State Authorities\nAre Involved in Corruption")
 
-
-tcs_cor_label <- tibble(mean = .8, prop_hcor = 95, label = tcs_cor)
-
-tcs_cor_plot <- ggplot(tcs_corruption,
-                         aes(x = mean,
-                             y = prop_hcor)) +
-  geom_segment(aes(x = q10, xend = q90,
-                   y = prop_hcor, yend = prop_hcor),
-               na.rm = TRUE,
-               alpha = .2) +
-  geom_text(aes(label = iso2c), size = 2) +
-  geom_smooth(method = 'lm', se = FALSE) +
-  theme_bw() + theme(legend.position="none",
-                     axis.text  = element_text(size=8),
-                     axis.title = element_text(size=9)) +
-  coord_cartesian(xlim=c(0, 1)) +
-  labs(x = "Trust Civil Servants, 2017", y = '% Agreeing That "There is Fairly \nWidespread Corruption in the country",\n2017') +
-  ggtitle("Eurobarometer 88.2,CSES5, WVS7")  +
-  geom_label(data = tcs_cor_label, aes(label = label))
-
-#tcs_cor_plot
-
-
-###voter_efficacy_time
- anes16_eff <- read.csv(here::here("data","anes16_eff.csv"))
+ext_cor_plot <- validation_plot(ext_cor_dat,
+                                    lab_x = .1,
+                                    lab_y = 95) +
+  theme_bw() +
+  theme(legend.position="none",
+        axis.text  = element_text(size=8),
+        axis.title = element_text(size=9),
+        plot.title = element_text(hjust = 0.5, size = 9),
+        strip.background = element_blank()) +
+  coord_cartesian(xlim = c(0,1), ylim = c(0,100)) +
+  labs(x = "TCS Score",
+       y = "% Saying Most or Almost All\nGovernment Officials Are Corrupt")
  
- us_int_eff <-  anes16_eff %>%   
-   select(year, int_eff,n) %>%
-   filter(int_eff != 0) %>%
-   mutate(country = "United States") %>%
-   mutate( prop = int_eff/n,
-           se = sqrt((prop*(1-prop))/n),
-           prop_90 = prop + qnorm(0.90)*se,
-           prop_10 = prop - qnorm(0.90)*se) %>%
-   left_join(theta_results %>% 
-               select(-kk, -tt) %>%
-               filter(country == "United States"),
-             by = c("country", "year")) %>%
-   filter(!is.na(mean))
- 
- 
- tcs_inteff_us <- tcs %>% 
-   map(. %>% right_join(us_int_eff %>% 
-                          rowwise() %>% 
-                          transmute(country = country,
-                                    year = year,
-                                    prop = int_eff/n,
-                                    se = sqrt((prop*(1-prop))/n),
-                                    var = rnorm(1, mean = prop, sd = se)),
-                        by = c("country", "year")))
- 
- 
- inteff_us_cor <- map(tcs_inteff_us, function(x) 
-   with(x, cor(tcs_mean, var))) %>%
-   unlist() %>% 
-   mean() %>% 
-   round(2) %>% 
-   paste0("R = ", .)  #0.52 
- 
- 
- inteff_us_label <- tibble(year = 2005, mean = .8, label = inteff_us_cor)
- inteff_us_plot <- us_int_eff %>% 
-   ggplot(aes(x = year,
-              y = mean)) +
-   geom_line() +
-   geom_ribbon(aes(ymin = q10,         
-                   ymax = q90,
-                   linetype = NA),
-               alpha = .2) +
-   geom_point(aes(y = prop),
-              fill = "black",
-              shape = 21,
-              size = .5,
-              na.rm = TRUE) +
-   geom_path(aes(y = prop),
-             linetype = 3,
-             na.rm = TRUE,
-             alpha = .7) +
-   geom_segment(aes(x = year, xend = year,
-                    y = prop_90, yend = prop_10),
-                na.rm = TRUE,
-                alpha = .2) +
-   annotate("text", x = 1984, y = .72, size = 3,
-            label = 'ANES') +
-   annotate("text", x = 1982, y = .36, size = 3,
-            label = "Trus Civil Servants") +
-   labs(x = "Year", 
-        y = "Scores") +
-   theme_bw() +
-   theme(legend.position="none",
-         axis.text  = element_text(size=8),
-         axis.title = element_text(size=9),
-         plot.title = element_text(hjust = 0.5, size = 11)) +
-   ggtitle("United States")  +
-   geom_label(data = inteff_us_label, aes(label = label)) #, size = 3
- 
-# inteff_us_plot
+ext_issp_cor_plot <- validation_plot(ext_issp_cor_dat,
+                                    lab_x = .1,
+                                    lab_y = 95) +
+  theme_bw() +
+  theme(legend.position="none",
+        axis.text  = element_text(size=8),
+        axis.title = element_text(size=9),
+        plot.title = element_text(hjust = 0.5, size = 9),
+        strip.background = element_blank()) +
+  coord_cartesian(xlim = c(0,1), ylim = c(0,100)) +
+  labs(x = "TCS Score",
+       y = "% Saying a Lot or Almost Everyone in the\nCountry's Public Service Is Involved in Corruption")
 
-#Performance Satisfactions 
-wvs7_sat <- read.csv(here::here("data","satisfy_all.csv"))
-
-sat_tcs <-  wvs7_sat %>%   
-  mutate( prop = round(hsat_rate/n*100,2),
-          iso2c = countrycode::countrycode(country,
-                                           origin = "country.name",
-                                           destination = "iso2c")) %>%
-  left_join(theta_results %>% 
-              select(-kk, -tt),
-            by = c("country", "year")) %>%
-  filter(!is.na(mean))
-
-
-tcs_sat <- tcs %>% 
-  map(. %>% right_join(sat_tcs,
-                       by = c("country", "year")))
-
-
-tcs_sat_cor <- map(tcs_sat, function(x) 
-  with(x, cor(tcs_mean, prop))) %>%
-  unlist() %>% 
-  mean() %>% 
-  round(2) %>% 
-  paste0("R = ", .)  #0.67
-
-tcs_sat_label <- tibble(mean = 0.7, prop = 75, label = tcs_sat_cor)
-
-tcs_sat_plot <- ggplot(sat_tcs,
-                         aes(x = mean,
-                             y = prop)) +
-  geom_segment(aes(x = q10, xend = q90,
-                   y = prop, yend = prop),
-               na.rm = TRUE,
-               alpha = .2) +
-  geom_text(aes(label = iso2c), size = 2) +
-  geom_smooth(method = 'lm', se = FALSE) +
-  theme_bw() + theme(legend.position="none",
-                     axis.text  = element_text(size=8),
-                     axis.title = element_text(size=9)) +
-  coord_cartesian(xlim=c(0, 1)) +
-  labs(x = "Trust Civil Servants", y = "% satisfying with the political system performance,\n WVS7") +
-  ggtitle("WVS7")  +
-  geom_label(data = tcs_sat_label, aes(label = label))
-
-#tcs_sat_plot
-
- 
-tcs_cor_plot + inteff_us_plot + tcs_sat_plot + patchwork::plot_annotation(caption = "Note: Gray whiskers and shading represent 80% credible intervals.")
-
-
-
+ext_wvs_cor_plot + ext_cor_plot + ext_issp_cor_plot + patchwork::plot_annotation(caption = "Note: Gray whiskers and shading represent 80% credible intervals.")
 ```
 
 \pagebreak
@@ -1391,12 +997,84 @@ Items have one less difficulty score than the number of response categories.
 Survey dataset codes correspond to those used in the `DCPOtools` R package; they appear in decreasing order of country-years contributed.
 
 Together, the survey items in the source data were asked in `r n_countries` different countries in at least two time points over `r n_years` years, `r year_range`, yielding a total of `r n_cyi` country-year-item observations.
-The number of items observed in the source data for each country-year is plotted in Figure \ref{obs_by_cy} below.
+The number of items observed in the source data for each country-year is plotted in Figure\nobreakspace{}\@ref(fig:obs_by_cy) below.
 The TCS scores of country-years with more observed items are likely to be estimated more precisely.
 The estimates for country-years with fewer (or no) observed items rely more heavily (or entirely) on the random-walk prior and are therefore less certain.
-Figure \ref{obs_by_item2} displays the distribution of the source data in yet another way, showing the (binned) number of country-years in which both members of each pair of items is observed.
 
+\noindent Table A1: Indicators Used in the Unidimensional Latent Variable Model of Democratic Support
 
+```{r tsc_items}
+alpha_results <- summarize_dcpo_results(dcpo_input,
+                                        dcpo_output = dcpo_output,
+                                        pars = "alpha") %>% 
+  transmute(item = question,
+            dispersion = mean)
+
+beta_results <- summarize_dcpo_results(dcpo_input,
+                                       dcpo_output,
+                                       "beta") %>% 
+  group_by(question) %>% 
+  summarize(difficulties0 = paste0(sprintf("%.2f", round(mean, 2)),
+                                   collapse = ", ")) %>% 
+  mutate(item = question,
+         cp = if_else(str_detect(item, "threestate"),
+                      2, 
+                      as.numeric(str_extract(item, "\\d+")) - 1),
+         term = str_glue("(( ?-?[0-9].[0-9][0-9]?,?){{{cp}}})"),
+         difficulties = str_extract(difficulties0, 
+                                    term) %>%
+           str_replace(",$", "") %>% 
+           str_trim()) %>% 
+  transmute(item, difficulties)
+                                    
+items_summary <- dcpo_input_raw1 %>%
+  dplyr::select(country, year, item, survey) %>%
+  distinct() %>%
+  separate(survey, c("surv1", "surv2", "surv3"), sep=", ", fill = "left") %>%
+  pivot_longer(cols = starts_with("surv"), values_to = "survey") %>%
+  filter(!is.na(survey)) %>% 
+  group_by(item) %>% 
+  mutate(survey = str_extract(survey, "^[a-z]*"),
+         all_surveys = paste0(unique(survey), collapse = ", ")) %>% 
+  ungroup() %>% 
+  distinct(country, year, item, .keep_all = TRUE) %>% 
+  group_by(item) %>% 
+  mutate(n_cy = n()) %>% 
+  ungroup() %>%
+  distinct(item, n_cy, all_surveys) %>% 
+  left_join(surveys_tb %>%
+              select(item, question_text, response_categories) %>%
+              distinct(item, .keep_all = TRUE),
+            by = "item") %>% 
+  left_join(alpha_results, by = "item") %>% 
+  left_join(beta_results, by = "item") %>% 
+  arrange(-n_cy)
+```
+
+```{r tsc_items_table}  
+items_summary %>% 
+  transmute(`Survey\nItem\nCode` = item,
+            `Country-Years` = as.character(n_cy),
+            `Question Text` = str_replace(question_text, "([^(]*)\\(.*", "\\1"),
+            `Response Categories` = response_categories,
+            `Dispersion` = dispersion,
+            `Difficulties`= difficulties,
+            `Survey Dataset Codes` = all_surveys) %>% 
+  modelsummary::datasummary_df(output = "kableExtra",
+                               longtable = TRUE) %>% 
+  kableExtra::column_spec(1, width = "7em") %>%
+  kableExtra::column_spec(2, width = "4em") %>%
+  kableExtra::column_spec(3, width = "13em") %>%
+  kableExtra::column_spec(4, width = "16em") %>%
+  kableExtra::column_spec(5, width = "4em") %>%
+  kableExtra::column_spec(c(6, 7), width = "8em") %>% 
+  kableExtra::kable_styling(font_size = 7) %>%
+  kableExtra::kable_styling(latex_options = c("repeat_header")) %>%
+  kableExtra::kable_styling(latex_options = "striped")
+```
+
+\clearpage
+\pagebreak
 
 # Appendix B: The DCPO Model
 A number of recent studies have developed latent variable models of public opinion based on cross-national survey data [see @Claassen2019; @Caughey2019; @McGann2019; @Kolczynska2020].
