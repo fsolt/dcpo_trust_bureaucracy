@@ -265,18 +265,20 @@ On contrast, without public trust, public officials could struggle in performing
 Among few existing studies, data is limited in both regional scale  and time periods [@Morelock2021; @Choi2018; @Houston2016], which severely impedes causal inferences in dynamic relationship between trust in bureaucracy and quality of administration.
 Specifically, the lack of comparative data on trust on bureaucracy makes it impossible to test the competing theories about what affects trusting attitudes, government performance, or the quality of governance [@Bouckaert2012; @Kettl2000; @VandeWalle2022; @Morelock2021].
 
-```{r dcpo_input_raw, include=FALSE, cache=TRUE}
-surveys_tb <- read_csv(here::here("data-raw", "surveys_bureaucracy.csv"),
+```{r dcpo_input_raw, include=FALSE}
+surveys_tb <- read_csv(here::here("data-raw",
+                                  "surveys_bureaucracy.csv"),
                        col_types = "cccccc")
 
 dcpo_input_raw <- DCPOtools::dcpo_setup(vars = surveys_tb,
-                                         datapath = here::here("..",
-                                                               "data", "dcpo_surveys"),
-                                         file = here::here("data",
-                                                           "dcpo_input_raw.csv"))
+                                         datapath = here("..",
+                                                         "data",
+                                                         "dcpo_surveys"),
+                                         file = here("data",
+                                                     "dcpo_input_raw.csv"))
 ```
 
-```{r tb_summary_stats, cache=TRUE}
+```{r tb_summary_stats}
 dcpo_input_raw <- read_csv(here::here("data", "dcpo_input_raw.csv"),
                                   col_types = "cdcddcd")
 
@@ -361,7 +363,7 @@ Compared to this complete set of country-year-items, the available data can be s
 From a more optimistic standpoint, we note there there are `r n_cy` country-years in which we have at least _some_ information about the trust in civil servants of the population, that is, some `r round(covered_share)`% of the `r spanned_cy` country-years spanned by the data we collected.
 But there can be no denying that the many different survey items employed renders these data incomparable and difficult to use together.
 
-```{r itemcountry, fig.cap="Countries and Years with the Most Observations in the Source Data \\label{item_country_plots}", fig.height=3.5, fig.pos='h'}
+```{r itemcountry, fig.cap="Countries and Years with the Most Observations in the Source Data \\label{item_country_plots}", fig.height=3.5, fig.pos='h', cache=FALSE}
 items_plot <- dcpo_input_raw1 %>%
   distinct(country, year, item) %>%
   count(item) %>%
@@ -557,7 +559,7 @@ Consider the most frequently asked item in the data we collected, which asks res
 Employed by the Arab Barometer,the Asia Europe Survey, the Asian Barometer, the British Social Attitudes Survey, the Latino Barometer, the East Asian Social Survey, the European Values Survey, the Italian National Election Study, the South Asian Barometer, and the World Values Survey, this question was asked in a total of `r trust4_cy` different country-years.
 That this constitutes only `r {trust4_cy*100/(spanned_cy %>% str_replace(",", "") %>% as.numeric())} %>% round()`% of the country-years spanned by our data---and again, this is the _most common_ survey item---again underscores just how sparse and incomparable the available public opinion data is on this topic.
 
-The upper left panel of Figure\nobreakspace{}\@ref(fig:item_and_country_plots) shows the dozen countries with the highest count of country-year-item observations.
+The upper left panel of Figure\nobreakspace{}\ref{item_country_plots} shows the dozen countries with the highest count of country-year-item observations.
 The United States, with `r us_obs` observations, is far and away the best represented country in the source data, followed by `r others`.
 At the other end of the spectrum, `r n_data_poorest` countries`r data_poorest`have only the minimum two observations required to be included in the source dataset at all.
 The upper right panel shows the twelve countries with the most years observed; this group is similar, but with `r adding` joining the list and `r dropping` dropping off.
@@ -588,18 +590,19 @@ To address the sparsity of the source data---the fact that there are gaps in the
 That is, within each country, each year's value of trust in civil servants is modeled as the previous year's estimate plus a random shock.
 These dynamic models smooth the estimates of trust in civil servants over time and allow estimation even in years for which little or no survey data is available, albeit at the expense of greater measurement uncertainty.
 
-```{r dcpo_input, eval=TRUE, include=FALSE, results=FALSE}
+```{r dcpo_input, eval=FALSE, include=FALSE, results=FALSE}
 dcpo_input <- DCPOtools::format_dcpo(dcpo_input_raw1,
                                      scale_q = "trust4",
                                      scale_cp = 2)
 save(dcpo_input, file = here::here("data", "dcpo_input.rda"))
 ```
 
-```{r dcpo, eval=TRUE, include=FALSE, results=FALSE}
- iter <- 1000
+```{r dcpo, eval=FALSE, include=FALSE, results=FALSE}
+iter <- 1000
  
- dcpo <- cmdstan_model("~/Documents/Projects/DCPO/inst/stan/dcpo.stan")
- dcpo_output <- dcpo$sample(
+dcpo <- cmdstan_model("~/Documents/Projects/DCPO/inst/stan/dcpo.stan")
+
+dcpo_output <- dcpo$sample(
    data = dcpo_input[1:13], 
    max_treedepth = 14,
    adapt_delta = 0.99,
@@ -611,22 +614,28 @@ save(dcpo_input, file = here::here("data", "dcpo_input.rda"))
    iter_sampling = iter/2,
    refresh = iter/50
  )
- results_path <- here::here(file.path("data", 
-                                      iter, 
-                                      {str_replace_all(Sys.time(), "[- :]", "") %>%
-                                          str_replace("\\d{2}$", "")}))
- dir.create(results_path, 
-            showWarnings = FALSE, 
-            recursive = TRUE)
- dcpo_output$save_data_file(dir = results_path,
-                            random = FALSE)
- dcpo_output$save_output_files(dir = results_path,
-                               random = FALSE)
+
+results_path <- here::here(file.path("data", 
+                                     iter, 
+                                  {str_replace_all(Sys.time(),
+                                                      "[- :]",
+                                                   "") %>%
+                                         str_replace("\\d{2}$",
+                                                     "")}))
+
+dir.create(results_path, 
+           showWarnings = FALSE, 
+           recursive = TRUE)
+
+dcpo_output$save_data_file(dir = results_path,
+                           random = FALSE)
+dcpo_output$save_output_files(dir = results_path,
+                              random = FALSE)
 ```
 
 ```{r dcpo_results}
  if (!exists("results_path")) {
-   latest <- "202302231615"
+   latest <- "202303030905"
    results_path <- here::here("data", "1000", latest)
    
    # Define OSF_PAT in .Renviron: https://docs.ropensci.org/osfr/articles/auth
@@ -639,9 +648,9 @@ save(dcpo_input, file = here::here("data", "dcpo_input.rda"))
    }
 }
  
- dcpo_output <- as_cmdstan_fit(here::here(results_path,
-                                          list.files(results_path, pattern = "csv$")))
- 
+dcpo_output <- as_cmdstan_fit(here(results_path,
+                                   list.files(results_path,
+                                              pattern="csv$")))
 
 ```
 
@@ -659,7 +668,8 @@ res_c <- theta_summary %>%
   unique() %>% 
   length()
 
-save(theta_summary, file = here::here("data","theta_summary.rda"))
+save(theta_summary, file = here::here("data",
+                                      "theta_summary.rda"))
 ```
 
 ```{r theta_results}
@@ -669,7 +679,7 @@ theta_results <- extract_dcpo_results(dcpo_input,
 ```
 
 
-```{r cs_plot, fig.cap="TCS Scores, Most Recent Available Year \\label{cs_mry}", fig.height=10, fig.width=8}
+```{r cs, fig.cap="TCS Scores, Most Recent Available Year \\label{cs_mry}", fig.height=10, fig.width=8}
 n_panes <- 2
 axis_text_size <- 10
 
@@ -727,14 +737,14 @@ The $\hat{R}$ diagnostic had a maximum value of 1.01, indicating that the model 
 <!--The dispersion parameters of the survey items indicate that all of them load well on the latent variable (see Appendix A).-->
 
 The result is estimates, in all `r res_cy` country-years spanned by the source data, of mean trust in civil servants, what we call TCS scores.
-Figure\nobreakspace{}\@ref(fig:cs_mry) displays the most recent available TCS score for each of the `r res_c` countries and territories in the dataset.
+Figure\nobreakspace{}\ref{cs_mry} displays the most recent available TCS score for each of the `r res_c` countries and territories in the dataset.
 
 [The Scandinavian countries, Finland and Denmark which have high quality of governance, and Asian countries, China, India and Singapore which have e history of meritocracy, are at the top of the list.]
 <!--Niger in input date only has two time points. The question is about tax.2015's data of trust in institutions  was higher than data in later years https://bti-project.org/en/reports/country-report/NER -->
 The latest scores for `r bottom5` have them as the places where the public has the lowest trust toward civil servants.
 
 ```{r ts, fig.cap="TCS Scores Over Time Within Selected Countries \\label{ts_plots}", fig.height=3.5}
-countries <- c("Finland", "China", "Philippines", "Bangladesh",
+countries <- c("Finland", "Germany", "Luxembourg", "Bangladesh",
                "Malaysia", "Turkey", "United Kingdom", "South Korea",
                "Belgium", "Spain", "United States", "Chile", 
                "Ukraine", "Italy", "Argentina", "Mexico")
@@ -743,18 +753,6 @@ countries2 <- countries %>%
   str_replace("United States", "U.S.") %>% 
   str_replace("United Kingdom", "U.K.")
 
-# alpha_results <- DCPOtools::summarize_dcpo_results(dcpo_input,
-#                                                    dcpo_output,
-#                                                    "alpha")
-# 
-# c_rawdata <- dcpo_input$data %>% 
-#   filter(country %in% countries) %>%
-#   mutate(mean = y_r/n_r,
-#          country = str_replace(country, "United States", "U.S.") %>% 
-#            str_replace("United Kingdom", "U.K.") %>% 
-#            factor(levels = countries2)) %>% 
-#   left_join(alpha_results %>% select(question, alpha_mean = mean), by = "question")
-
 c_res <- theta_summary %>% 
   filter(country %in% countries) %>%
   mutate(country = str_replace(country, "United States", "U.S.") %>% 
@@ -762,12 +760,9 @@ c_res <- theta_summary %>%
            factor(levels = countries2))
 
 ggplot(data = c_res, aes(x = year, y = mean)) +
-# ggplot(data = c_rawdata, aes(x = year, y = mean)) +
-#   geom_line(aes(color = item, alpha = 1/alpha_mean)) +
-#   geom_point(aes(color = item, alpha = 1/alpha_mean)) +
   theme_bw() +
   theme(legend.position = "none") +
-  coord_cartesian(xlim = c(1980, 2020), ylim = c(0, 1)) +
+  coord_cartesian(xlim = c(1980, 2025), ylim = c(0, 1)) +
   labs(x = NULL, y = "TCS Scores") +
   geom_ribbon(data = c_res, aes(ymin = q10, ymax = q90, linetype=NA), alpha = .25) +
   geom_line(data = c_res) +
@@ -780,17 +775,16 @@ ggplot(data = c_res, aes(x = year, y = mean)) +
   plot_annotation(caption = "Note: Countries are ordered by their TCS scores in their most recent\navailable year; gray shading represents 80% credible intervals.")
 ```
 
-We show the changes of TCS over time in sixteen countries in Figure\nobreakspace{}\@ref(fig:ts_plots).
-As displayed in Figure\nobreakspace{}\@ref(fig:cs_mry), the dataset covers a wide range of geographic breadth, allowing comparative studies of countries and regions too often neglected [see @Wilson2021].
-Figure\nobreakspace{}\@ref(fig:ts_plots) also shows that while TCS has risen prominently in some countries, such as Finland and U.K., trusting attitudes have maintained high or low over time in others, like China and Turkey, or fallen steadily, as in U.s. and Mexico. 
+We show the changes of TCS over time in sixteen countries in Figure\nobreakspace{}\ref{ts_plots}.
+As displayed in Figure\nobreakspace{}\ref{cs_mry}, the dataset covers a wide range of geographic breadth, allowing comparative studies of countries and regions too often neglected [see @Wilson2021].
+Figure\nobreakspace{}\ref{ts_plots} also shows that while TCS has risen prominently in some countries, such as Finland and U.K., trusting attitudes have maintained high or low over time in others, like China and Turkey, or fallen steadily, as in U.s. and Mexico. 
 They have advanced and retreated as in Spain or have declined and recovered as in Argentina .
 It is worthwhile to further explore the causes and consequences of these trends.
 
 
 # Validating Trust in Civil Servants
 
-```{r tcs_internal_val, fig.height = 4, fig.cap = "Convergent Validation: Correlations Between TSC Scores and Individual TSC Source-Data Survey Items"}
-
+```{r internal_val_dat, include=FALSE}
 internal_tscs_dat <- dcpo_input_raw1 %>% 
   filter(item == "trust4") %>%  
   mutate(title = "All Country-Years",
@@ -805,7 +799,9 @@ internal_ts_dat <- dcpo_input_raw1 %>%
   filter(survey == "usgss" & item == "trust3") %>%  
   mutate(title = "United States",
          neg = FALSE)
+```
 
+```{r internalval, fig.height = 4, fig.cap = "Convergent Validation: Correlations Between TSC Scores and Individual TSC Source-Data Survey Items \\label{internal_val}"}
 internal_tscs_plot <- validation_plot(internal_tscs_dat,
                                 lab_x = .1,
                                 lab_y = 95) +
@@ -817,7 +813,7 @@ internal_tscs_plot <- validation_plot(internal_tscs_dat,
         strip.background = element_blank()) +
   coord_cartesian(xlim = c(0,1), ylim = c(0,100)) +
   labs(x = "TCS Score",
-       y = "% Expressing at Least Some Trust")
+       y = "% Expressing Quite a Lot or a Great Deal of Trust")
 
 internal_cs_plot <- validation_plot(internal_cs_dat,
                                 lab_x = .1,
@@ -854,28 +850,37 @@ internal_tscs_plot + internal_cs_plot + internal_ts_plot  +
   patchwork::plot_annotation(caption = "Note: Gray whiskers and shading represent 80% credible intervals.")
 ```
 
-```{r tcs_ext_val1, fig.cap="Construct Validation: Correlations Between TCS Scores and Trust in Institutions Survey Items", fig.height=4}
+Figure\nobreakspace{}\ref{internal_val}
 
+```{r ext_val1_dat, include=FALSE}
 ext_wvs_gov_dat <- tibble(survey = c("wvs_combo", "wvs7"),
                           item = "trust_gov4",
                           variable = c("e069_11", "q71"),
                           values = "c(4:1)") %>% 
-  DCPOtools::dcpo_setup() %>%  
+  DCPOtools::dcpo_setup(datapath = here("..",
+                                        "data",
+                                        "dcpo_surveys")) %>%  
   mutate(title = "World Values Survey",
          neg = FALSE)
 
-ext_lb_courts_dat <- read_csv(here:: here("data-raw",
-                                       "surveys_courts.csv")) %>% 
-  DCPOtools::dcpo_setup() %>%  
+ext_lb_courts_dat <- read_csv(here("data-raw",
+                                   "surveys_lb_courts.csv")) %>% 
+    DCPOtools::dcpo_setup(datapath = here("..",
+                                        "data",
+                                        "dcpo_surveys")) %>%   
   mutate(title = "Latinobarómetro",
          neg = FALSE) 
 
-ext_evs_parl_dat <- read_csv(here:: here("data-raw",
+ext_evs_parl_dat <- read_csv(here("data-raw",
                      "surveys_evs_parliament.csv")) %>% 
-    DCPOtools::dcpo_setup() %>%  
+  DCPOtools::dcpo_setup(datapath = here("..",
+                                        "data",
+                                        "dcpo_surveys")) %>%  
     mutate(title = "European Values Survey",
            neg = FALSE)
+```
 
+```{r extval1, fig.cap="Construct Validation: Correlations Between TCS Scores and Trust in Institutions Survey Items \\label{ext_val1}", fig.height=4}
 ext_wvs_gov_plot <- validation_plot(ext_wvs_gov_dat,
                                     lab_x = .1,
                                     lab_y = 95) +
@@ -919,30 +924,39 @@ ext_wvs_gov_plot + ext_evs_parl_plot + ext_lb_courts_plot +
   plot_annotation(caption = "Note: Gray whiskers and shading represent 80% credible intervals.")
 ```
 
-```{r tcs_ext_val2, fig.height = 4, fig.cap = "Construct Validation: Correlations Between TCS Scores and Corruption of Public Servants Survey Items"}
+Figure\nobreakspace{}\ref{ext_val1}
 
+```{r ext_val2_dat, include=FALSE}
 ext_wvs_cor_dat <- tibble(survey = c("wvs_combo", "wvs7"),
                           item = "corrupt_state4",
                           variable = c("e269", "q113"),
                           values = "c(1:4)") %>% 
-  DCPOtools::dcpo_setup() %>%  
-  mutate(title = "World Values Survey",
+  DCPOtools::dcpo_setup(datapath = here("..",
+                                        "data",
+                                        "dcpo_surveys")) %>%
+  mutate(title = "World Values Survey", 
          neg = FALSE)
 
 ext_cor_dat <- read_csv(here:: here("data-raw",
                      "surveys_cor.csv")) %>% 
-  DCPOtools::dcpo_setup() %>%  
+  DCPOtools::dcpo_setup(datapath = here("..",
+                                        "data",
+                                        "dcpo_surveys")) %>%
   mutate(title = "Arab, Asian & New Europe Barometers\nand Latinobarómetro",
          neg = FALSE)
 
 ext_issp_cor_dat <- tibble(survey = c("issp2004", "issp2014"),
-                          item = "corrupt5",
-                          variable = c("v59", "v61"),
-                          values = "c(1:5)") %>% 
-  DCPOtools::dcpo_setup() %>%  
+                           item = "corrupt5",
+                           variable = c("v59", "v61"),
+                           values = "c(1:5)") %>% 
+  DCPOtools::dcpo_setup(datapath = here("..",
+                                        "data",
+                                        "dcpo_surveys")) %>%  
   mutate(title = "ISSP Citizenship I & II",
          neg = FALSE)
+```
 
+```{r extval2, fig.height = 4, fig.cap = "Construct Validation: Correlations Between TCS Scores and Corruption of Public Servants Survey Items \\label{ext_val2}"}
 ext_wvs_cor_plot <- validation_plot(ext_wvs_cor_dat,
                                     lab_x = .1,
                                     lab_y = 95) +
@@ -984,6 +998,8 @@ ext_issp_cor_plot <- validation_plot(ext_issp_cor_dat,
 
 ext_wvs_cor_plot + ext_cor_plot + ext_issp_cor_plot + patchwork::plot_annotation(caption = "Note: Gray whiskers and shading represent 80% credible intervals.")
 ```
+
+Figure\nobreakspace{}\ref{ext_val2}
 
 \pagebreak
 \pagebreak
