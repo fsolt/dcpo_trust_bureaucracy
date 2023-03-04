@@ -927,18 +927,20 @@ ext_wvs_gov_plot + ext_evs_parl_plot + ext_lb_courts_plot +
 Figure\nobreakspace{}\ref{ext_val1}
 
 ```{r ext_val2_dat, include=FALSE}
-ext_wvs_cor_dat <- tibble(survey = c("wvs_combo", "wvs7"),
-                          item = "corrupt_state4",
-                          variable = c("e269", "q113"),
-                          values = "c(1:4)") %>% 
+ext_dat <- read_csv(here("data-raw",
+                         "surveys_cor.csv"))
+
+ext_wvs_cor_dat <- ext_dat %>%
+  filter(str_detect(survey, "wvs")) %>% 
   DCPOtools::dcpo_setup(datapath = here("..",
                                         "data",
                                         "dcpo_surveys")) %>%
   mutate(title = "World Values Survey", 
          neg = FALSE)
 
-ext_cor_dat <- read_csv(here:: here("data-raw",
-                     "surveys_cor.csv")) %>% 
+ext_cor_dat <- ext_dat %>% 
+    filter(!str_detect(survey, "wvs") &
+             !str_detect(survey, "issp")) %>% 
   DCPOtools::dcpo_setup(datapath = here("..",
                                         "data",
                                         "dcpo_surveys")) %>%
