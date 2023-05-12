@@ -112,7 +112,9 @@ p_load(
   osfr,
   kableExtra
 ) 
+```
 
+```{r define_funs}
 # define functions
 validation_plot <- function(v_data_raw,
                             lab_x = .38, lab_y = 92,
@@ -133,7 +135,7 @@ validation_plot <- function(v_data_raw,
       mutate(v_val = str_extract(item0, "\\d+") %>% 
                as.numeric() %>% 
                median_val(.) %>%
-               {. + .1} %>% 
+               `+`(if_else(str_detect(item0, "disc3"), .1, .6)) %>% 
                round())
     
     validation_summarized <- v_data_raw %>% 
@@ -166,7 +168,7 @@ validation_plot <- function(v_data_raw,
       ungroup() %>% 
       select(title, theta, sim, draw) %>% 
       nest(data = c(theta, sim)) %>% 
-      mutate(r = lapply(data, function(df) cor(df) %>% nth(2)) %>% 
+      mutate(r = lapply(data, function(df) cor(df)[2,1]) %>% 
                unlist()) %>%
       select(-data) %>% 
       group_by(title) %>% 
@@ -239,11 +241,45 @@ covered_share_of_spanned <- function(dcpo_input_raw) {
   {(n_cy/spanned_cy) * 100}
 }
 
+get_coef <- function(iv, results_df = coef_data, type = "both", width = .95) {
+  result_var <- results_df %>% 
+    filter(.width == width) %>% 
+    pull(.variable) %>% 
+    str_subset(iv)
+  
+  if (!type=="both") {
+    res <- results_df %>% 
+      filter(.variable == result_var & .width == width) %>% 
+      pull({{type}})
+  } else {
+    sc <- results_df %>% 
+      filter(.variable == result_var & .width == width) %>% 
+      pull(std_coef)
+    
+    ci <- results_df %>% 
+      filter(.variable == result_var & .width == width) %>% 
+      pull(ci)
+    
+    res <- paste0(sc, " (95% c.i.: ", ci, ")")
+  }
+  
+  return(res)
+}
+
+by2sd <- function(var) {
+  dich <- stats::na.omit(unique(var)) %>% 
+    sort() %>% identical(c(0, 1))
+  if (dich) 
+    sd <- 1
+  else 
+    sd <- 2 * stats::sd(var, na.rm = TRUE)
+  
+  return(sd)
+}
+
 set.seed(324)
 ```
 
-
-# Intro
 
 [Y]et the comparative aspects of public administration have largely been ignored, and as long as the study of public administration is not comparative, claims for a "science of public administration" sound rather hollow [@Dahl1947, pp. 8].
 Comparative studies provide novel insights and innovatory concepts but face methodological challenges [@Pollitt2011].
@@ -567,28 +603,29 @@ The bottom panel counts the countries observed in each year and reveals just how
 Country coverage reached its peak in `r y_peak_year`, when respondents in `r y_peak_nn` countries were asked items about trust in civil servants.
 In the next section, we describe how we are able to make use of all of this sparse and incomparable survey data to generate complete, comparable time-series TCS scores using a latent variable model.
 
-# Estimating trust in civil servants
 
-A number of recent studies have developed latent variable models of public opinion based on cross-national survey data [see @Claassen2019; @Caughey2019; @McGann2019; @Kolczynska2020].
+# Estimating Trust in Civil Servants
+
+Several latent-variable models of public opinion based on cross-national survey data have been developed recently [see @Claassen2019; @Caughey2019; @McGann2019; @Kolczynska2020].
 To estimate trust in civil servants across countries and over time, we employ the latest of these methods that is appropriate for data that is not only incomparable but also sparse, the Dynamic Comparative Public Opinion (DCPO) model elaborated in @Solt2020c.^[
-@Solt2020c demonstrates that the DCPO model provides a better fit to survey data than the models put forward by @Claassen2019 or @Caughey2019.
-The @McGann2019 model depends on dense survey data unlike the sparse data on trust in civil servants described in the preceding section.
-@Kolczynska2020 is the very most recent of these five works and builds on each of the others, but the MRP approach developed in that piece is suitable not only when the available survey data are dense but also when ancillary data on population characteristics are available, so it is similarly inappropriate to this application.]
+The DCPO model provides a better fit to survey data than the models proposed in @Claassen2019 or @Caughey2019 [@Solt2020c].
+The model put forward in @McGann2019 depends on dense survey data unlike the sparse data on trust in civil servants just described.
+Building on all of these four works, @Kolczynska2020 is the very most recent effort, but the multilevel regression and post-stratification (MRP) approach it offers depends both on dense survey data and on additional data describing population characteristics, so it too is inappropriate for our purposes here.]
 The DCPO model is a population-level two-parameter ordinal logistic item response theory (IRT) model with country-specific item-bias terms.
-For a detailed description of the DCPO model, see Appendix B and @Solt2020c [, 3-8]; here, we focus on how it deals with the principal issues raised by our source data, incomparability and sparsity.
+For more information on the DCPO model, see Appendix B and @Solt2020c [, 3-8]; in this section, we focus on how it deals with the principal issues raised by our source data, incomparability and sparsity.
 
 The DCPO model accounts for the incomparability of different survey questions with two parameters.
 First, it incorporates the _difficulty_ of each question's responses, that is, how much trust in civil servants is indicated by a given response. 
-That each response evinces more or less of our latent trait is most easily seen with regard to the ordinal responses to the same question: strongly agreeing with the statement "you can generally trust the people who run our government to do what is right," exhibits more trust in civil servants than responding "agree," which in turn is more trusting than responding "disagree," which is a more trusting response than "strongly disagree."
-But this is also true across questions.
+That each response reveals more or less of our latent trait is easily seen with regard to ordinal responses to the same question: strongly agreeing with the statement "you can generally trust the people who run our government to do what is right," exhibits more trust in civil servants than simply agreeing, which shows more trust than responding "disagree," which in turn is a more trusting response than "strongly disagree."
+But this is likely to also be true across questions.
 For example, expressing "great trust" in civil servants "to look after your interests" likely expresses even more trust than just strongly agreeing that civil servants can be trusted to do what is right.
 Second, the DCPO model accounts for each question's _dispersion_, its noisiness with regard to our latent trait.
 The lower a question's dispersion, the better that changes in responses to the question map onto changes in trust of civil servants.
 Together, the model's difficulty and dispersion estimates work to generate comparable estimates of the latent variable of trust in civil servants from the available but incomparable source data.
 
-To address the sparsity of the source data---the fact that there are gaps in the time series of each country, and even many observed country-years have only one or few observed items---DCPO uses simple local-level dynamic linear models, i.e., random-walk priors, for each country.
+To address the sparsity of the source data---the fact that the time series for each country has gaps, and many country-years that are observed have available only one item---DCPO uses random-walk priors for each country.
 That is, within each country, each year's value of trust in civil servants is modeled as the previous year's estimate plus a random shock.
-These dynamic models smooth the estimates of trust in civil servants over time and allow estimation even in years for which little or no survey data is available, albeit at the expense of greater measurement uncertainty.
+The random walk priors smooth the estimates of trust in civil servants over time and allow---at the cost of greater measurement uncertainty---estimates to be generated even in years for which little or no data is available.
 
 ```{r dcpo_input, eval=FALSE, include=FALSE, results=FALSE}
 dcpo_input <- DCPOtools::format_dcpo(dcpo_input_raw1,
@@ -733,15 +770,12 @@ bottom5 <- p1_data %>%
 
 We estimated the model using the `DCPOtools` package for R [@Solt2020a], running four chains for 1,000 iterations each and discarding the first half as warmup, which left us with 2,000 samples.
 The $\hat{R}$ diagnostic had a maximum value of 1.01, indicating that the model converged.
-
-<!--The dispersion parameters of the survey items indicate that all of them load well on the latent variable (see Appendix A).-->
-
-The result is estimates, in all `r res_cy` country-years spanned by the source data, of mean trust in civil servants, what we call TCS scores.
+The dispersion parameters of the survey items indicate that all of our source data items load well on the latent variable (see Appendix A).
+The result is estimates, in all `r res_cy` country-years spanned by the source data, of the citizenry's aggregate trust in civil servants, what we call TCS scores.
 Figure\nobreakspace{}\ref{cs_mry} displays the most recent available TCS score for each of the `r res_c` countries and territories in the dataset.
 
-[The Scandinavian countries, Finland and Denmark which have high quality of governance, and Asian countries, China, India and Singapore which have e history of meritocracy, are at the top of the list.]
-<!--Niger in input date only has two time points. The question is about tax.2015's data of trust in institutions  was higher than data in later years https://bti-project.org/en/reports/country-report/NER -->
-The latest scores for `r bottom5` have them as the places where the public has the lowest trust toward civil servants.
+Asian countries, especially those with a history of meritocracy, dominate the top of the list.
+On the other hand, The latest scores for `r bottom5` have them as the places where the public has the lowest trust toward civil servants.
 
 ```{r ts, fig.cap="TCS Scores Over Time Within Selected Countries \\label{ts_plots}", fig.height=3.5}
 countries <- c("Finland", "Germany", "Luxembourg", "Bangladesh",
@@ -777,8 +811,8 @@ ggplot(data = c_res, aes(x = year, y = mean)) +
 
 We show the changes of TCS over time in sixteen countries in Figure\nobreakspace{}\ref{ts_plots}.
 As displayed in Figure\nobreakspace{}\ref{cs_mry}, the dataset covers a wide range of geographic breadth, allowing comparative studies of countries and regions too often neglected [see @Wilson2021].
-Figure\nobreakspace{}\ref{ts_plots} also shows that while TCS has risen prominently in some countries, such as Finland and U.K., trusting attitudes have maintained high or low over time in others, like China and Turkey, or fallen steadily, as in U.s. and Mexico. 
-They have advanced and retreated as in Spain or have declined and recovered as in Argentina .
+Figure\nobreakspace{}\ref{ts_plots} also shows that while TCS has risen prominently in some countries, such as Finland and U.K., trusting attitudes have maintained high or low over time in others, like China and Turkey, or fallen steadily, as in U.S. and Mexico. 
+They have advanced and retreated as in Spain or have declined and recovered as in Argentina.
 It is worthwhile to further explore the causes and consequences of these trends.
 
 
