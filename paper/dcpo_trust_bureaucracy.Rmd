@@ -130,30 +130,35 @@ validation_plot <- function(v_data_raw,
                             vectorize.args = "x")
     
     v_vars <- v_data_raw %>% 
-      select(item0 = item) %>% 
-      unique() %>% 
+      select(item0 = item,
+             title = title) %>% 
+      distinct() %>% 
       mutate(v_val = str_extract(item0, "\\d+") %>% 
                as.numeric() %>% 
                median_val(.) %>%
-               `+`(if_else(str_detect(item0, "disc3"), .1, .6)) %>% 
+               `+`(if_else(str_detect(item0, "disc3"), .1,
+                           if_else(str_detect(item0, "int5_allbus"),
+                                   0,
+                                   .6))) %>% 
                round())
     
     validation_summarized <- v_data_raw %>% 
       DCPOtools::format_dcpo(scale_q = v_vars$item0[[1]], # these arguments are required
                              scale_cp = 1) %>% # but they don't matter
       pluck("data") %>% 
-      mutate(item0 = str_remove(item, " \\d or higher"),
-             title = factor(title, 
+      mutate(item0 = str_remove(item, " \\d or higher")) %>% 
+      right_join(v_vars, by = "item0") %>%
+      arrange(title) %>% 
+      mutate(title = factor(title, 
                             levels = v_data_raw %>%
                               pull(title) %>%
                               unique())) %>% 
-      right_join(v_vars, by = "item0") %>%
-      arrange(title) %>% 
       filter(str_detect(item, paste(v_val, "or higher"))) %>%
       mutate(iso2c = countrycode::countrycode(country,
                                               origin = "country.name",
-                                              destination = "iso2c"),
-             prop = if_else(neg, 1-y_r/n_r, y_r/n_r),
+                                              destination = "iso2c",
+                                              warn = FALSE),
+             prop = y_r/n_r,
              se = sqrt((prop*(1-prop))/n),
              prop_90 = prop + qnorm(.9)*se,
              prop_10 = prop - qnorm(.9)*se) %>%
@@ -301,7 +306,7 @@ On contrast, without public trust, public officials could struggle in performing
 Among few existing studies, data is limited in both regional scale  and time periods [@Morelock2021; @Choi2018; @Houston2016], which severely impedes causal inferences in dynamic relationship between trust in bureaucracy and quality of administration.
 Specifically, the lack of comparative data on trust on bureaucracy makes it impossible to test the competing theories about what affects trusting attitudes, government performance, or the quality of governance [@Bouckaert2012; @Kettl2000; @VandeWalle2022; @Morelock2021].
 
-```{r dcpo_input_raw, include=FALSE}
+```{r dcpo_input_raw, include=FALSE, eval=FALSE}
 surveys_tb <- read_csv(here::here("data-raw",
                                   "surveys_bureaucracy.csv"),
                        col_types = "cccccc")
@@ -315,6 +320,10 @@ dcpo_input_raw <- DCPOtools::dcpo_setup(vars = surveys_tb,
 ```
 
 ```{r tb_summary_stats}
+surveys_tb <- read_csv(here::here("data-raw",
+                                  "surveys_bureaucracy.csv"),
+                       col_types = "cccccc")
+
 dcpo_input_raw <- read_csv(here::here("data", "dcpo_input_raw.csv"),
                                   col_types = "cdcddcd")
 
@@ -327,7 +336,8 @@ process_dcpo_input_raw <- function(dcpo_input_raw_df) {
     group_by(country) %>% 
     mutate(cc_rank = n()) %>% 
     ungroup() %>% 
-    arrange(-cc_rank)
+    arrange(-cc_rank) %>% 
+    mutate(item = str_remove_all(item, "_"))
 }
 
 dcpo_input_raw1 <- dcpo_input_raw %>% 
@@ -637,7 +647,8 @@ save(dcpo_input, file = here::here("data", "dcpo_input.rda"))
 ```{r dcpo, eval=FALSE, include=FALSE, results=FALSE}
 iter <- 1000
  
-dcpo <- cmdstan_model("~/Documents/Projects/DCPO/inst/stan/dcpo.stan")
+dcpo <- paste0(.libPaths(), "/DCPO/stan/dcpo.stan")[1] |> 
+  cmdstan_model()
 
 dcpo_output <- dcpo$sample(
    data = dcpo_input[1:13], 
@@ -657,7 +668,7 @@ results_path <- here::here(file.path("data",
                                   {str_replace_all(Sys.time(),
                                                       "[- :]",
                                                    "") %>%
-                                         str_replace("\\d{2}$",
+                                         str_replace("\\d{2}.\\d{6}$",
                                                      "")}))
 
 dir.create(results_path, 
@@ -672,7 +683,7 @@ dcpo_output$save_output_files(dir = results_path,
 
 ```{r dcpo_results}
  if (!exists("results_path")) {
-   latest <- "202303030905"
+   latest <- "202404171225"
    results_path <- here::here("data", "1000", latest)
    
    # Define OSF_PAT in .Renviron: https://docs.ropensci.org/osfr/articles/auth
@@ -680,8 +691,8 @@ dcpo_output$save_output_files(dir = results_path,
      dir.create(results_path, showWarnings = FALSE, recursive = TRUE)
      osf_retrieve_node("82w36") %>% 
        osf_ls_files() %>% 
-       filter(name == latest) %>% 
-       osf_download(path = here::here("data", "1000"))
+       filter(str_detect(name, latest)) %>% 
+       osf_download(path = results_path)
    }
 }
  
@@ -886,7 +897,7 @@ internal_tscs_plot + internal_cs_plot + internal_ts_plot  +
 
 Figure\nobreakspace{}\ref{internal_val}
 
-```{r ext_val1_dat, include=FALSE}
+```{r ext_val1_dat, eval=FALSE}
 ext_dat1 <- read_csv(here("data-raw",
                          "surveys_inst.csv"))
 
@@ -913,9 +924,14 @@ ext_evs_parl_dat <- ext_dat1 %>%
                                         "dcpo_surveys")) %>%  
     mutate(title = "European Values Survey",
            neg = FALSE)
+
+save(ext_wvs_gov_dat, ext_lb_courts_dat, ext_evs_parl_dat,
+     file = here::here("data", "extval1.rda"))
 ```
 
 ```{r extval1, fig.cap="Construct Validation: Correlations Between TCS Scores and Trust in Institutions Survey Items \\label{ext_val1}", fig.height=4}
+load(here::here("data", "extval1.rda"))
+
 ext_wvs_gov_plot <- validation_plot(ext_wvs_gov_dat,
                                     lab_x = .1,
                                     lab_y = 95) +
@@ -961,7 +977,7 @@ ext_wvs_gov_plot + ext_evs_parl_plot + ext_lb_courts_plot +
 
 Figure\nobreakspace{}\ref{ext_val1}
 
-```{r ext_val2_dat, include=FALSE}
+```{r ext_val2_dat, eval=FALSE}
 ext_dat2 <- read_csv(here("data-raw",
                          "surveys_cor.csv"))
 
@@ -989,9 +1005,14 @@ ext_issp_cor_dat <- ext_dat2 %>%
                                         "dcpo_surveys")) %>%  
   mutate(title = "ISSP Citizenship I & II",
          neg = FALSE)
+
+save(ext_wvs_cor_dat, ext_cor_dat, ext_issp_cor_dat,
+     file = here::here("data", "extval2.rda"))
 ```
 
 ```{r extval2, fig.height = 4, fig.cap = "Construct Validation: Correlations Between TCS Scores and Corruption of Public Servants Survey Items \\label{ext_val2}"}
+load(here::here("data", "extval2.rda"))
+
 ext_wvs_cor_plot <- validation_plot(ext_wvs_cor_dat,
                                     lab_x = .1,
                                     lab_y = 95) +
@@ -1083,7 +1104,7 @@ The estimates for country-years with fewer (or no) observed items rely more heav
 
 \noindent Table A1: Indicators Used in the Unidimensional Latent Variable Model of Democratic Support
 
-```{r tsc_items}
+```{r alpha_beta, eval=FALSE}
 alpha_results <- summarize_dcpo_results(dcpo_input,
                                         dcpo_output = dcpo_output,
                                         pars = "alpha") %>% 
@@ -1106,7 +1127,23 @@ beta_results <- summarize_dcpo_results(dcpo_input,
            str_replace(",$", "") %>% 
            str_trim()) %>% 
   transmute(item, difficulties)
-                                    
+
+save(alpha_results,
+     file = here::here("data",
+                       "alpha_results.rda"))
+
+save(beta_results,
+     file = here::here("data",
+                       "beta_results.rda"))
+```                                    
+
+```{r dcpo_items}
+load(here::here("data",
+                "alpha_results.rda"))
+
+load(here::here("data",
+                "beta_results.rda"))
+
 items_summary <- dcpo_input_raw1 %>%
   dplyr::select(country, year, item, survey) %>%
   distinct() %>%
@@ -1123,6 +1160,7 @@ items_summary <- dcpo_input_raw1 %>%
   ungroup() %>%
   distinct(item, n_cy, all_surveys) %>% 
   left_join(surveys_tb %>%
+              mutate(item = str_remove(item, "_")) %>% 
               select(item, question_text, response_categories) %>%
               distinct(item, .keep_all = TRUE),
             by = "item") %>% 
