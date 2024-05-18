@@ -95,8 +95,13 @@ knitr::opts_chunk$set(
 )
 
 # If `DCPOtools` is not yet installed:
+#install.packages('loo')
+#install.packages('rstan')
 # remotes::install_github("fsolt/DCPOtools")
-
+# remotes::install_github("stan-dev/cmdstanr")
+# install.packages('BiocManager')
+# remotes::install_github("expersso/WHO")
+# install.packages("devtools")
 if (!require(pacman)) install.packages("pacman")
 library(pacman)
 # load all the packages you will use below 
@@ -106,11 +111,17 @@ p_load(
   tidyverse,
   here,
   countrycode,
+  brms,
+  wbstats, 
+  tidybayes,
+  scales,
   patchwork,
   ggthemes,
+  modelsummary,
   rsdmx,
   osfr,
-  kableExtra
+  kableExtra,
+  bayesplot
 ) 
 ```
 
@@ -394,6 +405,7 @@ covered_share <- covered_share_of_spanned(dcpo_input_raw1)
 In this letter, we present the trust in civil servants/(bureaucracy/public administration) (TCS) dataset, which is based on the host of national and cross-national survey data available and recent advances in latent variable modeling of public opinion that allow us to make use of this sparse and incomparable data.
 It provides comparable estimates of the trust and confidence the public puts in civil servants and public administrators/administration across countries and over time.
 We validate the data by showing that these TCS scores are strongly correlated with responses to single survey items as well as with measures of [perceived corruption, unemployment, income inequality, and internal and external efficacy, the rule of law, government effectiveness].
+We apply our TCS data in a cross-national-time-series data to examine the competing theories on explaining trust in bureaucracy.
 We expect that the TCS data will become an invaluable source for broadly cross-national and longitudinal research on the causes and effects of trust in the civil service.
 
 
@@ -596,7 +608,7 @@ dcpo_input_raw1 %>%
                      sec.axis = dup_axis()) +
   scale_y_discrete(position = "right") +
   theme(legend.justification=c(0, 0), 
-        legend.position=c(0.01, 0.01),
+        legend.position.inside=c(0.01, 0.01),
         axis.text.y  = element_text(size = 7)) 
 ```
 
@@ -1058,6 +1070,328 @@ ext_wvs_cor_plot + ext_cor_plot + ext_issp_cor_plot + patchwork::plot_annotation
 Figure\nobreakspace{}\ref{ext_val2}
 
 \pagebreak
+
+A longstanding puzzle in public administration is understanding what explains trust in bureaucracies.
+A dominant theme is the belief that higher levels of government performance lead to greater trust in civil servants, based on the assumption that better performance correlates with higher trust and that lower trust toward bureaucrats reflects dissatisfaction with government performance  [@yang2006performance].
+One common approach to measuring performance is through macroeconomic outcomes, such as economic growth, unemployment rate, economic inequality, and inflation.
+However, the results from studies on macroeconomic outcomes are mixed. 
+For example, @Choi2018 found that GDP per capita positively affects trust in bureaucracies, while @Houston2016 did not find significant effects of GDP per capita and inflation rate on trust in civil servants.
+Instead, @Houston2016 found that the unemployment rate negatively influences trust in civil servants.
+Contrary to previous studies that found some evidence for the role of government outcomes, @Morelock2021 found that none of the outcome indicators, including GDP per capita, inflation rate, unemployment, and the GINI index, had a significant effect on trust in civil servants.
+
+Amidst these mixed results regarding macroeconomic outcomes, a growing body of literature emphasizes the role of government quality—or process—in explaining trust in bureaucracies.
+@VanRyzin2011 found that the quality of government, measured by the World Bank’s Worldwide Governance Indicators, plays a more crucial role than government outcomes measured by the UN's Human Development Index, which had a negative effect in his model.
+@Morelock2021's study also highlights the positive role of government effectiveness, although @Houston2016's study find inconsistent role of government effectiveness.
+A relatively consistent finding across studies is the significant role of corruption.
+@VandeWalle2022 concluded that the perceived absence of corruption is more impactful on trust in bureaucracies than performance evaluations.
+The critical influence of perceived corruption and corruption control on public trust in civil servants is also supported by @Houston2016 and @Morelock2021.
+However, since authors used different measures and modeling strategies, such as whether to include both outcomes and quality indicators in one model, it remains unclear how consistent these results would be if a uniform modeling strategy were used.
+
+Given these mixed results from studies on outcomes and quality in relation to trust, researchers acknowledge common limitations: limited country coverage, reliance on cross-sectional rather than dynamic analysis, and difficulties in obtaining comparable measures across countries or regions [@VanRyzin2011, @Houston2016,@Choi2018, @Morelock2021,@VandeWalle2022].
+These limitations in comparative data and the lack of time-series data hinder a deeper understanding of the relationship between government outcomes, quality, and trust in bureaucracies.
+
+With our time-series cross-national data on trust in bureaucracies, we combine both outcome and quality indicators to examine the factors influencing this trust.
+For outcome indicators, we followed previous studies and used GDP per capita, inflation, and unemployment from 1984 to 2022 as measures of macroeconomic performance.
+GDP per capita and inflation data were sourced from the International Monetary Fund, while unemployment data were collected from the World Bank, which uses modeled International Labour Organization estimates.
+To measure income inequality, we relied on @Solt2020's Standardized World Income Inequality Database (SWIID), specifically using the index of inequality in disposable income for its superior coverage and comparability.
+
+For quality of government indicators, we used the Corruption Perceptions Index from Transparency International, covering the years 1995 to 2022, to capture the perceived level of corruption.
+We also focused on the Government Effectiveness indicator from the World Bank's Worldwide Governance Indicators, as it encompasses the overall quality of public services, the civil service, and policy formulation and implementation.
+
+To further leverage our trust data, we collected the number of intentional homicides at the country-year level from the United Nations Office on Drugs and Crime, capturing outcomes in public safety, given that macroeconomic outcomes do not represent government performance in other fields [@VanRyzin2011,@Morelock2021].
+Additionally, to account for the effect of democratic development on trust, we included the Liberal Democracy Index from the V-Dem dataset by @Coppedge2023 and @Pemstein2023. 
+
+
+```{r data_combo}
+
+#Economic data ####
+
+## IMF: GDPpc and Inflation 
+
+###"Inflation rate, average consumer prices (Annual percent change)"
+imf_inflation <- readxl::read_excel(here::here("data","imf/2023/imf-inflation-export-20230730.xls"))[2:228,1:45] %>%
+  rename (country = colnames(.)[1]) %>%
+  gather(year, inflation, "1980":"2023") %>%
+  transmute(
+    year = as.numeric(year),
+    imf_inflation = as.numeric(inflation),
+    country =  countrycode(country, origin = 'country.name', destination = 'country.name')
+  ) %>%
+  filter(!is.na(country)) %>%
+  filter(year > 1983)
+
+###"GDP per capita, current prices (Purchasing power parity; international dollars per capita)"
+imf_gdppc <- readxl::read_excel(here::here("data","imf/2023/imf-gdppc-export-20230730.xls"))[2:228,1:45] %>%
+  rename (country = colnames(.)[1]) %>%
+  gather(year, gdppc, "1980":"2023") %>%
+  transmute(
+    year = as.numeric(year),
+    imf_gdppc = as.numeric(gdppc),
+    country =  countrycode(country, origin = 'country.name', destination = 'country.name')
+  ) %>%
+  filter(!is.na(country))  %>%
+  filter(year > 1983)
+
+
+imf_data <- imf_gdppc %>%
+  left_join(imf_inflation)
+  
+
+## WB: Unemployment 
+
+wb_unemployment <- wbstats::wb_data("SL.UEM.TOTL.ZS")[3:5] %>% 
+  rename (wb_unemploy = colnames(.)[3], 
+          year = date) %>%
+  filter(year > 1983) %>%
+  mutate(country =  countrycode(country, origin = 'country.name', destination = 'country.name'))
+#modelled ILO
+
+economic_data <- wb_unemployment %>%
+  left_join(imf_data)
+
+colSums(is.na(economic_data))
+
+
+## Swiid: Inequality 
+swiid9_4 <- load(here::here("data","swiid9_4/swiid9_4.rda"))
+swiid_summary <- swiid_summary %>% 
+    mutate(country = countrycode::countrycode(country,
+                                              "country.name",
+                                              "country.name",
+                                              warn = FALSE)) %>% 
+    select(country, year, gini_disp, gini_disp_se)
+
+
+
+#Quality data ####
+##cpi 1995
+load(here::here("data","cpi2022/cpi_95_22_error.rda"))
+ 
+cpi_95_22_error <-  cpi_95_22_error %>%
+  mutate(relative_error = cpi_error/cpi) %>%
+  dplyr::group_by(country) %>%
+  mutate(h_re = max(relative_error,na.rm = T),
+         h_re = ifelse(h_re =="-Inf",NA,h_re)) %>%
+  dplyr::ungroup() %>%
+  mutate(cpi_error = ifelse(is.na(cpi_error), cpi*h_re,cpi_error)) %>%
+  group_by(country) %>%
+  arrange(country,year) %>%
+  dplyr::select(-h_re, -relative_error)
+
+
+##wgi  1996
+wgidataset <- rio::import(here::here("data","qog/wgi2022/wgidataset.dta")) %>%
+  dplyr::select(code,countryname,year,vae, vas, pve,pvs, gee,ges,rqe,rqs,rle,rls,cce,ccs) %>%
+  mutate(country = countrycode::countrycode(countryname,origin = "country.name", destination = "country.name")) %>%
+  dplyr::select(-code,-countryname)
+
+#Others ####
+##unodc-- intentional_homicide
+unodc_homi <- readxl::read_excel(here::here("data","UNODC/data_cts_intentional_homicide.xlsx"), 
+                                   skip = 2) %>%
+  filter(Indicator == "Victims of intentional homicide") %>%
+  filter(Dimension == "Total") %>%
+  filter(Category == "Total") %>%
+  filter(Sex == "Total") %>%
+  filter(Age == "Total") %>%
+  filter(`Unit of measurement` == "Rate per 100,000 population")  %>%
+  transmute(year = Year,
+            country = countrycode::countrycode(Iso3_code,
+                                               origin = "iso3c",
+                                               destination = "country.name"), 
+            cname = Country,
+            victims_inthomi = VALUE
+            ) %>%
+  mutate(country = ifelse(cname =="Kosovo under UNSCR 1244", "Kosovo", country)) %>%
+  filter(year > 1983) %>%
+  filter(!is.na(country)) %>%
+  dplyr::select(-cname) %>%
+  filter(!is.na(victims_inthomi))
+
+####Vdem data
+load(here::here("data","vdem13cnry_libdem_1960full.rda"))
+load(here::here("data","vdem13_regime.rda"))
+
+vdem13 <- vdem13cnry_libdem_1960full %>%
+          select(country,year, libdem, libdem_sd) %>%
+          filter( year > 1983) %>%
+  left_join(vdem13_regime %>%
+          filter( year > 1983) )
+
+
+
+
+#Data combo ####
+data_combo <- theta_summary %>% 
+    left_join(cpi_95_22_error,
+              by = c("country", "year")) %>% 
+    left_join(wgidataset,
+              by = c("country", "year")) %>% 
+    left_join(swiid_summary %>%
+                filter(!(country == "Russia" & year == 1990 & gini_disp ==
+24.2)),
+              by = c("country", "year")) %>% #why russia has two values?
+    left_join(vdem13,
+              by = c("country", "year")) %>% 
+    left_join(qog_outcomes,
+              by = c("country", "year")) %>%
+    left_join(who_outcomes,
+              by = c("country", "year")) %>%
+    left_join(unodc_homi,
+              by = c("country", "year")) %>%
+    left_join(economic_data,
+              by = c("country", "year")) %>%
+     dplyr::select(-gpi_ss, -homi_100t) %>% # too many NAs
+    mutate(democracy = ifelse((!is.na(Vdem_regime)) & Vdem_regime < 2, 0, 
+                              ifelse((!is.na(Vdem_regime)) & Vdem_regime > 1, 1, Vdem_regime))) 
+  
+save(data_combo, file =  here::here("data","data_combo.rda"))
+
+```
+
+
+```{r moutcome_qua}
+
+data_combo_all <- data_combo %>%
+    dplyr::select(country , year, mean, sd, libdem,libdem_sd, democracy,imf_gdp,imf_gdppc,imf_inflation,
+                  wb_unemploy,gini_disp, gini_disp_se, victims_inthomi,cpi, cpi_error,gee) %>%    
+  drop_na(mean:imf_gdppc, gini_disp:icrg_qog) %>%
+    group_by(country) %>% 
+    mutate(
+          
+           gini_mean = mean(gini_disp),
+           gini_mean_se = sqrt(sum(gini_disp_se^2))/
+             length(gini_disp),   
+           gini_diff = (gini_disp - gini_mean),
+           gini_diff_se = sqrt(gini_disp_se^2 + gini_mean_se^2),
+           gdppc_mean = mean(imf_gdppc/1000),
+           gdppc_diff = imf_gdppc/1000 - gdppc_mean,
+              log_inf = sign(imf_inflation) * log(abs(imf_inflation) +1),
+           log_une = log(wb_unemploy),
+           gee_mean = mean(gee),
+           gee_diff = (gee - gee_mean),
+           cpi_mean = mean(cpi),
+           cpi_mean_se = sqrt(sum(cpi_error^2))/
+            length(cpi),   
+           cpi_diff = (cpi - cpi_mean),
+           cpi_diff_se = sqrt(cpi_error^2 + cpi_mean_se^2),
+            victims_mean = mean(victims_inthomi),
+           victims_diff = victims_inthomi - victims_mean,
+            libdem_mean = mean(libdem),
+           libdem_diff = (libdem - libdem_mean)
+    ) %>% 
+    ungroup()
+
+ m_wgi_gee <- brms::brm(bf(mean*100 | mi(sd*100) ~ 
+                           me(gini_mean, gini_mean_se) +
+                           me(gini_diff, gini_diff_se) +
+                             gdppc_mean + 
+                          gdppc_diff +
+                            log_inf +
+                         log_une +
+                        victims_mean +  victims_diff +
+                              me(cpi_mean, cpi_mean_se) +
+                            me(cpi_diff, cpi_diff_se) +
+                         gee_mean + gee_diff +
+                                 libdem_mean + libdem_diff +
+                              (1 | country) + (1 | year)),  
+             data = data_combo_all,
+             backend = "cmdstanr",
+             warmup = 1500, 
+             iter = 3000, 
+             control = list(max_treedepth = 14,
+                               adapt_delta = .9),
+             chains = 4, 
+             cores = 4,
+             seed = 313) 
+ 
+summary(m_wgi_gee) 
+
+save(m_wgi_gee , file = here::here("output", "m_wgi_gee.rda"))
+
+```
+
+
+```{r}
+
+
+named_vars <- tribble(~var_name, ~`.variable`, ~order,
+                        "GDPpc, Mean", "b_gdppc_mean", 1,
+                        "GDPpc, Difference", "b_gdppc_diff", 2, 
+                        "Inflation (in log)", "b_log_inf", 3,
+                        "Unemployment (in log)", "b_log_une", 4, 
+                        "Security, Mean", "b_victims_mean", 5,
+                        "Security, Difference", "b_victims_diff", 6,
+                     "Level of Liberabl Democracy, Mean", "b_libdem_mean",7,
+                      "Level of Liberabl Democracy, Difference",  "b_libdem_diff",8,
+                      "Government Effectiveness, Mean", "b_gee_mean",9,
+                      "Government Effectiveness, Difference", "b_gee_diff",10,
+                         "Income Inequality, Mean", "bsp_megini_meangini_mean_se", 11,
+                        "Income Inequality, Difference",
+                                                  "bsp_megini_diffgini_diff_se", 12,
+                        "Corruption Perception Index, Mean", "bsp_mecpi_meancpi_mean_se", 13,
+                        "Corruption Perception Index, Difference", "bsp_mecpi_diffcpi_diff_se", 14)
+
+ doubled_sd_all <- m_wgi_gee$data %>% 
+    select(-`mean * 100`, -mean, -sd,
+           -country, -year, -ends_with("_se")) %>% 
+    summarize(across(everything(), by2sd)) %>% 
+    pivot_longer(everything()) %>% 
+    transmute(`.variable` = case_when(name == "gini_mean" ~ 
+                                        "bsp_megini_meangini_mean_se",
+                                      name == "gini_diff" ~
+                                        "bsp_megini_diffgini_diff_se",
+                                      name == "cpi_mean" ~ 
+                                        "bsp_mecpi_meancpi_mean_se",
+                                      name == "cpi_diff" ~
+                                        "bsp_mecpi_diffcpi_diff_se",
+                                      TRUE ~ paste0("b_", name)),
+              sd2 = value) %>% 
+    left_join(named_vars, by = join_by(`.variable`)) %>% 
+    arrange(order)
+  
+  coef_data0_all <- m_wgi_gee %>% 
+    tidybayes::gather_draws(`bs?p?_.*`, regex = TRUE) %>% 
+    filter(!`.variable`=="b_Intercept") %>% 
+    left_join(doubled_sd_all, by = join_by(.variable))
+  
+  cy_summary_all <- m_wgi_gee$data %>%
+    count(country) %>%
+    pull(n) %>%
+    summary()
+
+```
+
+
+```{r resplot, fig.cap="Predicting Tolerance of Homosexuality \\label{model}", fig.height=6, fig.width=7.5}
+
+ordered <- doubled_sd_all %>%
+  pull(var_name) %>% 
+  rev()
+
+coef_data_all <- coef_data0_all %>% 
+  mutate(std_coef = round(.value * sd2, 1),
+         term = factor(var_name, levels = ordered)) %>%
+  ggdist::median_qi(std_coef, .width = c(.8, .9, .95)) %>%
+  mutate(ci = paste0(round(.lower, 1), " to ", round(.upper, 1))) %>%
+  left_join(doubled_sd_all, ., by = join_by(.variable))
+
+
+coef_data0_all %>% 
+  mutate(std_coef = round(.value * sd2, 1),
+         term = factor(var_name, levels = ordered)) %>% 
+  ggplot(aes(y = term,
+             x = std_coef)) +
+  stat_halfeye(.width = c(.8, .9, .95),
+               alpha = .3,
+               point_alpha = 1,
+               size = 1.2) +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  theme_light()  +
+  xlab(NULL) +
+  ylab(NULL) +
+  plot_annotation(caption = "Notes: Dots indicate posterior means; whiskers, from thickest to thinnest, describe 80%,\n90%, and 95% credible intervals; shading depicts the posterior probability density function.")
+```
 
 # References {.unnumbered}
 
