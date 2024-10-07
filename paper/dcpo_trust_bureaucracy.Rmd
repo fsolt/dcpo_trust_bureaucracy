@@ -104,6 +104,8 @@ knitr::opts_chunk$set(
 # install.packages("devtools")
 if (!require(pacman)) install.packages("pacman")
 library(pacman)
+#remotes::install_github("paul-buerkner/brms")
+#install.packages(c("brms", "Rcpp", "RcppEigen"))
 # load all the packages you will use below 
 p_load(
   DCPOtools,
@@ -257,7 +259,7 @@ covered_share_of_spanned <- function(dcpo_input_raw) {
   {(n_cy/spanned_cy) * 100}
 }
 
-get_coef <- function(iv, results_df = coef_data, type = "both", width = .95) {
+get_coef <- function(iv, results_df = coef_data_all, type = "both", width = .95) {
   result_var <- results_df %>% 
     filter(.width == width) %>% 
     pull(.variable) %>% 
@@ -402,7 +404,7 @@ back_to_numeric <- function(string_number) {
 covered_share <- covered_share_of_spanned(dcpo_input_raw1)
 ```
 
-In this letter, we present the trust in civil servants/(bureaucracy/public administration) (TCS) dataset, which is based on the host of national and cross-national survey data available and recent advances in latent variable modeling of public opinion that allow us to make use of this sparse and incomparable data.
+In this research, we present the trust in civil servants/(bureaucracy/public administration) (TCS) dataset, which is based on the host of national and cross-national survey data available and recent advances in latent variable modeling of public opinion that allow us to make use of this sparse and incomparable data.
 It provides comparable estimates of the trust and confidence the public puts in civil servants and public administrators/administration across countries and over time.
 We validate the data by showing that these TCS scores are strongly correlated with responses to single survey items as well as with measures of [perceived corruption, unemployment, income inequality, and internal and external efficacy, the rule of law, government effectiveness].
 We apply our TCS data in a cross-national-time-series data to examine the competing theories on explaining trust in bureaucracy.
@@ -798,7 +800,9 @@ The result is estimates, in all `r res_cy` country-years spanned by the source d
 Figure\nobreakspace{}\ref{cs_mry} displays the most recent available TCS score for each of the `r res_c` countries and territories in the dataset.
 
 Asian countries, especially those with a history of meritocracy, dominate the top of the list.
+The least corrupt counties, like Switzerland, Norway, Denmark and Finland, also rank highly. 
 On the other hand, The latest scores for `r bottom5` have them as the places where the public has the lowest trust toward civil servants.
+The bottom-ranked countries are either among the most corrupt, like Venezuela, or have high crime rates, like Peru and Honduras.
 
 ```{r ts, fig.cap="TCS Scores Over Time Within Selected Countries \\label{ts_plots}", fig.height=3.5}
 countries <- c("Finland", "Germany", "Luxembourg", "Bangladesh",
@@ -834,9 +838,9 @@ ggplot(data = c_res, aes(x = year, y = mean)) +
 
 We show the changes of TCS over time in sixteen countries in Figure\nobreakspace{}\ref{ts_plots}.
 As displayed in Figure\nobreakspace{}\ref{cs_mry}, the dataset covers a wide range of geographic breadth, allowing comparative studies of countries and regions too often neglected [see @Wilson2021].
-Figure\nobreakspace{}\ref{ts_plots} also shows that while TCS has risen prominently in some countries, such as Finland and U.K., trusting attitudes have maintained high or low over time in others, like China and Turkey, or fallen steadily, as in U.S. and Mexico. 
-They have advanced and retreated as in Spain or have declined and recovered as in Argentina.
-It is worthwhile to further explore the causes and consequences of these trends.
+Figure\nobreakspace{}\ref{ts_plots} also shows that while TCS has risen prominently in some countries, such as Finland and Germany, trusting attitudes have maintained high or low over time in others, like Luxembourg and Mexico, or fallen steadily, as in U.S. and Chile. 
+They have advanced and retreated as in Spain or have declined and recovered as in Turkey.
+The differences within countries over time and differences across countries present a challenge to explain the causes and consequences of trust in bureaucracies. 
 
 
 # Validating Trust in Civil Servants
@@ -859,6 +863,7 @@ internal_ts_dat <- dcpo_input_raw1 %>%
 ```
 
 ```{r internalval, fig.height = 4, fig.cap = "Convergent Validation: Correlations Between TSC Scores and Individual TSC Source-Data Survey Items \\label{internal_val}"}
+
 internal_tscs_plot <- validation_plot(internal_tscs_dat,
                                 lab_x = .1,
                                 lab_y = 95) +
@@ -907,7 +912,19 @@ internal_tscs_plot + internal_cs_plot + internal_ts_plot  +
   patchwork::plot_annotation(caption = "Note: Gray whiskers and shading represent 80% credible intervals.")
 ```
 
-Figure\nobreakspace{}\ref{internal_val}
+Before using these estimates in analysis, we validate our trust civil service score through convergent validation and construct validation, since validation tests of cross-national latent variables are crucially important [see, e.g., @Hu2023].
+Figure\nobreakspace{}\ref{internal_val} shows the measure's validity in tests of convergent validation that tests whether a measure is empirically associated with alternative indicators of the same concept [@Adcock2001, 540].
+We started with 'internal' convergent validation test [see, e.g., @Caughey2019, 689; @Solt2020c, 10] by comparing our TCS score with individual items from source-data to generate them. 
+
+The left panel in Figure\nobreakspace{}\ref{internal_val} shows a scatterplot of country-years in which the TCS scores are plotted against the percentage of respondents who expressed "a quite a lot "or "a great deal" of trust in response to the question: "I am going to name a number of institutions. For each one, could you tell me how much trust you have in them. Is it a great deal of trust, some trust, not very much trust or none at all? Civil service."
+
+The middle panel plots our TCS score against the percentage who responded "Tend to trust." to the question, "I would like to ask you a question about how much trust you have in certain institutions. For each of the following institutions, please tell me if you tend to trust it or tend not to trust it: Public administration in (OUR COUNTRY)" in the Eurobarometer 96.3 January-February 2022 module.
+This question is asked in the most countries compared to other single cross-national surveys.
+
+Finally, the right panel compares the trend of the longest item that has been asked since 1973 in U.S.General Social Survey, "I am going to name some institutions in this country. As far as the people running these institutions are concerned, would you say you have a great deal of confidence, only some confidence, or hardly any confidence at all in them? Executive branch of the federal government." to the trend of the TCS scores.
+The TCS scores effectively reflect changes of trust in executive branch over time.
+
+All three demonstrations show strong correlations between TCS and individual items, estimated taking into account the uncertainty in the measures. 
 
 ```{r ext_val1_dat, eval=FALSE}
 ext_dat1 <- read_csv(here("data-raw",
@@ -942,6 +959,7 @@ save(ext_wvs_gov_dat, ext_lb_courts_dat, ext_evs_parl_dat,
 ```
 
 ```{r extval1, fig.cap="Construct Validation: Correlations Between TCS Scores and Trust in Institutions Survey Items \\label{ext_val1}", fig.height=4}
+
 load(here::here("data", "extval1.rda"))
 
 ext_wvs_gov_plot <- validation_plot(ext_wvs_gov_dat,
@@ -987,7 +1005,17 @@ ext_wvs_gov_plot + ext_evs_parl_plot + ext_lb_courts_plot +
   plot_annotation(caption = "Note: Gray whiskers and shading represent 80% credible intervals.")
 ```
 
-Figure\nobreakspace{}\ref{ext_val1}
+Figure\nobreakspace{}\ref{ext_val1} present three 'external' convergent validation tests, comparing TCS scores to responses to survey items that were *not* included in the source data: items that asked respondents' confidence and trust in national government,  parliament, and judiciary in their countries.
+There is a longstanding debate about the dimentionality of political trust [@Easton1965, @Marien2011,@Norris2011,@Rothstein2008,@Tai2022role].
+Although trust in civil servants has been theoretically classified into the same dimentionality with either all these three types of trust[@Marien2011,@Hooghe2011], or one of them [@Norris2011,@Rothstein2008,@Tai2022role], our validations empirically show the importance of taking trust in civil servants separately an seriously. 
+
+In the left panel, we plot TCS score against data from seven rounds of World Value Survey, which asked respondents how much they trust their national government.
+The center plot shows data from European Values Surveys asking respondents' confidence in parliament.
+The right presents the percentage of respondents who expressed at least some trust in judiciary in their country in latinobarometro.
+Our measure positively correlated with all of them, with a stronger correlation with trust in national government and mild correlation with trust in parliament and judiciary.
+
+The general strong relationship between TCS measures and institutional trust confirms the theoretical expectation about institutional trust, but the variation in TCS' relationship with trust in different institutions cross regions is worthwhile to further investigate to refine the dimensions in political trust. 
+
 
 ```{r ext_val2_dat, eval=FALSE}
 ext_dat2 <- read_csv(here("data-raw",
@@ -1067,7 +1095,18 @@ ext_issp_cor_plot <- validation_plot(ext_issp_cor_dat,
 ext_wvs_cor_plot + ext_cor_plot + ext_issp_cor_plot + patchwork::plot_annotation(caption = "Note: Gray whiskers and shading represent 80% credible intervals.")
 ```
 
-Figure\nobreakspace{}\ref{ext_val2}
+We then conduct construct validation in Figure\nobreakspace{}\ref{ext_val2}.
+
+Construct validation assesses whether a given indicator is empirically correlated with other indicators in a way that conforms to theoretical expectations [@Adcock2001, 542].
+Corruption is often often argued as a likely contributor to trust in civil servants and administration [see, e.g., @Anderson2003, @VanRyzin2011,@VandeWalle2022].
+The left panel compares perceived widespread of corruption, measured as the percentage of those saying most or state authorities are involved in corruption in seven WVS surveys, with the TCS scores.
+As theoretical expectation, there is a clear negative relationship between the spread of perceived corruption and TCS: when there is widespread perception of corruption in authorities, the public tends to distrust civil servants.
+The center and right panel of Figure\nobreakspace{}\ref{ext_val2} also present negative relationships between TCS scores and the spread of perceived corruption of government officials cross different geographic regions.
+The center panel shows the data in developing or new democratic countries surveyed in Asian, New Europe Barometer, and Latinobarometro, and the right panel displays the data in countries surveyed in The International Social Survey Programme Citizenship module (2004, 2014).
+
+To sum up, the evidence of construct validation of TCS scores agains the perceived widespread of corruption in Figure\nobreakspace{}\ref{ext_val2}, together with the evidence of external validation in Figure\nobreakspace{}\ref{ext_val1} and convergent validation in Figure \nobreakspace{}\ref{internal_val}, demonstrates the validity of the TCS scores as measures of the public's trust in civil servants. 
+
+
 
 \pagebreak
 
@@ -1101,8 +1140,14 @@ We also focused on the Government Effectiveness indicator from the World Bank's 
 To further leverage our trust data, we collected the number of intentional homicides at the country-year level from the United Nations Office on Drugs and Crime, capturing outcomes in public safety, given that macroeconomic outcomes do not represent government performance in other fields [@VanRyzin2011,@Morelock2021].
 Additionally, to account for the effect of democratic development on trust, we included the Liberal Democracy Index from the V-Dem dataset by @Coppedge2023 and @Pemstein2023. 
 
+We adopted a Bayesian multilevel model with varying intercepts for each country and each year. The varying intercepts for each country account for heteroskedasticity across countries, while those for each year account for 'time shocks' that impact all countries simultaneously [@Shor2007].
+To capture both short-term and historical effects of predictors, we employed the 'within-between random effects' specification. This approach incorporates the time-invariant country mean and the time-varying difference between each country-year value and this country mean, following @Bell2015 and @Woo2023.
+Measurement uncertainty in the data for trust in bureaucracies, income inequality, and the Corruption Perceptions Index was also incorporated into the analysis [see @Tai2024]. 
+The model was estimated using the brms R package [@Burkner2017].
 
-```{r data_combo}
+
+
+```{r data_combo,eval=FALSE, include=FALSE, results=FALSE}
 
 #Economic data ####
 
@@ -1233,10 +1278,6 @@ data_combo <- theta_summary %>%
               by = c("country", "year")) %>% #why russia has two values?
     left_join(vdem13,
               by = c("country", "year")) %>% 
-    left_join(qog_outcomes,
-              by = c("country", "year")) %>%
-    left_join(who_outcomes,
-              by = c("country", "year")) %>%
     left_join(unodc_homi,
               by = c("country", "year")) %>%
     left_join(economic_data,
@@ -1245,58 +1286,63 @@ data_combo <- theta_summary %>%
     mutate(democracy = ifelse((!is.na(Vdem_regime)) & Vdem_regime < 2, 0, 
                               ifelse((!is.na(Vdem_regime)) & Vdem_regime > 1, 1, Vdem_regime))) 
   
-save(data_combo, file =  here::here("data","data_combo.rda"))
+#save(data_combo, file =  here::here("data","data_combo.rda"))
 
 ```
 
 
-```{r moutcome_qua}
+```{r m_results, include=FALSE,eval=FALSE}
+load(here::here("data","data_combo.rda"))
+
 
 data_combo_all <- data_combo %>%
     dplyr::select(country , year, mean, sd, libdem,libdem_sd, democracy,imf_gdp,imf_gdppc,imf_inflation,
                   wb_unemploy,gini_disp, gini_disp_se, victims_inthomi,cpi, cpi_error,gee) %>%    
-  drop_na(mean:imf_gdppc, gini_disp:icrg_qog) %>%
+  drop_na(mean:imf_gdppc, gini_disp:gee) %>%
     group_by(country) %>% 
-    mutate(
-          
-           gini_mean = mean(gini_disp),
+    mutate( gini_mean = mean(gini_disp),
            gini_mean_se = sqrt(sum(gini_disp_se^2))/
              length(gini_disp),   
            gini_diff = (gini_disp - gini_mean),
-           gini_diff_se = sqrt(gini_disp_se^2 + gini_mean_se^2),
+           gini_diff_se = sqrt(gini_disp_se^2 + gini_mean_se^2)/2,
            gdppc_mean = mean(imf_gdppc/1000),
            gdppc_diff = imf_gdppc/1000 - gdppc_mean,
-              log_inf = sign(imf_inflation) * log(abs(imf_inflation) +1),
-           log_une = log(wb_unemploy),
-           gee_mean = mean(gee),
-           gee_diff = (gee - gee_mean),
+           inf_mean = mean(sign(imf_inflation) * log(abs(imf_inflation) +1)),
+            inf_diff = (sign(imf_inflation) * log(abs(imf_inflation) +1)) - inf_mean,
+            #log_inf = sign(imf_inflation) * log(abs(imf_inflation) +1),
+          # log_une = log(wb_unemploy),
+          unemploy_mean = mean(wb_unemploy),
+          unemploy_diff = wb_unemploy - unemploy_mean,
+           gee_mean = mean(gee*10),
+           gee_diff = (gee*10 - gee_mean),
            cpi_mean = mean(cpi),
            cpi_mean_se = sqrt(sum(cpi_error^2))/
             length(cpi),   
            cpi_diff = (cpi - cpi_mean),
-           cpi_diff_se = sqrt(cpi_error^2 + cpi_mean_se^2),
+           cpi_diff_se = sqrt(cpi_error^2 + cpi_mean_se^2)/2,
             victims_mean = mean(victims_inthomi),
            victims_diff = victims_inthomi - victims_mean,
-            libdem_mean = mean(libdem),
-           libdem_diff = (libdem - libdem_mean)
+            libdem_mean = mean(libdem*100),
+           libdem_diff = libdem*100 - libdem_mean
     ) %>% 
     ungroup()
+
+
 
  m_wgi_gee <- brms::brm(bf(mean*100 | mi(sd*100) ~ 
                            me(gini_mean, gini_mean_se) +
                            me(gini_diff, gini_diff_se) +
-                             gdppc_mean + 
-                          gdppc_diff +
-                            log_inf +
-                         log_une +
-                        victims_mean +  victims_diff +
-                              me(cpi_mean, cpi_mean_se) +
+                             gdppc_mean + gdppc_diff +
+                            inf_mean + inf_diff +
+                            unemploy_mean + unemploy_diff +
+                            victims_mean +  victims_diff +
+                            me(cpi_mean, cpi_mean_se) +
                             me(cpi_diff, cpi_diff_se) +
-                         gee_mean + gee_diff +
-                                 libdem_mean + libdem_diff +
+                             gee_mean + gee_diff +
+                            libdem_mean + libdem_diff +
                               (1 | country) + (1 | year)),  
              data = data_combo_all,
-             backend = "cmdstanr",
+            # backend = "cmdstanr",
              warmup = 1500, 
              iter = 3000, 
              control = list(max_treedepth = 14,
@@ -1305,32 +1351,39 @@ data_combo_all <- data_combo %>%
              cores = 4,
              seed = 313) 
  
-summary(m_wgi_gee) 
+#summary(m_wgi_gee) 
+#summary(m_wgi_gee,prob = 0.9) 
+#summary(m_wgi_gee,prob = 0.8) 
 
-save(m_wgi_gee , file = here::here("output", "m_wgi_gee.rda"))
+#save(m_wgi_gee , file = here::here("output", "m_wgi_gee.rda"))
+#load(here::here("output", "m_wgi_gee.rda"))
 
 ```
 
 
-```{r}
+```{r resplot, fig.cap="Predicting Trust in Bueacracies \\label{model}", fig.height=6, fig.width=7.5}
+
+load(here::here("output", "m_wgi_gee.rda"))
 
 
 named_vars <- tribble(~var_name, ~`.variable`, ~order,
                         "GDPpc, Mean", "b_gdppc_mean", 1,
                         "GDPpc, Difference", "b_gdppc_diff", 2, 
-                        "Inflation (in log)", "b_log_inf", 3,
-                        "Unemployment (in log)", "b_log_une", 4, 
-                        "Security, Mean", "b_victims_mean", 5,
-                        "Security, Difference", "b_victims_diff", 6,
-                     "Level of Liberabl Democracy, Mean", "b_libdem_mean",7,
-                      "Level of Liberabl Democracy, Difference",  "b_libdem_diff",8,
-                      "Government Effectiveness, Mean", "b_gee_mean",9,
-                      "Government Effectiveness, Difference", "b_gee_diff",10,
-                         "Income Inequality, Mean", "bsp_megini_meangini_mean_se", 11,
+                        "Inflation Mean", "b_inf_mean", 3,
+                        "Inflation Difference", "b_inf_diff", 4,
+                        "Unemployment Mean", "b_unemploy_mean", 5, 
+                       "Unemployment Difference", "b_unemploy_diff", 6, 
+                        "Insecurity, Mean", "b_victims_mean", 7,
+                        "Insecurity, Difference", "b_victims_diff", 8,
+                       "Income Inequality, Mean", "bsp_megini_meangini_mean_se", 9,
                         "Income Inequality, Difference",
-                                                  "bsp_megini_diffgini_diff_se", 12,
+                                                  "bsp_megini_diffgini_diff_se", 10,
+                      "Government Effectiveness, Mean", "b_gee_mean",11,
+                      "Government Effectiveness, Difference", "b_gee_diff",12,
                         "Corruption Perception Index, Mean", "bsp_mecpi_meancpi_mean_se", 13,
-                        "Corruption Perception Index, Difference", "bsp_mecpi_diffcpi_diff_se", 14)
+                        "Corruption Perception Index, Difference", "bsp_mecpi_diffcpi_diff_se", 14,
+                      "Level of Liberabl Democracy, Mean", "b_libdem_mean",15,
+                      "Level of Liberabl Democracy, Difference",  "b_libdem_diff",16)
 
  doubled_sd_all <- m_wgi_gee$data %>% 
     select(-`mean * 100`, -mean, -sd,
@@ -1360,21 +1413,17 @@ named_vars <- tribble(~var_name, ~`.variable`, ~order,
     pull(n) %>%
     summary()
 
-```
-
-
-```{r resplot, fig.cap="Predicting Tolerance of Homosexuality \\label{model}", fig.height=6, fig.width=7.5}
-
 ordered <- doubled_sd_all %>%
   pull(var_name) %>% 
   rev()
 
 coef_data_all <- coef_data0_all %>% 
-  mutate(std_coef = round(.value * sd2, 1),
+  mutate(std_coef = round(.value * sd2, 1), #to reflect their variability, making them easier to compare.
          term = factor(var_name, levels = ordered)) %>%
-  ggdist::median_qi(std_coef, .width = c(.8, .9, .95)) %>%
+  ggdist::median_qi(std_coef, .width = c(.95)) %>%
   mutate(ci = paste0(round(.lower, 1), " to ", round(.upper, 1))) %>%
   left_join(doubled_sd_all, ., by = join_by(.variable))
+#This can be particularly useful for interpreting the relative impact of coefficients when considering their uncertainty.
 
 
 coef_data0_all %>% 
@@ -1382,7 +1431,7 @@ coef_data0_all %>%
          term = factor(var_name, levels = ordered)) %>% 
   ggplot(aes(y = term,
              x = std_coef)) +
-  stat_halfeye(.width = c(.8, .9, .95),
+  stat_halfeye(.width = c(.95),
                alpha = .3,
                point_alpha = 1,
                size = 1.2) +
@@ -1390,8 +1439,29 @@ coef_data0_all %>%
   theme_light()  +
   xlab(NULL) +
   ylab(NULL) +
-  plot_annotation(caption = "Notes: Dots indicate posterior means; whiskers, from thickest to thinnest, describe 80%,\n90%, and 95% credible intervals; shading depicts the posterior probability density function.")
+  plot_annotation(caption = "Notes: Dots indicate posterior means; whiskers, from thickest to thinnest, describe \n95% credible intervals; shading depicts the posterior probability density function.")
 ```
+
+The results are presented in Figure\nobreakspace{}\ref{model}.
+In terms of economic outcomes, the increase in GDP per capita is associated with a higher level of trust in civil servants in the short term.
+A two-standard-deviation year-to-year change increases trust by `r get_coef("b_gdppc_diff", results_df = coef_data_all) %>% str_remove("-")` point (95% c.i.:`r get_coef("b_gdppc_diff", results_df = coef_data_all, type = "ci")`).
+Similarly, we find that a two-standard-deviation year-to-year increase in unemployment rate in a short run decreases trust in civil servants by `r get_coef("b_unemploy_diff", results_df = coef_data_all) %>% str_remove("-")` point (95% c.i.:`r get_coef("b_unemploy_diff", results_df = coef_data_all,type = "ci")`).
+Regarding outcomes in public safety, government's performance in public security measured by the number of intentional homicides at the country-year level has a "historical", long-run negative effect on trust in civil servants.
+A two-standard deviation increase in a country's mean public insecurity is associated with `r get_coef("b_victims_mean", results_df = coef_data_all) %>% str_remove("-")` points less trust (95% credible interval: `r get_coef("b_victims_mean", results_df = coef_data_all,type = "ci")` points) across all countries.
+However, we do not find evidence for the either "historical" or short-run effect of inflation and income inequality on trust in civil servants.
+
+With regards of government quality-or process, a higher government effectiveness score was found to have a strong positive long-term effect on trust in civil servants.
+A two-standard deviation increase in a country's mean effectiveness score is associated with `r get_coef("b_gee_mean", results_df = coef_data_all) %>% str_remove("-")` points more trust (95% credible interval: `r get_coef("b_gee_mean", results_df = coef_data_all,type = "ci")` points) across all countries.
+The development of democracy is associated with less trust in civil servants, both in the long run and in the short term.
+Critical citizens in more democratic countries could trust civil servant critically and have a higher demand for them [@Norris1999].
+However, perceived Corruption measured by Corruption perception index was not associated with trust in civil servants across countries at 95% confident interval at the both long-term and short-run and estimates are close to zero.
+
+We find evidence for both arguments on government outcomes and government quality. 
+Among predictors, compared to economic and public security outcomes, such as year-to-year GDP per capita, unemployment and countries' mean insecurity, government quality or process, measured by countries' mean government effectiveness and mean democratic development, has more substantive effects in long run.
+
+
+# Conclusion {.unlisted .unnumbered}
+
 
 # References {.unnumbered}
 
