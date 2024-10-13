@@ -71,7 +71,7 @@ header-includes:
 
 ```{=tex}
 \begin{abstract}
-blah blah blah
+Trust in civil servants is essential for effective governance, enabling policy implementation, public service delivery, and compliance. However, comparative public administration research is often hindered by the lack of comparable trust measures across countries and time. To address this gap, based on 132 national and cross-national surveys from 98 countries spanning 1986 to 2022, we employ an advanced latent-variable modeling technique to meausure trust in civil servants.  Our measures reveal variations in trust both within and between countries. Our analysis indicates that economic performance and public security enhance trust in the short term, whereas government quality and effectiveness have more enduring, long-term impacts on trust in civil service.This study contributes to the field of comparative public administration by providing a robust, longitudinal dataset on trust in civil service, facilitating the exploration of the dynamic relationship between trust and various governance factors and enabling more accurate testing of theoretical models. 
 \end{abstract}
 ```
 \pagebreak
@@ -1131,6 +1131,8 @@ To sum up, the evidence of construct validation of TCS scores agains the perceiv
 
 \pagebreak
 
+# Explaining Trust in Civil Servants
+
 With our time-series cross-national data on trust in bureaucracies, we combine both outcome and quality indicators to examine the factors influencing this trust.
 For outcome indicators, we followed previous studies and used GDP per capita, inflation, and unemployment from 1984 to 2022 as measures of macroeconomic performance.
 GDP per capita and inflation data were sourced from the International Monetary Fund, while unemployment data were collected from the World Bank, which uses modeled International Labour Organization estimates.
@@ -1474,6 +1476,24 @@ Among predictors, compared to economic and public security outcomes, such as yea
 
 
 # Conclusion {.unlisted .unnumbered}
+
+The study of comparative public administration has long been hindered by the lack of comparable measures across countries and over time.
+Specifically, the scarcity of comparable data on trust in civil servants complicates the testing of competing theories regarding the determinants of such trust, leading to inconsistent findings.
+
+In this research, we employ a state-of-the-art latent-variable model [@Solt2020c] to develop a dynamic comparative measure of trust in civil servants.
+Our measures reveal significant variations in trust both within and across countries over time.
+For example, Asian countries with a history of meritocracy and rapid economic development, such as China and Singapore, as well as least corrupt countries like Switzerland and Norway, exhibit high levels of trust in civil servants.
+In contrast, countries plagued by widespread corruption or high crime rates, like Venezuela, Mexico, and Peru, show the lowest levels of trust.
+Within individual countries, some—like Germany and the United States—have experienced steady increasing or declining trends in trust, while others maintain consistently high or low levels, as seen in Luxembourg and Mexico, or display fluctuations, as observed in Spain and Turkey.
+These variations pose challenges for explaining the causes and consequences of trust in bureaucracies within a comparative context, while also providing opportunities for in-depth exploration of these changes in specific contexts.
+
+Our analysis of time series cross-sectional data indicates that trust in civil servants is positively influenced by economic performance and public security in the short term.
+However, long-term trust is more strongly enhanced by government quality and effectiveness in service delivery, policy formation, and implementation.
+
+While this study focuses on the determinants of trust in bureaucracy, the publicly accessible Trust in Civil Servants (TCS) dataset we provide opens opportunities for future research to explore the consequences of trust in civil servants.
+Researchers can leverage the TCS dataset to examine how varying levels of trust influence governance such as policy implementation effectiveness, citizen compliance with regulations, and overall public satisfaction with government services.
+Moreover, the longitudinal nature of the dataset facilitates the study of temporal dynamics, enabling researchers to assess how changes in trust over time correlate with shifts in government's policy priorities, governance reforms, or public policy preferences.
+Overall, by providing a robust and comparable measure across countries and over time, the TCS dataset serves as a valuable resource for testing  theoretical models that link trust to aspects of public administration and governance.
 
 
 # References {.unnumbered}
