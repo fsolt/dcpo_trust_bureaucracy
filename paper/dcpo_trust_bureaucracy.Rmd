@@ -299,8 +299,8 @@ set.seed(324)
 ```
 
 Despite the long-standing call for comparative studies in public administration, much of the field remains focused on national contexts.
-However, as long as public administration research fails to be comparative, claims for a "science of public administration" remain unconvincing [@Dahl1947, pp. 8].
-While comparative studies offer valuable insights and innovative concepts, they face significant methodological challenges [@Pollitt2011], with measurement equivalence being one of the most critical.
+Without comparative research, claims for a "science of public administration" remain unconvincing [@Dahl1947, pp. 8].
+Comparative studies offer valuable insights and innovative concepts but face significant methodological challenges [@Pollitt2011], with measurement equivalence being one of the most critical.
 Specifically, non-equivalent measures across countries pose a serious threat to comparative public administration study, yielding biased results, wrong theoretical conclusions, and misleading policy implications [@Jilke2015].
 
 The challenge of non-comparable data is particularly evident in public administration survey research.
@@ -317,11 +317,12 @@ This dataset provides comparable estimates of public trust in civil servants acr
 We validate the TCS data by demonstrating strong correlations with individual survey items and related measures of perceived corruption and trust in other political institutions.
 
 Using the TCS data, we conduct a cross-national time-series analysis to examine competing theories on trust in civil servants, focusing on government outcomes versus government quality.
-Our findings reveal that while government outcomes (e.g., economic performance and public security) have short-term effects, government quality (e.g., effectiveness) exerts more significant, long-lasting effects on trust in civil servants.
-This suggests that both factors are important, but the quality of governance has a more enduring impact.
+We find that government outcomes, such as economic performance and public security, have short-term effects on trust, while government quality including effectiveness, exerts more significant, enduring effects.
+This underscores that while both factors are important, the quality of governance plays a long-term role in fostering trust in civil servants.
 
 Our study contributes to comparative public administration studies by providing valid, comparable longitudinal data on trust in civil servants. 
-We expect this dataset will enrich cross-national research and facilitate more robust investigations into the causes and consequences of trust in civil servants across different contexts.
+The TCS dataset is poised to enrich cross-national research and enable more robust investigations into the causes and consequences of trust in civil servants across diverse contexts.
+
 
 ```{r dcpo_input_raw, include=FALSE, eval=FALSE}
 surveys_tb <- read_csv(here::here("data-raw",
@@ -336,13 +337,31 @@ dcpo_input_raw <- DCPOtools::dcpo_setup(vars = surveys_tb,
                                                      "dcpo_input_raw.csv"))
 ```
 
+
 ```{r tb_summary_stats}
 surveys_tb <- read_csv(here::here("data-raw",
                                   "surveys_bureaucracy.csv"),
                        col_types = "cccccc")
 
+
+n_raw_survey <- surveys_tb %>%
+  distinct(survey) %>% 
+  nrow()
+
 dcpo_input_raw <- read_csv(here::here("data", "dcpo_input_raw.csv"),
                                   col_types = "cdcddcd")
+
+n_raw_country <- dcpo_input_raw %>%
+  distinct(country) %>% 
+  nrow()
+
+n_raw_year <- dcpo_input_raw %>%
+  distinct(year) %>% 
+  nrow()
+
+n_raw_item <- dcpo_input_raw %>%
+  distinct(item) %>% 
+  nrow()
 
 process_dcpo_input_raw <- function(dcpo_input_raw_df) {
   dcpo_input_raw_df %>% 
@@ -426,15 +445,19 @@ A relatively consistent finding across studies is the significant role of corrup
 The critical influence of perceived corruption and corruption control on public trust in civil servants is also supported by @Houston2016 and @Morelock2021.
 However, since authors used different measures and modeling strategies, such as whether to include both outcomes and quality indicators in one model, it remains unclear how consistent these results would be if a uniform modeling strategy were used.
 
-Given these mixed results from studies on outcomes and quality in relation to trust, researchers acknowledge common limitations: limited country coverage, reliance on cross-sectional rather than dynamic analysis, and difficulties in obtaining comparable measures across countries or regions [@VanRyzin2011; @Houston2016;@Choi2018; @Morelock2021;@VandeWalle2022].
-These limitations in comparative data and the lack of time-series data hinder a deeper understanding of the relationship between government outcomes, quality, and trust in bureaucracies.
+These mixed results reflect limitations in comparative data, including limited country coverage, reliance on cross-sectional rather than dynamic analysis, and the absence of comparable measures across countries or regions [@VanRyzin2011; @Houston2016;@Choi2018; @Morelock2021;@VandeWalle2022].
+These shortcomings hinder a deeper understanding of the relationship between government outcomes, quality, and trust in bureaucracies.
 
-To overcome these data limitations, we measured trust in civil servants cross-nationally and examined the competing theories on the sources of trust in civil servants .
+To overcome these challenges, we built the trust in civil servants (TCS) dataset, providing a dynamic, cross-national measure and enables rigorous testing of competing theories on the sources of trust in civil servants.
+
 
 # Examining the Source Data on Trust in Bureaucracy
 
-National and cross-national surveys have asked questions on trust attitudes toward public administrations over the past half-century, but the resulting data are both sparse, that is, unavailable for many countries and years, and incomparable, generated by many different survey items.
-In all, we identified `r n_items` such survey items that were asked in no fewer than five country-years in countries surveyed at least twice; these items were drawn from `r n_surveys` different survey datasets.^[
+Over the past half-century, many national and cross-national surveys have asked questions on trust attitudes toward public administrations.
+However, these data are sparse-unavailable for many countries and years-and incomparable, derived from different survey items.
+To construct a dynamic and comparable trust dataset, we undertook an extensive effort to collect and compile relevant survey questions.
+This involved a systematic review of `r n_raw_survey` unique survey projects spanning `r n_raw_country` countries over `r n_raw_year` year to maximize broad geographic and temporal coverage and  `r n_raw_item` unique survey questions in capturing public attitudes toward trust in civil servants.
+To minimize the noise from the sparse data and increase comparability, drawn from the raw data, we followed a common approach [@Woo2023a] and filtered out `r n_items` survey items that were asked in no fewer than five country-years in countries surveyed at least twice.^[
 The complete list of trust in civil servants/public administration survey items is included in online Appendix A.]
 
 Together, the survey items in the source data were asked in `r n_countries` different countries in at least two time points over `r n_years` years, from 1986 to 2022, yielding a total of `r n_cyi` country-year-item observations.
