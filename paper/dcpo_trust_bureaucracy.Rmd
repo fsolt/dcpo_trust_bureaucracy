@@ -426,11 +426,10 @@ A relatively consistent finding across studies is the significant role of corrup
 The critical influence of perceived corruption and corruption control on public trust in civil servants is also supported by @Houston2016 and @Morelock2021.
 However, since authors used different measures and modeling strategies, such as whether to include both outcomes and quality indicators in one model, it remains unclear how consistent these results would be if a uniform modeling strategy were used.
 
-Given these mixed results from studies on outcomes and quality in relation to trust, researchers acknowledge common limitations: limited country coverage, reliance on cross-sectional rather than dynamic analysis, and difficulties in obtaining comparable measures across countries or regions [@VanRyzin2011, @Houston2016,@Choi2018, @Morelock2021,@VandeWalle2022].
+Given these mixed results from studies on outcomes and quality in relation to trust, researchers acknowledge common limitations: limited country coverage, reliance on cross-sectional rather than dynamic analysis, and difficulties in obtaining comparable measures across countries or regions [@VanRyzin2011; @Houston2016;@Choi2018; @Morelock2021;@VandeWalle2022].
 These limitations in comparative data and the lack of time-series data hinder a deeper understanding of the relationship between government outcomes, quality, and trust in bureaucracies.
 
 To overcome these data limitations, we measured trust in civil servants cross-nationally and examined the competing theories on the sources of trust in civil servants .
-
 
 # Examining the Source Data on Trust in Bureaucracy
 
@@ -607,7 +606,6 @@ n_data_poor <- {data_poorest %>%
 (countries_plot + cby_plot) / (ybc_plot)
 ```
 
-\pagebreak
 ```{r obs, fig.cap = "Source Data Observations by Country and Year \\label{obs_by_cy}", fig.height = 9}
 dcpo_input_raw1 %>% 
   mutate(country = str_replace(country, "’", "'")) %>% 
@@ -1027,8 +1025,8 @@ ext_wvs_gov_plot + ext_evs_parl_plot + ext_lb_courts_plot +
 ```
 
 Figure\nobreakspace{}\ref{ext_val1} present three 'external' convergent validation tests, comparing TCS scores to responses to survey items that were *not* included in the source data: items that asked respondents' confidence and trust in national government,  parliament, and judiciary in their countries.
-There is a longstanding debate about the dimentionality of political trust [@Easton1965, @Marien2011,@Norris2011,@Rothstein2008,@Tai2022role].
-Although trust in civil servants has been theoretically classified into the same dimentionality with either all these three types of trust[@Marien2011,@Hooghe2011], or one of them [@Norris2011,@Rothstein2008,@Tai2022role], our validations empirically show the importance of taking trust in civil servants separately an seriously. 
+There is a longstanding debate about the dimentionality of political trust [@Easton1965; @Marien2011; @Norris2011;@Rothstein2008;@Tai2022role].
+Although trust in civil servants has been theoretically classified into the same dimentionality with either all these three types of trust[@Marien2011;@Hooghe2011], or one of them [@Norris2011;@Rothstein2008;@Tai2022role], our validations empirically show the importance of taking trust in civil servants separately an seriously. 
 
 In the left panel, we plot TCS score against data from seven rounds of World Value Survey, which asked respondents how much they trust their national government.
 The center plot shows data from European Values Surveys asking respondents' confidence in parliament.
@@ -1117,9 +1115,8 @@ ext_wvs_cor_plot + ext_cor_plot + ext_issp_cor_plot + patchwork::plot_annotation
 ```
 
 We then conduct construct validation in Figure\nobreakspace{}\ref{ext_val2}.
-
 Construct validation assesses whether a given indicator is empirically correlated with other indicators in a way that conforms to theoretical expectations [@Adcock2001, 542].
-Corruption is often often argued as a likely contributor to trust in civil servants and administration [see, e.g., @Anderson2003, @VanRyzin2011,@VandeWalle2022].
+Corruption is often often argued as a likely contributor to trust in civil servants and administration [see, e.g., @Anderson2003; @VanRyzin2011;@VandeWalle2022].
 The left panel compares perceived widespread of corruption, measured as the percentage of those saying most or state authorities are involved in corruption in seven WVS surveys, with the TCS scores.
 As theoretical expectation, there is a clear negative relationship between the spread of perceived corruption and TCS: when there is widespread perception of corruption in authorities, the public tends to distrust civil servants.
 The center and right panel of Figure\nobreakspace{}\ref{ext_val2} also present negative relationships between TCS scores and the spread of perceived corruption of government officials cross different geographic regions.
@@ -1127,9 +1124,6 @@ The center panel shows the data in developing or new democratic countries survey
 
 To sum up, the evidence of construct validation of TCS scores agains the perceived widespread of corruption in Figure\nobreakspace{}\ref{ext_val2}, together with the evidence of external validation in Figure\nobreakspace{}\ref{ext_val1} and convergent validation in Figure \nobreakspace{}\ref{internal_val}, demonstrates the validity of the TCS scores as measures of the public's trust in civil servants. 
 
-
-
-\pagebreak
 
 # Explaining Trust in Civil Servants
 
@@ -1141,12 +1135,12 @@ To measure income inequality, we relied on @Solt2020's Standardized World Income
 For quality of government indicators, we used the Corruption Perceptions Index from Transparency International, covering the years 1995 to 2022, to capture the perceived level of corruption.
 We also focused on the Government Effectiveness indicator from the World Bank's Worldwide Governance Indicators, as it encompasses the overall quality of public services, the civil service, and policy formulation and implementation.
 
-To further leverage our trust data, we collected the number of intentional homicides at the country-year level from the United Nations Office on Drugs and Crime, capturing outcomes in public safety, given that macroeconomic outcomes do not represent government performance in other fields [@VanRyzin2011,@Morelock2021].
+To further leverage our trust data, we collected the number of intentional homicides at the country-year level from the United Nations Office on Drugs and Crime, capturing outcomes in public safety, given that macroeconomic outcomes do not represent government performance in other fields [@VanRyzin2011;@Morelock2021].
 Additionally, to account for the effect of democratic development on trust, we included the Liberal Democracy Index from the V-Dem dataset by @Coppedge2023 and @Pemstein2023. 
 
 We adopted a Bayesian multilevel model with varying intercepts for each country and each year. The varying intercepts for each country account for heteroskedasticity across countries, while those for each year account for 'time shocks' that impact all countries simultaneously [@Shor2007].
 To capture both short-term and historical effects of predictors, we employed the 'within-between random effects' specification. This approach incorporates the time-invariant country mean and the time-varying difference between each country-year value and this country mean, following @Bell2015 and @Woo2023.
-Measurement uncertainty in the data for trust in bureaucracies, income inequality, and the Corruption Perceptions Index was also incorporated into the analysis [see @Tai2024]. 
+Measurement uncertainty in the data for trust in bureaucracies, income inequality, and the Corruption Perceptions Index was also incorporated into the analysis (see @Tai2024). 
 The model was estimated using the brms R package [@Burkner2017].
 
 
