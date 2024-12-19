@@ -648,25 +648,25 @@ In the next section, we describe how we leveraged this sparse and incomparable s
 # Estimating Trust in Civil Servants
 
 Several latent-variable models of public opinion based on cross-national survey data have been developed recently [see @Claassen2019; @Caughey2019; @McGann2019; @Kolczynska2020].
-To estimate trust in civil servants across countries and over time, we employ the latest of these methods that is appropriate for data that is not only incomparable but also sparse, the Dynamic Comparative Public Opinion (DCPO) model elaborated in @Solt2020c.^[
+To estimate trust in civil servants across countries and over time, we employ the recent and suitable method for handling data that is both incomparable and sparse: the Dynamic Comparative Public Opinion (DCPO) model built in @Solt2020c.^[
 The DCPO model provides a better fit to survey data than the models proposed in @Claassen2019 or @Caughey2019 [@Solt2020c].
 The model put forward in @McGann2019 depends on dense survey data unlike the sparse data on trust in civil servants just described.
 Building on all of these four works, @Kolczynska2020 is the very most recent effort, but the multilevel regression and post-stratification (MRP) approach it offers depends both on dense survey data and on additional data describing population characteristics, so it too is inappropriate for our purposes here.]
-The DCPO model is a population-level two-parameter ordinal logistic item response theory (IRT) model with country-specific item-bias terms.
-For more information on the DCPO model, see Appendix B and @Solt2020c [, 3-8]; in this section, we focus on how it deals with the principal issues raised by our source data, incomparability and sparsity.
+The DCPO model, a population-level two-parameter ordinal logistic item response theory (IRT) model, address the two principal challenges posed by our source data: incomparability and sparsity.
 
 The DCPO model accounts for the incomparability of different survey questions with two parameters.
 First, it incorporates the _difficulty_ of each question's responses, that is, how much trust in civil servants is indicated by a given response. 
-That each response reveals more or less of our latent trait is easily seen with regard to ordinal responses to the same question: strongly agreeing with the statement "you can generally trust the people who run our government to do what is right," exhibits more trust in civil servants than simply agreeing, which shows more trust than responding "disagree," which in turn is a more trusting response than "strongly disagree."
-But this is likely to also be true across questions.
+The extent to which each response reflects the latent trait is most clearly demonstrated through ordinal responses to the same question: strongly agreeing with the statement "Most government administrators (civil servants) can be trusted to do what is best for the country," exhibits more trust in civil servants than simply agreeing, which shows more trust than responding "disagree," which in turn is a more trusting response than "strongly disagree."
+This logic extends across different questions as well.
 For example, expressing "great trust" in civil servants "to look after your interests" likely expresses even more trust than just strongly agreeing that civil servants can be trusted to do what is right.
 Second, the DCPO model accounts for each question's _dispersion_, its noisiness with regard to our latent trait.
 The lower a question's dispersion, the better that changes in responses to the question map onto changes in trust of civil servants.
 Together, the model's difficulty and dispersion estimates work to generate comparable estimates of the latent variable of trust in civil servants from the available but incomparable source data.
 
-To address the sparsity of the source data---the fact that the time series for each country has gaps, and many country-years that are observed have available only one item---DCPO uses random-walk priors for each country.
-That is, within each country, each year's value of trust in civil servants is modeled as the previous year's estimate plus a random shock.
-The random walk priors smooth the estimates of trust in civil servants over time and allow---at the cost of greater measurement uncertainty---estimates to be generated even in years for which little or no data is available.
+To address the sparsity of the source data, characterized by gaps in the time series for each country and many country-years with only a single available item, the DCPO model employs random-walk priors for each country.
+This means that within each country, a given year's trust level is modeled as the previous year's estimate plus a random shock.
+These random-walk priors smooth trust estimates over time, allowing the generation of estimates even for years with little or no data, albeit with greater measurement uncertainty.
+For more information on the DCPO model, see Appendix B and @Solt2020c [, 3-8].
 
 ```{r dcpo_input, eval=FALSE, include=FALSE, results=FALSE}
 dcpo_input <- DCPOtools::format_dcpo(dcpo_input_raw1,
