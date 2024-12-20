@@ -652,7 +652,7 @@ To estimate trust in civil servants across countries and over time, we employ th
 The DCPO model provides a better fit to survey data than the models proposed in @Claassen2019 or @Caughey2019 [@Solt2020c].
 The model put forward in @McGann2019 depends on dense survey data unlike the sparse data on trust in civil servants just described.
 Building on all of these four works, @Kolczynska2020 is the very most recent effort, but the multilevel regression and post-stratification (MRP) approach it offers depends both on dense survey data and on additional data describing population characteristics, so it too is inappropriate for our purposes here.]
-The DCPO model, a population-level two-parameter ordinal logistic item response theory (IRT) model, address the two principal challenges posed by our source data: incomparability and sparsity.
+The DCPO model, a population-level two-parameter ordinal logistic item response theory (IRT) model with country-specific item-bias terms, addresses the two principal challenges posed by our source data: incomparability and sparsity.
 
 The DCPO model accounts for the incomparability of different survey questions with two parameters.
 First, it incorporates the _difficulty_ of each question's responses, that is, how much trust in civil servants is indicated by a given response. 
