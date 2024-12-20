@@ -648,7 +648,7 @@ In the next section, we describe how we leveraged this sparse and incomparable s
 # Estimating Trust in Civil Servants
 
 Several latent-variable models of public opinion based on cross-national survey data have been developed recently [see @Claassen2019; @Caughey2019; @McGann2019; @Kolczynska2020].
-To estimate trust in civil servants across countries and over time, we employ the recent and suitable method for handling data that is both incomparable and sparse: the Dynamic Comparative Public Opinion (DCPO) model built in @Solt2020c.^[
+To estimate trust in civil servants across countries and over time, we employ the recent and suitable method for handling data that is both incomparable and sparse: the Dynamic Comparative Public Opinion (DCPO) model built by @Solt2020c.^[
 The DCPO model provides a better fit to survey data than the models proposed in @Claassen2019 or @Caughey2019 [@Solt2020c].
 The model put forward in @McGann2019 depends on dense survey data unlike the sparse data on trust in civil servants just described.
 Building on all of these four works, @Kolczynska2020 is the very most recent effort, but the multilevel regression and post-stratification (MRP) approach it offers depends both on dense survey data and on additional data describing population characteristics, so it too is inappropriate for our purposes here.]
@@ -813,7 +813,8 @@ bottom5 <- p1_data %>%
 We estimated the model using the `DCPOtools` package for R [@Solt2020a], running four chains for 1,000 iterations each and discarding the first half as warmup, which left us with 2,000 samples.
 The $\hat{R}$ diagnostic had a maximum value of 1.01, indicating that the model converged.
 The dispersion parameters of the survey items indicate that all of our source data items load well on the latent variable (see Appendix A).
-The result is estimates, in all `r res_cy` country-years spanned by the source data, of the citizenry's aggregate trust in civil servants, what we call TCS scores.
+
+The result is estimates, in all `r res_cy` country-years spanned by the source data, of public trust in civil servants, what we call TCS scores.
 Figure\nobreakspace{}\ref{cs_mry} displays the most recent available TCS score for each of the `r res_c` countries and territories in the dataset.
 
 Asian countries, especially those with a history of meritocracy, dominate the top of the list.
@@ -822,10 +823,10 @@ On the other hand, the latest scores for `r bottom5` have them as the places whe
 The bottom-ranked countries are either among the most corrupt, like Venezuela, or have high crime rates, like Peru and Honduras.
 
 ```{r ts, fig.cap="TCS Scores Over Time Within Selected Countries \\label{ts_plots}", fig.height=3.5}
-countries <- c("Philippines", "Switzerland", "Germany", "Finland",
-               "Russia", "United Kingdom", "Belgium", "Spain",
-               "Japan", "Italy", "United States", "Chile",
-               "South Korea", "Greece", "Argentina", "Mexico")
+countries <- c("Germany","United States","Switzerland","Finland",
+               "United Kingdom", "Greece", "Australia","New Zealand", 
+               "China",  "Japan", "South Korea", "Philippines", 
+               "Algeria", "Chile", "Argentina", "Mexico")
 
 countries2 <- countries %>% 
   str_replace("United States", "U.S.") %>% 
@@ -855,10 +856,10 @@ ggplot(data = c_res, aes(x = year, y = mean)) +
 
 We show the changes of TCS over time in sixteen countries in Figure\nobreakspace{}\ref{ts_plots}.
 As displayed in Figure\nobreakspace{}\ref{cs_mry}, the dataset covers a wide geographic breadth, allowing comparative studies of countries and regions too often neglected [see @Wilson2021].
-Figure\nobreakspace{}\ref{ts_plots} also shows that while trust in civil servants has risen prominently in some countries, such as Russia, trusting attitudes have been fairly constant over time in others, like Greece, or fallen steadily, as in South Korea. 
-They have advanced and retreated as in the United Kingdom or have declined and recovered as in the Philippines.
-Together, the differences within countries over time and the differences across countries present a challenge to theories on the causes and consequences of trust in bureaucracies. 
-
+Figure\nobreakspace{}\ref{ts_plots} also shows that trust in civil servants has risen prominently in some countries, such as Germany and New Zealand, while remaining fairly constant over time in others, like Greece and Australia. 
+In contrast, TCS scores have fallen steadily in countries such as South Korea and the United States. 
+Some countries exhibit fluctuations, as seen in the United Kingdom, where trust has advanced and retreated, or the Philippines, where trust has declined and later recovered.
+Together, the differences within countries over time and the differences across countries present a challenge to theories on the causes and consequences of trust in civil servants. 
 
 # Validating Trust in Civil Servants
 
@@ -1370,12 +1371,12 @@ data_combo_all <- data_combo %>%
 ```{r resplot, fig.cap="Predicting Trust in Bureaucracies \\label{model}", fig.height=6, fig.width=7.5}
 
 # Define OSF_PAT in .Renviron: https://docs.ropensci.org/osfr/articles/auth
-if(!file.exists(here::here("data", "m_wgi_gee.rda"))) {
-  dir.create(here::here("data"), showWarnings = FALSE, recursive = TRUE)
-  osf_retrieve_node("82w36") %>% 
-    osf_ls_files(pattern = "m_wgi_gee") %>% 
-    osf_download(path = here::here("data"))
-}
+#if(!file.exists(here::here("data", "m_wgi_gee.rda"))) {
+#  dir.create(here::here("data"), showWarnings = FALSE, recursive = TRUE)
+#  osf_retrieve_node("82w36") %>% 
+#    osf_ls_files(pattern = "m_wgi_gee") %>% 
+#    osf_download(path = here::here("data"))
+#}
 
 
 
