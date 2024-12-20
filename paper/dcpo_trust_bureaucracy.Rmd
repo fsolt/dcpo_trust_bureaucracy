@@ -935,14 +935,14 @@ Figure\nobreakspace{}\ref{internal_val} shows the measure's validity in tests of
 We started with 'internal' convergent validation test [see, e.g., @Caughey2019, 689; @Solt2020c, 10] by comparing our TCS score with individual items from source-data to generate them. 
 
 The left panel in Figure\nobreakspace{}\ref{internal_val} shows a scatterplot of country-years in which the TCS scores are plotted against the percentage of respondents who expressed "a quite a lot "or "a great deal" of trust in response to the question: "I am going to name a number of institutions. For each one, could you tell me how much trust you have in them. Is it a great deal of trust, some trust, not very much trust or none at all? Civil service."
+The strong correlation (R = 0.93) indicates that TCS scores effectively capture variations in trust in civil service across country-years.
 
 The middle panel plots our TCS score against the percentage who responded "Tend to trust." to the question, "I would like to ask you a question about how much trust you have in certain institutions. For each of the following institutions, please tell me if you tend to trust it or tend not to trust it: Public administration in (OUR COUNTRY)" in the Eurobarometer 96.3 January-February 2022 module.
-This question is asked in the most countries compared to other single cross-national surveys.
+This question is asked in the most countries, and the strong correlation demonstrates the broad applicability of the TCS scores in capturing trust across diverse contexts.
 
 Finally, the right panel compares the trend of the longest item that has been asked since 1973 in U.S.General Social Survey, "I am going to name some institutions in this country. As far as the people running these institutions are concerned, would you say you have a great deal of confidence, only some confidence, or hardly any confidence at all in them? Executive branch of the federal government." to the trend of the TCS scores.
-The TCS scores effectively reflect changes of trust in executive branch over time.
+The TCS scores closely align with trends in trust in the executive branch over time, effectively capturing historical changes in trust. 
 
-All three demonstrations show strong correlations between TCS and individual items, estimated taking into account the uncertainty in the measures. 
 
 ```{r ext_val1_dat, eval=FALSE}
 ext_dat1 <- read_csv(here("data-raw",
@@ -1024,15 +1024,14 @@ ext_wvs_gov_plot + ext_evs_parl_plot + ext_lb_courts_plot +
 ```
 
 Figure\nobreakspace{}\ref{ext_val1} present three 'external' convergent validation tests, comparing TCS scores to responses to survey items that were *not* included in the source data: items that asked respondents' confidence and trust in national government,  parliament, and judiciary in their countries.
-There is a longstanding debate about the dimentionality of political trust [@Easton1965; @Marien2011; @Norris2011; @Rothstein2008; @Tai2022role].
-Although trust in civil servants has been theoretically classified into the same dimentionality with either all these three types of trust[@Marien2011; @Hooghe2011], or one of them [@Norris2011; @Rothstein2008; @Tai2022role], our validations empirically show the importance of taking trust in civil servants separately an seriously. 
-
 In the left panel, we plot TCS score against data from seven rounds of World Value Survey, which asked respondents how much they trust their national government.
 The center plot shows data from European Values Surveys asking respondents' confidence in parliament.
 The right presents the percentage of respondents who expressed at least some trust in judiciary in their country in Latinobarometro.
 Our measure positively correlated with all of them, with a stronger correlation with trust in national government and mild correlation with trust in parliament and judiciary.
 
-The general strong relationship between the TCS measure and institutional trust confirms the theoretical expectation about institutional trust, but the variation in the relationship between TCS and trust in different institutions across regions is worth further investigation to refine the dimensions in political trust. 
+There is a longstanding debate about the dimentionality of political trust [@Easton1965; @Marien2011; @Norris2011; @Rothstein2008; @Tai2022role].
+Trust in civil servants has been theoretically grouped within the same dimension as all three types of institutional trust [@Marien2011; @Hooghe2011], or one of them [@Norris2011; @Rothstein2008; @Tai2022role].
+However, the variation in correlations between TCS scores and trust in different institutions requires empirical analysis of political trust's dimensions.
 
 
 ```{r ext_val2_dat, eval=FALSE}
@@ -1116,9 +1115,11 @@ ext_wvs_cor_plot + ext_cor_plot + ext_issp_cor_plot + patchwork::plot_annotation
 We next conduct tests of construct validation in Figure\nobreakspace{}\ref{ext_val2}.
 Construct validation assesses whether a given indicator is empirically correlated with other indicators in a way that conforms to theoretical expectations [@Adcock2001, 542].
 Corruption is often often argued as a likely contributor to distrust in civil servants and public administration [see, e.g., @Anderson2003; @VanRyzin2011; @VandeWalle2022].
+
+
 The left panel compares perceived widespread of corruption, measured as the percentage of those saying most or state authorities are involved in corruption in seven waves of the WVS, with the TCS scores.
-As theoretical expectation, there is a clear negative relationship between the spread of perceived corruption and the TCS scores: when there is widespread perception of corruption in authorities, the public tends to distrust civil servants.
-The center and right panel of Figure\nobreakspace{}\ref{ext_val2} also present negative relationships between TCS scores and the spread of perceived corruption of government officials across different geographic regions.
+As anticipated, there is a clear negative relationship between the spread of perceived corruption and the TCS scores: when there is widespread perception of corruption in authorities, the public tends to distrust civil servants.
+The similar negative correlations between TCS scores and perceived corruption among government officials are also perceived in the center and right panel of Figure\nobreakspace{}\ref{ext_val2}, which used data from different regions.
 The center panel shows the data in developing or newly democratic countries surveyed in the Asian Barometer, the New Europe Barometer, and the Latinobarometro, and the right panel displays the data in countries surveyed in the International Social Survey Programme Citizenship module (2004, 2014).
 
 To sum up, the evidence of construct validation of TCS scores against the perceived widespread of corruption in Figure\nobreakspace{}\ref{ext_val2}, together with the evidence of external validation in Figure\nobreakspace{}\ref{ext_val1} and convergent validation in Figure \nobreakspace{}\ref{internal_val}, demonstrates the validity of the TCS scores as measures of the public's trust in civil servants. 
