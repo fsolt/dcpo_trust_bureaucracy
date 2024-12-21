@@ -1127,21 +1127,23 @@ To sum up, the evidence of construct validation of TCS scores against the percei
 
 # Explaining Trust in Civil Servants
 
-With our time-series cross-national data on trust in bureaucracies, we combine both outcome and quality indicators to examine the factors influencing this trust.
+With our time-series cross-national data on trust in civil servants, we combined both outcome and quality indicators to examine the factors influencing this trust.
 For outcome indicators, we followed previous studies and used GDP per capita, inflation, and unemployment from 1984 to 2022 as measures of macroeconomic performance.
 GDP per capita and inflation data were sourced from the International Monetary Fund, while unemployment data were collected from the World Bank, which uses modeled International Labour Organization estimates.
 To measure income inequality, we relied on the Standardized World Income Inequality Database (SWIID) presented in @Solt2020, specifically the Gini index of inequality in disposable income.
 
-For quality of government indicators, we used the Corruption Perceptions Index from Transparency International, covering the years 1995 to 2022, to capture the perceived level of corruption.
-We also included the Government Effectiveness indicator from the World Bank's Worldwide Governance Indicators, as it encompasses the overall quality of public services, the civil service, and policy formulation and implementation.
+For quality of government indicators, we included the Corruption Perceptions Index from Transparency International, covering the years 1995 to 2022, to capture the perceived level of corruption.
+We also used the Government Effectiveness indicator from the World Bank's Worldwide Governance Indicators, as it reflects the overall quality of public services, the civil service, and policy formulation and implementation.
 
-To further leverage our trust data, we collected the number of intentional homicides at the country-year level from the United Nations Office on Drugs and Crime, capturing outcomes in public safety, given that macroeconomic outcomes do not represent government performance in other fields [@VanRyzin2011; @Morelock2021].
-Additionally, to account for the effect of democratic development on trust, we included the Liberal Democracy Index from the V-Dem dataset by @Coppedge2023 and @Pemstein2023. 
+To further leverage our trust data, we collected the number of intentional homicides at the country-year level from the United Nations Office on Drugs and Crime, capturing outcomes in public safety, given that macroeconomic outcomes do not represent government performance in other critical fields [@VanRyzin2011; @Morelock2021].
+To account for the effect of democratic development on trust, we included the Liberal Democracy Index from the V-Dem dataset[@Coppedge2023; @Pemstein2023]. 
 
-We adopted a Bayesian multilevel model with varying intercepts for each country and each year. The varying intercepts for each country account for heteroskedasticity across countries, while those for each year account for 'time shocks' that impact all countries simultaneously [@Shor2007].
-To capture both short-term and historical effects of predictors, we employed the 'within-between random effects' specification, following @Bell2015 and @Woo2023.
-This approach incorporates the time-invariant country mean and the time-varying difference between each country-year value and this country mean.
-Measurement uncertainty in the data for trust in bureaucracies, income inequality, and the Corruption Perceptions Index was also incorporated into the analysis (see @Tai2024). 
+We adopted a Bayesian multilevel model with varying intercepts for each country and each year.
+The varying intercepts for each country account for heteroskedasticity across countries, while those for each year account for 'time shocks' that impact all countries simultaneously [@Shor2007].
+To differentiate between short-term and historical effects, we used the 'within-between random effects' specification as described by @Bell2015 and @Woo2023.
+This approach models the time-invariant country mean alongside the time-varying difference from this mean for each country-year.
+
+Finally, we addressed measurement uncertainty in the data for trust in bureaucracies, income inequality, and the Corruption Perceptions Index by incorporating it directly into the analysis (see @Tai2024). 
 The model was estimated using the `brms` R package [@Burkner2017].
 
 ```{r data_combo,eval=FALSE, include=FALSE, results=FALSE}
@@ -1464,20 +1466,29 @@ coef_data0_all %>%
 The results are presented in Figure\nobreakspace{}\ref{model}.
 In terms of economic outcomes, the increase in GDP per capita is associated with a higher level of trust in civil servants in the short term.
 A two-standard-deviation year-to-year change in per capita income increases trust by `r get_coef("b_gdppc_diff", results_df = coef_data_all) %>% str_remove("-")` point.
-Similarly, we find that a two-standard-deviation year-to-year increase in unemployment decreases trust in civil servants by `r get_coef("b_unemploy_diff", results_df = coef_data_all) %>% str_remove("-")` points.
-Regarding outcomes in public safety, cross-national differences in the mean number of intentional homicides are estimated to have a negative effect on trust in civil servants, suggestive evidence of a long-term effect.
+This significant but relatively small effect suggests that GDP growth alone may not be sufficient to sustain high levels of trust in civil servants, given that economic growth may not transfer to effective resource management and service delivery.
+
+Unemployment exhibits a strong negative effect on trust in civil servants, with a two-standard-deviation year-to-year increase in unemployment decreasing trust in civil servants by `r get_coef("b_unemploy_diff", results_df = coef_data_all) %>% str_remove("-")` points.
+High unemployment rates can signal government inefficiency or failure to address critical economic challenges, eroding trust in civil servants.
+
+In terms of public safety, the mean number of intentional homicides has a long-term negative impact on trust in civil servants.
 A two-standard deviation increase in a country's mean number of homicides is associated with `r get_coef("b_victims_mean", results_df = coef_data_all) %>% str_remove("-")` points less trust.
-However, these results do not provide evidence for either long- or short-run effects of inflation and of income inequality on trust in civil servants net of the other variables included in this model.
+High levels of violence and insecurity can undermine public confidence in the administration’s competence to uphold law and order, diminishing trust in its civil service.
+
+We found no evidence that either inflation or income inequality significantly affects trust in civil servants in the short or long term, when other factors are controlled.
 
 With regard to process, a higher government effectiveness score was found to have a strong positive long-term effect on trust in civil servants.
 A two-standard deviation increase in a country's mean effectiveness score is associated with `r get_coef("b_gee_mean", results_df = coef_data_all) %>% str_remove("-")` points more trust across countries.
+This finding suggests that improving the perceived quality of public services and policy formulation can lead to a sustained increase in trust.
+Coproduction of public value provides a compelling explanation, emphasizing how involving individuals in policy-making processes can strengthen trust in the public sector  [@Schmidthuber2021].
+
 Conversely, the development of democracy is associated with less trust in civil servants, both in the long run and in the short term.
 Critical citizens in more democratic countries may trust civil servant only critically and have higher expectations of them [@Norris1999].
 However, perceived corruption was not consistently associated with trust in civil servants in either the long term or short run; these estimates are close to zero.
 
 We find evidence for arguments on both government outcomes and government quality. 
-Among predictors, compared to economic and public security outcomes, such as year-to-year GDP per capita, unemployment and countries' mean insecurity, process, measured by countries' mean government effectiveness and mean democratic development, has much larger substantive effects.
-
+However, government quality, measured by mean government effectiveness—exert larger effects over long term than economic and public security outcomes like GDP per capita, unemployment, and insecurity.
+To sustain trust in civil servants, policymakers and practitioners should prioritize institutional reforms that enhance effectiveness and inclusiveness.
 
 # Conclusion {.unlisted .unnumbered}
 
