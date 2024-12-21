@@ -444,12 +444,16 @@ Amidst these mixed results regarding macroeconomic outcomes, a growing body of l
 A relatively consistent finding across studies is the significant role of corruption.
 @VandeWalle2022 concluded that the perceived absence of corruption is more impactful on trust in bureaucracies than performance evaluations.
 The critical influence of perceived corruption and corruption control on public trust in civil servants is also supported by @Houston2016 and @Morelock2021.
-However, since authors used different measures and modeling strategies, such as whether to include both outcomes and quality indicators in one model, it remains unclear how consistent these results would be if a uniform modeling strategy were used.
+Beyond these findings, recent research has explored dimensions of government performance, including transparency, agency reputation, and the integration of input, process, and output measures.
+Studies show that both public and private elite actors’ trust in agencies is strongly influenced by performance [@Kappler2024].
+Moreover, transparency and perceived organizational reliability have been identified as key factors in shaping public trust [@Schmidthuber2023].
+Despite these advancements, variations in measures and modeling strategies—such as whether both outcomes and quality indicators are included in the same model—leave uncertainty about the consistency of these results.
+A more standardized approach is needed to clarify these relationships.
 
-These mixed results reflect limitations in comparative data, including limited country coverage, reliance on cross-sectional rather than dynamic analysis, and the absence of comparable measures across countries or regions [@VanRyzin2011; @Houston2016; @Choi2018; @Morelock2021; @VandeWalle2022].
+These mixed results also reflect limitations in comparative data, including limited country coverage, reliance on cross-sectional rather than dynamic analysis, and the absence of comparable measures across countries or regions [@VanRyzin2011; @Houston2016; @Choi2018; @Morelock2021; @VandeWalle2022].
 These shortcomings hinder a deeper understanding of the relationship between government outcomes, quality, and trust in bureaucracies.
 
-To overcome these challenges, we built the trust in civil servants (TCS) dataset, providing a dynamic, cross-national measure and enables rigorous testing of competing theories on the sources of trust in civil servants.
+To address these challenges, we developed the Trust in Civil Servants (TCS) dataset, a dynamic, cross-national measure that enables rigorous testing of competing theories about the sources of trust in civil servants.
 
 
 # Examining the Source Data on Trust in Bureaucracy
@@ -1480,9 +1484,9 @@ We found no evidence that either inflation or income inequality significantly af
 Regarding process, a higher government effectiveness score has a strong positive long-term effect on trust in civil servants.
 A two-standard deviation increase in a country's mean effectiveness score is associated with `r get_coef("b_gee_mean", results_df = coef_data_all) %>% str_remove("-")` points more trust across countries.
 This finding suggests that improving the perceived quality of public services and policy formulation can lead to a sustained increase in trust.
-Coproduction of public value provides a compelling explanation, emphasizing how involving individuals in policy-making processes can strengthen trust in the public sector  [@Schmidthuber2021].
+Coproduction of public value provides a compelling explanation, emphasizing how involving individuals in policy-making processes can strengthen trust in the public sector[@Schmidthuber2021].
 
-Conversely, the development of democracy is associated with less trust in civil servants, both in the long run and in the short term.
+Although democratic capacity is found to mediate the relationship between government openness and public trust [@Schmidthuber2021], we found the development of democracy is associated with less trust in civil servants, both in the long run and in the short term.
 Critical citizens in more democratic countries may trust civil servant only critically and have higher expectations of them [@Norris1999].
 However, perceived corruption was not consistently associated with trust in civil servants in either the long term or short run; these estimates are close to zero.
 
