@@ -9,7 +9,7 @@ output:
     pandoc_args: --lua-filter=multibib.lua
     
 title: |
-  | Trust in Bureaucracy: 
+  | Behind Bureaucracy: 
   | Public Opinion on Public Servants in
   | Dynamic Comparative Perspective
 
@@ -71,7 +71,7 @@ header-includes:
 
 ```{=tex}
 \begin{abstract}
-Trust in civil servants is essential for effective governance, enabling policy implementation, public service delivery, and compliance. However, comparative public administration research is often hindered by the lack of comparable trust measures across countries and time. To address this gap, based on 132 national and cross-national surveys from 98 countries spanning 1986 to 2022, we employ an advanced latent-variable modeling technique to measure trust in civil servants.  Our measures reveal variations in trust both within and between countries. Our analysis indicates that economic performance and public security enhance trust in the short term, whereas government quality and effectiveness have more enduring, long-term impacts on trust in civil service. This study contributes to the field of comparative public administration by providing a robust, longitudinal dataset on trust in civil service, facilitating the exploration of the dynamic relationship between trust and various governance factors and enabling more accurate testing of theoretical models. 
+Trust in civil servants is essential for effective governance, enabling policy implementation, public service delivery, and compliance. However, comparative public administration research is often hindered by the lack of comparable trust measures across countries and time. To address this gap, based on 132 national and cross-national surveys from 98 countries spanning 1986 to 2022, we employ an advanced latent-variable modeling technique to measure trust in civil servants.  Our measures reveal variations in trust both within and between countries. Our analysis indicates that economic performance and public security enhance trust in the short term, whereas government quality and effectiveness have more enduring, long-term impacts on trust in civil service. This study contributes to the field of comparative public administration by providing a robust, longitudinal dataset on trust in civil servants, facilitating the exploration of the dynamic relationship between trust and various governance factors and enabling more accurate testing of theoretical models. 
 \end{abstract}
 ```
 \pagebreak
@@ -823,8 +823,8 @@ On the other hand, the latest scores for `r bottom5` have them as the places whe
 The bottom-ranked countries are either among the most corrupt, like Venezuela, or have high crime rates, like Peru and Honduras.
 
 ```{r ts, fig.cap="TCS Scores Over Time Within Selected Countries \\label{ts_plots}", fig.height=3.5}
-countries <- c("Germany","United States","Switzerland","Finland",
-               "United Kingdom", "Greece", "Australia","New Zealand", 
+countries <- c("Germany","United States","United Kingdom","Spain",
+                "Greece", "Turkey","Australia","New Zealand", 
                "China",  "Japan", "South Korea", "Philippines", 
                "Algeria", "Chile", "Argentina", "Mexico")
 
@@ -941,7 +941,7 @@ The middle panel plots our TCS score against the percentage who responded "Tend 
 This question is asked in the most countries, and the strong correlation demonstrates the broad applicability of the TCS scores in capturing trust across diverse contexts.
 
 Finally, the right panel compares the trend of the longest item that has been asked since 1973 in U.S.General Social Survey, "I am going to name some institutions in this country. As far as the people running these institutions are concerned, would you say you have a great deal of confidence, only some confidence, or hardly any confidence at all in them? Executive branch of the federal government." to the trend of the TCS scores.
-The TCS scores closely align with trends in trust in the executive branch over time, effectively capturing historical changes in trust. 
+The TCS scores align with trends in trust in the executive branch over time, effectively capturing historical changes. 
 
 
 ```{r ext_val1_dat, eval=FALSE}
@@ -1031,7 +1031,7 @@ Our measure positively correlated with all of them, with a stronger correlation 
 
 There is a longstanding debate about the dimentionality of political trust [@Easton1965; @Marien2011; @Norris2011; @Rothstein2008; @Tai2022role].
 Trust in civil servants has been theoretically grouped within the same dimension as all three types of institutional trust [@Marien2011; @Hooghe2011], or one of them [@Norris2011; @Rothstein2008; @Tai2022role].
-However, the variation in correlations between TCS scores and trust in different institutions requires empirical analysis of political trust's dimensions.
+However, the variation in correlations between TCS scores and trust in institutions requires empirical analysis of trust's dimensions.
 
 
 ```{r ext_val2_dat, eval=FALSE}
@@ -1130,7 +1130,7 @@ To sum up, the evidence of construct validation of TCS scores against the percei
 With our time-series cross-national data on trust in civil servants, we combined both outcome and quality indicators to examine the factors influencing this trust.
 For outcome indicators, we followed previous studies and used GDP per capita, inflation, and unemployment from 1984 to 2022 as measures of macroeconomic performance.
 GDP per capita and inflation data were sourced from the International Monetary Fund, while unemployment data were collected from the World Bank, which uses modeled International Labour Organization estimates.
-To measure income inequality, we relied on the Standardized World Income Inequality Database (SWIID) presented in @Solt2020, specifically the Gini index of inequality in disposable income.
+Regarding income inequality, we relied on the Standardized World Income Inequality Database presented in @Solt2020, specifically the Gini index of inequality in disposable income.
 
 For quality of government indicators, we included the Corruption Perceptions Index from Transparency International, covering the years 1995 to 2022, to capture the perceived level of corruption.
 We also used the Government Effectiveness indicator from the World Bank's Worldwide Governance Indicators, as it reflects the overall quality of public services, the civil service, and policy formulation and implementation.
@@ -1143,7 +1143,7 @@ The varying intercepts for each country account for heteroskedasticity across co
 To differentiate between short-term and historical effects, we used the 'within-between random effects' specification as described by @Bell2015 and @Woo2023.
 This approach models the time-invariant country mean alongside the time-varying difference from this mean for each country-year.
 
-Finally, we addressed measurement uncertainty in the data for trust in bureaucracies, income inequality, and the Corruption Perceptions Index by incorporating it directly into the analysis (see @Tai2024). 
+Finally, we addressed measurement uncertainty in the data for trust in bureaucracies, income inequality, and the Corruption Perceptions Index by incorporating it into the analysis (see @Tai2024). 
 The model was estimated using the `brms` R package [@Burkner2017].
 
 ```{r data_combo,eval=FALSE, include=FALSE, results=FALSE}
@@ -1371,7 +1371,7 @@ data_combo_all <- data_combo %>%
 ```
 
 
-```{r resplot, fig.cap="Predicting Trust in Bureaucracies \\label{model}", fig.height=6, fig.width=7.5}
+```{r resplot, fig.cap="Predicting Trust in Civil Servants Across Countries Over Time \\label{model}", fig.height=6, fig.width=7.5}
 
 # Define OSF_PAT in .Renviron: https://docs.ropensci.org/osfr/articles/auth
 #if(!file.exists(here::here("data", "m_wgi_gee.rda"))) {
@@ -1474,10 +1474,9 @@ High unemployment rates can signal government inefficiency or failure to address
 In terms of public safety, the mean number of intentional homicides has a long-term negative impact on trust in civil servants.
 A two-standard deviation increase in a country's mean number of homicides is associated with `r get_coef("b_victims_mean", results_df = coef_data_all) %>% str_remove("-")` points less trust.
 High levels of violence and insecurity can undermine public confidence in the administration’s competence to uphold law and order, diminishing trust in its civil service.
-
 We found no evidence that either inflation or income inequality significantly affects trust in civil servants in the short or long term, when other factors are controlled.
 
-With regard to process, a higher government effectiveness score was found to have a strong positive long-term effect on trust in civil servants.
+Regarding process, a higher government effectiveness score has a strong positive long-term effect on trust in civil servants.
 A two-standard deviation increase in a country's mean effectiveness score is associated with `r get_coef("b_gee_mean", results_df = coef_data_all) %>% str_remove("-")` points more trust across countries.
 This finding suggests that improving the perceived quality of public services and policy formulation can lead to a sustained increase in trust.
 Coproduction of public value provides a compelling explanation, emphasizing how involving individuals in policy-making processes can strengthen trust in the public sector  [@Schmidthuber2021].
@@ -1497,18 +1496,17 @@ Specifically, the scarcity of comparable data on trust in civil servants complic
 
 In this research, we employ a state-of-the-art latent-variable model [@Solt2020c] to develop a dynamic comparative measure of trust in civil servants.
 Our measures reveal significant variations in trust both within and across countries over time.
-For example, Asian countries with a history of meritocracy and rapid economic development, such as China and Singapore, as well as the least corrupt countries like Switzerland and Norway, exhibit high levels of trust in civil servants.
+<!---For example, Asian countries with a history of meritocracy and rapid economic development, such as China and Singapore, as well as the least corrupt countries like Switzerland and Norway, exhibit high levels of trust in civil servants.
 In contrast, countries plagued by widespread corruption or high crime rates, like Venezuela, Mexico, and Peru, show the lowest levels of trust.
-Within individual countries, some---like Germany and the United States---have experienced steady increasing or declining trends in trust, while others maintain consistently high or low levels, as seen in Luxembourg and Mexico, or display fluctuations, as observed in Spain and Turkey.
-These variations pose challenges for explaining the causes and consequences of trust in bureaucracies within a comparative context, while also providing opportunities for in-depth exploration of these changes in specific contexts.
-
+Within individual countries, some---like Germany and the United States---have experienced steady increasing or declining trends in trust, while others maintain consistently high or low levels, as seen in China and Mexico, or display fluctuations, as observed in Spain and Turkey.
+These variations pose challenges for explaining the causes and consequences of trust in civil servants within a comparative context, while also providing opportunities for in-depth exploration of these changes in specific contexts. -->
 Our analysis of time-series cross-sectional data indicates that trust in civil servants is positively influenced by economic performance and public security in the short term.
-However, our results indicate that over the long-term, trust is more strongly enhanced by government quality and effectiveness in service delivery, policy formation, and implementation.
+However,in the long term, trust is more strongly enhanced by government quality and effectiveness in service delivery, policy formation, and implementation.
 
-While this study focuses on the sources of trust in bureaucracy, the publicly accessible Trust in Civil Servants (TCS) dataset we provide opens opportunities for future research to explore the consequences of trust in civil servants.
+While this study focuses on the sources of trust in civil servants, the publicly accessible Trust in Civil Servants (TCS) dataset we provide opens opportunities for future research to explore the consequences of such trust.
 Researchers can leverage the TCS dataset to examine how varying levels of trust influence governance such as policy implementation effectiveness, citizen compliance with regulations, and overall public satisfaction with government services.
 Moreover, the longitudinal nature of the dataset facilitates the study of temporal dynamics, enabling researchers to assess how changes in trust over time correlate with shifts in government's policy priorities, governance reforms, or public policy preferences.
-Overall, by providing a robust and comparable measure across countries and over time, the TCS dataset serves as a valuable resource for testing theoretical models that link trust to aspects of public administration and governance.
+By offering a robust and comparable measure across countries and over time, the TCS dataset serves as a valuable resource for testing theoretical models that link trust to aspects of public administration and governance.
 
 
 # References {.unnumbered}
