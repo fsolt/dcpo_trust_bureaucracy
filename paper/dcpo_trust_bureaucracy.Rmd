@@ -320,8 +320,9 @@ Using the TCS data, we conduct a cross-national time-series analysis to examine 
 We find that government outcomes, such as economic performance and public security, have short-term effects on trust, while government quality including effectiveness, exerts more significant, enduring effects.
 This underscores that while both factors are important, the quality of governance plays a long-term role in fostering trust in civil servants.
 
-Our study contributes to comparative public administration studies by providing valid, comparable longitudinal data on trust in civil servants. 
-The TCS dataset is poised to enrich cross-national research and enable more robust investigations into the causes and consequences of trust in civil servants across diverse contexts.
+Our study contributes to comparative public administration studies by providing valid, comparable longitudinal data on trust in civil servants.
+Recent studies emphasize the need to explore how public management reforms like NPM affect governance outcomes, such as accountability and efficiency[@Pierre2024], and how governance indicators, like trust in public institutions, influence complex policy challenges like CO2 emissions and decarbonization [@Pierre2024 @Cole2024].
+The Trust in Civil Servants (TCS) dataset responds to these recent calls by providing a data to examine how trust interacts governance quality and public sector performance, facilitating cross-national studies that connect administrative practices to governance challenges and policy outcomes.
 
 
 ```{r dcpo_input_raw, include=FALSE, eval=FALSE}
@@ -1473,7 +1474,7 @@ High unemployment rates can signal government inefficiency or failure to address
 
 In terms of public safety, the mean number of intentional homicides has a long-term negative impact on trust in civil servants.
 A two-standard deviation increase in a country's mean number of homicides is associated with `r get_coef("b_victims_mean", results_df = coef_data_all) %>% str_remove("-")` points less trust.
-High levels of violence and insecurity can undermine public confidence in the administration’s competence to uphold law and order, diminishing trust in its civil service.
+High levels of violence and insecurity can undermine public confidence in the administration’s competence to uphold law and order, diminishing trust in its civil service [@Berg2016;@Uddin2024].
 We found no evidence that either inflation or income inequality significantly affects trust in civil servants in the short or long term, when other factors are controlled.
 
 Regarding process, a higher government effectiveness score has a strong positive long-term effect on trust in civil servants.
