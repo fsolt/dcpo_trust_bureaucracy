@@ -431,8 +431,8 @@ covered_share <- covered_share_of_spanned(dcpo_input_raw1)
 # Debates on the Causes of Trust in Bureaucracy
 
 A longstanding puzzle in public administration is understanding what explains trust in bureaucracy.
-A dominant theme is the belief that higher levels of government performance lead to greater trust in civil servants, based on the assumption that better performance correlates with higher trust and that lower trust toward bureaucrats reflects dissatisfaction with government performance  [@yang2006performance].
-One common approach to measuring performance is through macroeconomic outcomes, such as economic growth, unemployment rate, economic inequality, and inflation.
+One dominant theme is the belief that higher levels of government performance lead to greater trust in civil servants, based on the assumption that better performance correlates with higher trust and that lower trust toward bureaucrats reflects dissatisfaction with government performance  [@yang2006performance].
+A common approach to measuring performance is through macroeconomic outcomes, such as economic growth, unemployment rate, economic inequality, and inflation.
 However, the results from studies on macroeconomic outcomes are mixed. 
 For example, @Choi2018 found that GDP per capita positively affects trust in bureaucracies, while @Houston2016 did not find significant effects of GDP per capita and inflation rate on trust in civil servants.
 Instead, @Houston2016 found that the unemployment rate negatively influences trust in civil servants.
