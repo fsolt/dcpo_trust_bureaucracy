@@ -298,31 +298,33 @@ by2sd <- function(var) {
 set.seed(324)
 ```
 
-Despite the long-standing call for comparative studies in public administration, much of the field remains focused on national contexts.
+<!--Despite the long-standing call for comparative studies in public administration, much of the field remains focused on national contexts.
 Without comparative research, claims for a "science of public administration" remain unconvincing [@Dahl1947, pp. 8].
 Comparative studies offer valuable insights and innovative concepts but face significant methodological challenges [@Pollitt2011], with measurement equivalence being one of the most critical.
-Specifically, non-equivalent measures across countries pose a serious threat to comparative public administration study, yielding biased results, wrong theoretical conclusions, and misleading policy implications [@Jilke2015].
+Specifically, non-equivalent measures across countries pose a serious threat to comparative public administration study, yielding biased results, wrong theoretical conclusions, and misleading policy implications [@Jilke2015].-->
 
-The challenge of non-comparable data is particularly evident in public administration survey research.
-Trust, a core topic in comparative administration, bridges classical administrative theories and behavioral perspectives [@VanRyzin2011].
-Given that the public cannot directly monitor agencies or civil servants, trust in bureaucracy is essential for empowering officials to act in the public's interest [@Thomas1998].
-Since civil servants implement policies, deliver public services, and frequently interact with citizens, public trust is crucial for the acceptance of services and compliance with public policies [@Morelock2021].
-With sufficient trust, the public supports policy implementation [@Kim2005, p. 611], whereas a lack of trust can hinder officials’ ability to perform their tasks and gain public cooperation [@Yates1982; @VanRyzin2011].
-However, cross-national studies on trust in bureaucracy are plagued by the lack of comparable data.
-Existing studies are subject to a limited geographic and temporal scope [@Morelock2021; @Choi2018; @Houston2016; @VandeWalle2022] and cannot capture the dynamic relationship between trust in bureaucracy, government outcomes, and administrative quality in a broadly comparative context.
+The role of political trust on policy preferences and support remains debated in recent policy research.
+While examining redistribution policies, @Devine2024b finds negligible effects of political trust on policy preferences in the UK and Switzerland, contrasting with @Macdonald2021's evidence of trust shaping redistribution support in America.
+In environmental and climate change policy domains, @Gomm2024 reveals that political trust enhances policy support and procedural inclusiveness mitigates the negative effects of low trust on policy support.
+Yet when examining trust specifically in administrative institutions, the evidence becomes even more nuanced—@Harring2018 found no effect of such trust on environmental policy support, while @Bergquist2022 demonstrated that public trust in in implementing institutions has a stronger effect on supporting climate change policies than other institutional trust.
+
+These mixed findings underscore a critical challenge in understanding the causes and consequences of political trust: the lack of comparable, cross-national data on trust.
+For policy studies, trust in civil servants deserves particular attention because these officials directly interact with citizens, deliver public services, and translate policies into practice [@Morelock2021]. 
+With adequate trust, the public more readily accepts services and complies with policy directives [@Kim2005, p. 611]. 
+Conversely, low trust can impede officials' ability to implement policies effectively and secure public cooperation [@Yates1982; @VanRyzin2011]. Despite this importance, existing research on trust in civil servants remains geographically and temporally constrained [@Morelock2021; @Choi2018; @Houston2016; @VandeWalle2022], limiting our ability to understand how trust dynamics influence policy process across different governance contexts.
 In addition, the scarcity of comparable data makes it challenging to test competing theories about the factors influencing trust in bureaucracy, whether it is government performance, governance quality, or other factors [@Bouckaert2012; @Kettl2000; @VandeWalle2022; @Morelock2021].
 
-In this research, we introduce the Trust in Civil Servants (TCS) dataset, which leverages 132 national and cross-national surveys covering 98 countries over 36 years (1986–2022) and applies recent advances in latent-variable modeling of public opinion [@Solt2020c].
-This dataset provides comparable estimates of public trust in civil servants across countries and time.
-We validate the TCS data by demonstrating strong correlations with individual survey items and related measures of perceived corruption and trust in other political institutions.
+To address this gap, we introduce the Trust in Civil Servants (TCS) dataset, which leverages 132 national and cross-national surveys covering 98 countries over 36 years (1986–2022) and applies recent advances in latent-variable modeling of public opinion [@Solt2020c].
+We validate the TCS data by demonstrating strong correlations with individual survey items and related measures, such as perceived corruption and trust in other political institutions.
 
-Using the TCS data, we conduct a cross-national time-series analysis to examine competing theories on trust in civil servants, focusing on government outcomes versus government quality.
+Using the TCS data, we conduct a cross-national time-series analysis to examine competing theories on trust in civil servants, focusing on government outcomes versus government quality. 
 We find that government outcomes, such as economic performance and public security, have short-term effects on trust, while government quality including effectiveness, exerts more significant, enduring effects.
 This underscores that while both factors are important, the quality of governance plays a long-term role in fostering trust in civil servants.
 
-Our study contributes to comparative public administration studies by providing valid, comparable longitudinal data on trust in civil servants.
-Recent studies emphasize the need to explore how public management reforms like NPM affect governance outcomes, such as accountability and efficiency [@Pierre2024], and how governance indicators, like trust in public institutions, influence complex policy challenges like climate change mitigation support, CO2 emissions, and decarbonization [@Davidovic2024; @Cole2024].
-The Trust in Civil Servants (TCS) dataset responds to these recent calls by providing data to examine how trust interacts governance quality and public sector performance, facilitating cross-national studies that connect administrative practices to governance challenges and policy outcomes.
+Our study contributes to comparative public administration and public policy by providing valid, comparable longitudinal data on trust in civil servants. 
+Recent research underscores the need to explore how trust in public institutions influence complex policy challenges like climate change and environmental mitigation support, CO2 emissions, and decarbonization in comparative context [@Davidovic2024; @Cole2024].
+The TCS dataset addresses these calls by enabling cross-national research on how trust interacts with governance quality and public sector performance, linking administrative practices to governance challenges and policy outcomes.
+Moreover, the TCS dataset contributes to ongoing policy debates on the role of institutional trust in shaping policy preferences. By facilitating comparative analyses, the TCS dataset allows researchers to explore whether and how trust influences support for complex policies across diverse contexts.
 
 
 ```{r dcpo_input_raw, include=FALSE, eval=FALSE}
