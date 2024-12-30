@@ -9,9 +9,9 @@ output:
     pandoc_args: --lua-filter=multibib.lua
     
 title: |
-  | Behind Bureaucracy: 
-  | Public Opinion on Public Servants in
-  | Dynamic Comparative Perspective
+  | Trust in Civil Servants: 
+  | A Cross-National Dataset for Public Policy Research, 
+  | 1986–2022
 
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 editor_options: 
@@ -71,7 +71,7 @@ header-includes:
 
 ```{=tex}
 \begin{abstract}
-Trust in civil servants is essential for effective governance, enabling policy implementation, public service delivery, and compliance. However, comparative public administration research is often hindered by the lack of comparable trust measures across countries and time. To address this gap, based on 132 national and cross-national surveys from 98 countries spanning 1986 to 2022, we employ an advanced latent-variable modeling technique to measure trust in civil servants.  Our measures reveal variations in trust both within and between countries. Our analysis indicates that economic performance and public security enhance trust in the short term, whereas government quality and effectiveness have more enduring, long-term impacts on trust in civil service. The TCS dataset enables research on how public management reforms and trust influence governance outcomes and complex policy challenges, such as climate change policies. By providing robust, comparable longitudinal data, this study advances comparative public administration research and enables more rigorous exploration of the links between trust, governance quality, and policy outcomes.
+Trust in civil servants is essential for effective governance, enabling policy implementation, public service delivery, and compliance. However, the lack of comparable cross-national data on trust in bureaucracy has limited our ability to systematically examine these relationships. To address this gap, we develop the Trust in Civil Servants (TCS) dataset using an advanced latent-variable modeling technique, using 132 national and cross-national surveys from 98 countries (1986-2022). Our measures reveal variations in trust both within and between countries. We find that economic performance and public security enhance trust in the short term, whereas government quality and effectiveness have more enduring, long-term impacts on trust in civil service. The TCS dataset opens new avenues for examining connections between trust, governance quality, and complex policy challenges across different contexts.
 \end{abstract}
 ```
 \pagebreak
@@ -311,7 +311,8 @@ Yet when examining trust specifically in administrative institutions, the eviden
 These mixed findings underscore a critical challenge in understanding the causes and consequences of political trust: the lack of comparable, cross-national data on trust.
 For policy studies, trust in civil servants deserves particular attention because these officials directly interact with citizens, deliver public services, and translate policies into practice [@Morelock2021]. 
 With adequate trust, the public more readily accepts services and complies with policy directives [@Kim2005, p. 611]. 
-Conversely, low trust can impede officials' ability to implement policies effectively and secure public cooperation [@Yates1982; @VanRyzin2011]. Despite this importance, existing research on trust in civil servants remains geographically and temporally constrained [@Morelock2021; @Choi2018; @Houston2016; @VandeWalle2022], limiting our ability to understand how trust dynamics influence policy process across different governance contexts.
+Conversely, low trust can impede officials' ability to implement policies effectively and secure public cooperation [@Yates1982; @VanRyzin2011].
+Despite this importance, existing research on trust in civil servants remains geographically and temporally constrained [@Morelock2021; @Choi2018; @Houston2016; @VandeWalle2022], limiting our ability to understand how trust dynamics influence policy process across different governance contexts.
 In addition, the scarcity of comparable data makes it challenging to test competing theories about the factors influencing trust in bureaucracy, whether it is government performance, governance quality, or other factors [@Bouckaert2012; @Kettl2000; @VandeWalle2022; @Morelock2021].
 
 To address this gap, we introduce the Trust in Civil Servants (TCS) dataset, which leverages 132 national and cross-national surveys covering 98 countries over 36 years (1986–2022) and applies recent advances in latent-variable modeling of public opinion [@Solt2020c].
@@ -440,11 +441,11 @@ For example, @Choi2018 found that GDP per capita positively affects trust in bur
 Instead, @Houston2016 found that the unemployment rate negatively influences trust in civil servants.
 Contrary to previous studies that found some evidence for the role of government outcomes, @Morelock2021 found that none of the outcome indicators, including GDP per capita, inflation rate, unemployment, and the Gini index, had a significant effect on trust in civil servants.
 
-Amidst these mixed results regarding macroeconomic outcomes, a growing body of literature emphasizes the role of government quality---or process---in explaining trust in bureaucracies.
+Amidst these mixed results regarding macroeconomic outcomes, a growing body of literature emphasizes the role of government quality---or process---in explaining trust in bureaucracy.
 @VanRyzin2011 found that the quality of government, measured by the World Bank’s Worldwide Governance Indicators, plays a more crucial role than government outcomes measured by the UN's Human Development Index, which had a negative effect in his model.
 @Morelock2021 also highlights the positive role of government effectiveness, although @Houston2016 finds inconsistent role of government effectiveness.
 A relatively consistent finding across studies is the significant role of corruption.
-@VandeWalle2022 concluded that the perceived absence of corruption is more impactful on trust in bureaucracies than performance evaluations.
+@VandeWalle2022 concluded that the perceived absence of corruption is more impactful on trust in bureaucracy than performance evaluations.
 The critical influence of perceived corruption and corruption control on public trust in civil servants is also supported by @Houston2016 and @Morelock2021.
 Beyond these findings, recent research has explored dimensions of government performance, including transparency, agency reputation, and the integration of input, process, and output measures.
 Studies show that both public and private elite actors’ trust in agencies is strongly influenced by performance [@Kappler2024].
@@ -453,7 +454,7 @@ Despite these advancements, variations in measures and modeling strategies—suc
 A more standardized approach is needed to clarify these relationships.
 
 These mixed results also reflect limitations in comparative data, including limited country coverage, reliance on cross-sectional rather than dynamic analysis, and the absence of comparable measures across countries or regions [@VanRyzin2011; @Houston2016; @Choi2018; @Morelock2021; @VandeWalle2022].
-These shortcomings hinder a deeper understanding of the relationship between government outcomes, quality, and trust in bureaucracies.
+These shortcomings hinder a deeper understanding of the relationship between government outcomes, quality, and trust in bureaucracy.
 
 To address these challenges, we developed the Trust in Civil Servants (TCS) dataset, a dynamic, cross-national measure that enables rigorous testing of competing theories about the sources of trust in civil servants.
 
@@ -1150,7 +1151,7 @@ The varying intercepts for each country account for heteroskedasticity across co
 To differentiate between short-term and historical effects, we used the 'within-between random effects' specification as described by @Bell2015 and @Woo2023.
 This approach models the time-invariant country mean alongside the time-varying difference from this mean for each country-year.
 
-Finally, we addressed measurement uncertainty in the data for trust in bureaucracies, income inequality, and the Corruption Perceptions Index by incorporating it into the analysis (see @Tai2024). 
+Finally, we addressed measurement uncertainty in the data for trust in bureaucracy, income inequality, and the Corruption Perceptions Index by incorporating it into the analysis (see @Tai2024). 
 The model was estimated using the `brms` R package [@Burkner2017].
 
 ```{r data_combo,eval=FALSE, include=FALSE, results=FALSE}
@@ -1498,22 +1499,23 @@ To sustain trust in civil servants, policymakers and practitioners should priori
 
 # Conclusion {.unlisted .unnumbered}
 
-The study of comparative public administration has long been hindered by the lack of comparable measures across countries and over time.
-Specifically, the scarcity of comparable data on trust in civil servants complicates the testing of competing theories regarding the determinants of such trust, leading to inconsistent findings.
+The study of trust’s role in policy processes has long been hindered by the absence of comparable measures of trust in civil servants—key actors in policy implementation—across countries and over time.
+This gap has impeded efforts to identify the causes and consequences of bureaucratic trust, resulting in mixed findings regarding its origins and influence on policy support and implementation.
 
-In this research, we employ a state-of-the-art latent-variable model [@Solt2020c] to develop a dynamic comparative measure of trust in civil servants.
-Our measures reveal significant variations in trust both within and across countries over time.
+Using a state-of-the-art latent-variable model [@Solt2020c], we develop a dynamic, comparative measure of trust in civil servants that uncovers significant variations both within and across countries.
 <!---For example, Asian countries with a history of meritocracy and rapid economic development, such as China and Singapore, as well as the least corrupt countries like Switzerland and Norway, exhibit high levels of trust in civil servants.
 In contrast, countries plagued by widespread corruption or high crime rates, like Venezuela, Mexico, and Peru, show the lowest levels of trust.
 Within individual countries, some---like Germany and the United States---have experienced steady increasing or declining trends in trust, while others maintain consistently high or low levels, as seen in China and Mexico, or display fluctuations, as observed in Spain and Turkey.
 These variations pose challenges for explaining the causes and consequences of trust in civil servants within a comparative context, while also providing opportunities for in-depth exploration of these changes in specific contexts. -->
-Our analysis of time-series cross-sectional data indicates that trust in civil servants is positively influenced by economic performance and public security in the short term.
-However,in the long term, trust is more strongly enhanced by government quality and effectiveness in service delivery, policy formation, and implementation.
+Our analysis reveals that while economic performance and public security influence trust in the short term, government quality and effectiveness in service delivery and policy implementation have more enduring effects.
 
-While this study focuses on the sources of trust in civil servants, the publicly accessible Trust in Civil Servants (TCS) dataset we provide opens opportunities for future research to explore the consequences of such trust.
-Researchers can leverage the TCS dataset to examine how varying levels of trust influence governance such as policy implementation effectiveness, citizen compliance with regulations, and overall public satisfaction with government services.
-Moreover, the longitudinal nature of the dataset facilitates the study of temporal dynamics, enabling researchers to assess how changes in trust over time correlate with shifts in government's policy priorities, governance reforms, or public policy preferences.
-By offering a robust and comparable measure across countries and over time, the TCS dataset serves as a valuable resource for testing theoretical models that link trust to aspects of public administration and governance.
+While this study focuses on the sources of trust in civil servants, the publicly accessible Trust in Civil Servants (TCS) dataset also offers new opportunities to examine critical policy questions. 
+Researchers can investigate how varying levels of trust in bureaucracy affect policy implementation, citizen compliance with regulations, and public acceptance of policy interventions. 
+The dataset's longitudinal nature enables analysis of how changes in trust relate to policy reforms, implementation strategies, and policy outcomes. 
+These applications are particularly relevant for complex policy challenges that require sustained public cooperation and support.
+
+By offering robust, comparable measures across countries and time, the TCS dataset provides a foundation for advancing our understanding of the intricate relationship between trust in civil servants and policy success.
+This contribution helps resolve ongoing debates about trust’s role in governance, offering actionable insights for both scholars and policymakers.
 
 
 # References {.unnumbered}
