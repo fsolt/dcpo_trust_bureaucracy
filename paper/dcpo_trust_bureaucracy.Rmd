@@ -56,8 +56,8 @@ header-includes:
 
 # Authors {.unnumbered}
 
--   Yuehong Cassandra Tai, ORCID: <https://orcid.org/0000-0001-7303-7443>, Postdoctoral Fellow, Center for Social Data Analytics, Pennsylvania State University, [yhcasstai\@psu.edu](mailto:yhcasstai@psu.edu){.email}
--   Frederick Solt, corresponding author, ORCID: <https://orcid.org/0000-0002-3154-6132>, Associate Professor, Department of Political Science, University of Iowa, [frederick-solt\@uiowa.edu](mailto:frederick-solt@uiowa.edu){.email}
+- Yuehong Cassandra Tai, ORCID: <https://orcid.org/0000-0001-7303-7443>, Postdoctoral Fellow, Center for Social Data Analytics, Pennsylvania State University, [yhcasstai\@psu.edu](mailto:yhcasstai@psu.edu){.email}
+- Frederick Solt, corresponding author, ORCID: <https://orcid.org/0000-0002-3154-6132>, Professor, Department of Political Science, University of Iowa, [frederick-solt\@uiowa.edu](mailto:frederick-solt@uiowa.edu){.email}
 
 \pagebreak
 
@@ -73,6 +73,8 @@ header-includes:
 \begin{abstract}
 Trust in civil servants is essential for effective governance, enabling policy implementation, public service delivery, and compliance. However, the lack of comparable cross-national data on trust in bureaucracy has limited our ability to systematically examine these relationships. To address this gap, we develop the Trust in Civil Servants (TCS) dataset using an advanced latent-variable modeling technique, using 132 national and cross-national surveys from 98 countries (1986-2022). Our measures reveal variations in trust both within and between countries. We find that economic performance and public security enhance trust in the short term, whereas government quality and effectiveness have more enduring, long-term impacts on trust in civil service. The TCS dataset opens new avenues for examining connections between trust, governance quality, and complex policy challenges across different contexts.
 \end{abstract}
+
+Keywords: political trust, latent variable model, public administration, governance quality, policy implementation, policy support
 ```
 \pagebreak
 
@@ -1498,7 +1500,7 @@ We find evidence for arguments on both government outcomes and government qualit
 However, government quality, measured by mean government effectiveness—exert larger effects over long term than economic and public security outcomes like GDP per capita, unemployment, and insecurity.
 To sustain trust in civil servants, policymakers and practitioners should prioritize institutional reforms that enhance effectiveness and inclusiveness.
 
-# Conclusion {.unlisted .unnumbered}
+# Discussion {.unlisted .unnumbered}
 
 The study of trust’s role in policy processes has long been hindered by the absence of comparable measures of trust in civil servants---key actors in policy implementation—across countries and over time.
 This gap has impeded efforts to identify the causes and consequences of bureaucratic trust, resulting in mixed findings regarding its origins and influence on policy support and implementation.
@@ -1518,6 +1520,8 @@ These applications are particularly relevant for complex policy challenges that 
 By offering robust, comparable measures across countries and time, the TCS dataset provides a foundation for advancing our understanding of the intricate relationship between trust in civil servants and policy success.
 This contribution helps resolve ongoing debates about trust’s role in governance, offering actionable insights for both scholars and policymakers.
 
+# Disclosure statement {.unnumbered}
+No potential conflict of interest was reported by the author(s).
 
 # References {.unnumbered}
 
