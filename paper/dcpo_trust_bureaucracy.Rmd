@@ -306,7 +306,7 @@ Specifically, non-equivalent measures across countries pose a serious threat to 
 The role of political trust on policy preferences and support remains debated in recent policy research.
 While examining redistribution policies, @Devine2024b finds negligible effects of political trust on policy preferences in the UK and Switzerland, contrasting with @Macdonald2021's evidence of trust shaping redistribution support in America.
 In environmental and climate change policy domains, @Gomm2024 reveals that political trust enhances policy support and procedural inclusiveness mitigates the negative effects of low trust on policy support.
-Yet when examining trust specifically in administrative institutions, the evidence becomes even more nuanced---@Harring2018 found no effect of such trust on environmental policy support, while @Bergquist2022 demonstrated that public trust in implementing institutions has a stronger effect on supporting climate change policies than other institutional trust.
+Yet when examining trust specifically in administrative institutions, the evidence becomes even more nuanced—@Harring2018 found no effect of such trust on environmental policy support, while @Bergquist2022 demonstrated that public trust in implementing institutions has a stronger effect on supporting climate change policies than other institutional trust.
 
 These mixed findings underscore a critical challenge in understanding the causes and consequences of political trust: the lack of comparable, cross-national data on trust.
 For policy studies, trust in civil servants deserves particular attention because these officials directly interact with citizens, deliver public services, and translate policies into practice [@Morelock2021]. 
@@ -1061,7 +1061,7 @@ ext_cor_dat <- ext_dat2 %>%
   DCPOtools::dcpo_setup(datapath = here("..",
                                         "data",
                                         "dcpo_surveys")) %>%
-  mutate(title = "Arab, Asian & New Europe Barometers\nand Latinobarómetro",
+  mutate(title = "Arab, Asian & New Europe\n Barometers and\nLatinobarómetro",
          neg = FALSE)
 
 ext_issp_cor_dat <- ext_dat2 %>%
@@ -1131,7 +1131,7 @@ As anticipated, there is a clear negative relationship between the spread of per
 The similar negative correlations between TCS scores and perceived corruption among government officials are also perceived in the center and right panel of Figure\nobreakspace{}\ref{ext_val2}, which used data from different regions.
 The center panel shows the data in developing or newly democratic countries surveyed in the Asian Barometer, the New Europe Barometer, and the Latinobarometro, and the right panel displays the data in countries surveyed in the International Social Survey Programme Citizenship module (2004, 2014).
 
-To sum up, the evidence of construct validation of TCS scores against the perceived widespread of corruption in Figure\nobreakspace{}\ref{ext_val2}, together with the evidence of external validation in Figure\nobreakspace{}\ref{ext_val1} and convergent validation in Figure \nobreakspace{}\ref{internal_val}, demonstrates the validity of the TCS scores as measures of the public's trust in civil servants. 
+To sum up, the evidence of construct validation of TCS scores against the perceived extent of corruption in Figure\nobreakspace{}\ref{ext_val2}, together with the evidence of external validation in Figure\nobreakspace{}\ref{ext_val1} and convergent validation in Figure \nobreakspace{}\ref{internal_val}, demonstrates the validity of the TCS scores as measures of the public's trust in civil servants. 
 
 
 # Explaining Trust in Civil Servants
@@ -1145,14 +1145,14 @@ For quality of government indicators, we included the Corruption Perceptions Ind
 We also used the Government Effectiveness indicator from the World Bank's Worldwide Governance Indicators, as it reflects the overall quality of public services, the civil service, and policy formulation and implementation.
 
 To further leverage our trust data, we collected the number of intentional homicides at the country-year level from the United Nations Office on Drugs and Crime, capturing outcomes in public safety, given that macroeconomic outcomes do not represent government performance in other critical fields [@VanRyzin2011; @Morelock2021].
-To account for the effect of democratic development on trust, we included the Liberal Democracy Index from the V-Dem dataset[@Coppedge2023; @Pemstein2023]. 
+To account for the effect of democratic development on trust, we included the Liberal Democracy Index from the V-Dem dataset [@Coppedge2023; @Pemstein2023]. 
 
 We adopted a Bayesian multilevel model with varying intercepts for each country and each year.
 The varying intercepts for each country account for heteroskedasticity across countries, while those for each year account for 'time shocks' that impact all countries simultaneously [@Shor2007].
-To differentiate between short-term and historical effects, we used the 'within-between random effects' specification as described by @Bell2015 and @Woo2023.
-This approach models the time-invariant country mean alongside the time-varying difference from this mean for each country-year.
+To differentiate between short-term and historical effects, we used the 'within-between random effects' specification as described by @Bell2015 [see also @Woo2023].
+This approach models, for each time-varying predictor, the time-invariant country mean alongside the time-varying difference from this mean for each country-year.
 
-Finally, we addressed measurement uncertainty in the data for trust in bureaucracy, income inequality, and the Corruption Perceptions Index by incorporating it into the analysis (see @Tai2024). 
+Finally, we addressed measurement uncertainty in the data for trust in bureaucracy, income inequality, and the Corruption Perceptions Index by incorporating it into the analysis [see @Tai2024]. 
 The model was estimated using the `brms` R package [@Burkner2017].
 
 ```{r data_combo,eval=FALSE, include=FALSE, results=FALSE}
@@ -1488,7 +1488,7 @@ We found no evidence that either inflation or income inequality significantly af
 Regarding process, a higher government effectiveness score has a strong positive long-term effect on trust in civil servants.
 A two-standard deviation increase in a country's mean effectiveness score is associated with `r get_coef("b_gee_mean", results_df = coef_data_all) %>% str_remove("-")` points more trust across countries.
 This finding suggests that improving the perceived quality of public services and policy formulation can lead to a sustained increase in trust.
-Coproduction of public value provides a compelling explanation, emphasizing how involving individuals in policy-making processes can strengthen trust in the public sector[@Schmidthuber2021].
+Coproduction of public value provides a compelling explanation, emphasizing how involving individuals in policy-making processes can strengthen trust in the public sector [@Schmidthuber2021].
 
 Although democratic capacity is found to mediate the relationship between government openness and public trust [@Schmidthuber2021], we found the development of democracy is associated with less trust in civil servants, both in the long run and in the short term.
 Critical citizens in more democratic countries may trust civil servant only critically and have higher expectations of them [@Norris1999].
