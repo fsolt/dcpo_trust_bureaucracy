@@ -306,7 +306,7 @@ Specifically, non-equivalent measures across countries pose a serious threat to 
 The role of political trust on policy preferences and support remains debated in recent policy research.
 While examining redistribution policies, @Devine2024b finds negligible effects of political trust on policy preferences in the UK and Switzerland, contrasting with @Macdonald2021's evidence of trust shaping redistribution support in America.
 In environmental and climate change policy domains, @Gomm2024 reveals that political trust enhances policy support and procedural inclusiveness mitigates the negative effects of low trust on policy support.
-Yet when examining trust specifically in administrative institutions, the evidence becomes even more nuanced—@Harring2018 found no effect of such trust on environmental policy support, while @Bergquist2022 demonstrated that public trust in in implementing institutions has a stronger effect on supporting climate change policies than other institutional trust.
+Yet when examining trust specifically in administrative institutions, the evidence becomes even more nuanced---@Harring2018 found no effect of such trust on environmental policy support, while @Bergquist2022 demonstrated that public trust in implementing institutions has a stronger effect on supporting climate change policies than other institutional trust.
 
 These mixed findings underscore a critical challenge in understanding the causes and consequences of political trust: the lack of comparable, cross-national data on trust.
 For policy studies, trust in civil servants deserves particular attention because these officials directly interact with citizens, deliver public services, and translate policies into practice [@Morelock2021]. 
@@ -325,7 +325,8 @@ This underscores that while both factors are important, the quality of governanc
 Our study contributes to comparative public administration and public policy by providing valid, comparable longitudinal data on trust in civil servants. 
 Recent research underscores the need to explore how trust in public institutions influence complex policy challenges like climate change and environmental mitigation support, CO2 emissions, and decarbonization in comparative context [@Davidovic2024; @Cole2024].
 The TCS dataset addresses these calls by enabling cross-national research on how trust interacts with governance quality and public sector performance, linking administrative practices to governance challenges and policy outcomes.
-Moreover, the TCS dataset contributes to ongoing policy debates on the role of institutional trust in shaping policy preferences. By facilitating comparative analyses, the TCS dataset allows researchers to explore whether and how trust influences support for complex policies across diverse contexts.
+Moreover, the TCS dataset contributes to ongoing policy debates on the role of institutional trust in shaping policy preferences.
+By facilitating comparative analyses, the TCS dataset allows researchers to explore whether and how trust influences support for complex policies across diverse contexts.
 
 
 ```{r dcpo_input_raw, include=FALSE, eval=FALSE}
@@ -1499,7 +1500,7 @@ To sustain trust in civil servants, policymakers and practitioners should priori
 
 # Conclusion {.unlisted .unnumbered}
 
-The study of trust’s role in policy processes has long been hindered by the absence of comparable measures of trust in civil servants—key actors in policy implementation—across countries and over time.
+The study of trust’s role in policy processes has long been hindered by the absence of comparable measures of trust in civil servants---key actors in policy implementation—across countries and over time.
 This gap has impeded efforts to identify the causes and consequences of bureaucratic trust, resulting in mixed findings regarding its origins and influence on policy support and implementation.
 
 Using a state-of-the-art latent-variable model [@Solt2020c], we develop a dynamic, comparative measure of trust in civil servants that uncovers significant variations both within and across countries.
