@@ -1,16 +1,19 @@
 ---
-output: 
-  pdf_document: #bookdown::word_document2:
-    fig_caption: yes
-    keep_tex: yes
-    toc: no
-    number_sections: no
-    latex_engine: xelatex
-    #pandoc_args: --lua-filter=multibib.lua
+format:
+  docx:
+    number-sections: true
+    papersize: a4
+    keep-tex: false
+    
+crossref:
+#  sec-prefix: OSM
+  sec-labels: alpha A
+#prefer-html: true
 title: |
   | Trust in Civil Servants: 
   | A Cross-National Dataset for Public Policy Research, 
   | 1986–2022
+
 #date: "`r format(Sys.time(), '%B %d, %Y')`"
 editor_options: 
   markdown: 
@@ -23,6 +26,7 @@ csl: https://raw.githubusercontent.com/citation-style-language/styles/master/sag
 #sage-harvard.csl
 fontsize: 12pt
 indent: true
+geometry: margin=1in
 linestretch: 1.5 # double spacing using linestretch 1.5
 bibliography: dcpo-trust-bureaucracy.bib
 #  text: dcpo-trust-bureaucracy.bib
@@ -55,6 +59,10 @@ header-includes:
 
 \pagenumbering{gobble}
 
+# Authors {.unnumbered}
+
+- Yuehong Cassandra Tai, ORCID: <https://orcid.org/0000-0001-7303-7443>, Assistant Research Professor, Center for Social Data Analytics, Pennsylvania State University, [yhcasstai\@psu.edu](mailto:yhcasstai@psu.edu){.email}
+- Frederick Solt, ORCID: <https://orcid.org/0000-0002-3154-6132>, Professor, Department of Political Science, University of Iowa, [frederick-solt\@uiowa.edu](mailto:frederick-solt@uiowa.edu){.email}
 
 ```{=tex}
 \renewcommand{\baselinestretch}{1}
@@ -72,10 +80,6 @@ Trust in civil servants is essential for effective governance, enabling policy i
 Keywords: political trust, latent variable model, public administration, governance
 ```
 
-
-# Authors {.unnumbered}
-- Yuehong Cassandra Tai, ORCID: <https://orcid.org/0000-0001-7303-7443>, Assistant Research Professor, Center for Social Data Analytics, Pennsylvania State University, [yhcasstai\@psu.edu](mailto:yhcasstai@psu.edu){.email}
-- Frederick Solt, ORCID: <https://orcid.org/0000-0002-3154-6132>, Professor, Department of Political Science, University of Iowa, [frederick-solt\@uiowa.edu](mailto:frederick-solt@uiowa.edu){.email}
 
 # Declaration of conflicting interest {.unnumbered}
 No potential conflict of interest was reported by the author(s).
@@ -100,9 +104,11 @@ knitr::opts_chunk$set(
   fig.width=7,
   fig.height = 2.5,
   plot = function(x, options)  {
-    hook_plot_tex(x, options)
+  hook_plot_tex(x, options)
   }
 )
+
+options(htmltools.dir.version = FALSE)
 
 # If `DCPOtools` is not yet installed:
 #install.packages('loo')
@@ -133,7 +139,8 @@ p_load(
   rsdmx,
   osfr,
   kableExtra,
-  bayesplot
+  bayesplot,
+  webshot2
 ) 
 ```
 
