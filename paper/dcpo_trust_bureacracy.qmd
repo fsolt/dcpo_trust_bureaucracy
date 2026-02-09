@@ -320,17 +320,26 @@ Without comparative research, claims for a "science of public administration" re
 Comparative studies offer valuable insights and innovative concepts but face significant methodological challenges [@Pollitt2011], with measurement equivalence being one of the most critical.
 Specifically, non-equivalent measures across countries pose a serious threat to comparative public administration study, yielding biased results, wrong theoretical conclusions, and misleading policy implications [@Jilke2015].-->
 
-The role of political trust on policy preferences and support remains debated in recent policy research.
-While examining redistribution policies, @Devine2024b finds negligible effects of political trust on policy preferences in the UK and Switzerland, contrasting with @Macdonald2021's evidence of trust shaping redistribution support in America.
-In environmental and climate change policy domains, @Gomm2024 reveals that political trust enhances policy support and procedural inclusiveness mitigates the negative effects of low trust on policy support.
-Yet when examining trust specifically in administrative institutions, the evidence becomes even more nuanced—@Harring2018 found no effect of such trust on environmental policy support, while @Bergquist2022 demonstrated that public trust in implementing institutions has a stronger effect on supporting climate change policies than other institutional trust.
+Political trust is a foundation of regime support, democratic legitimacy, and governance [@Easton1975; @Norris2002; @Wuttke2020].
+It is also associated with civic duty and policy compliance [@Valgardhsson2021; @Bargain2020], as well as individuals’ well-being during crises [@Zaki2022; @Devine2021].
+For these reasons, political trust’s dynamics, determinants, and consequences have been a leading issue in political science and public administration.
 
-These mixed findings underscore a critical challenge in understanding the causes and consequences of political trust: the lack of comparable, cross-national data on trust.
+Yet despite its importance, empirical findings about whether and how political trust matters remain mixed.
+While examining redistribution policies, @Devine2024b finds negligible effects of political trust on policy preferences in the UK and Switzerland, contrasting with @Macdonald2021's evidence of trust shaping redistribution support in the United States.
+When the focus shifts to trust in administrative and implementing institutions, the evidence is also mixed: @Harring2018 found no effect of trust in administrative institutions on environmental policy support, while @Bergquist2022 demonstrated that public trust in implementing institutions has a stronger effect on supporting climate change policies than other institutional trust.
+
+These mixed findings illustrate that our empirical leverage remains limited. Comparative research on trust is hindered by the lack of comparable cross-national time-series measures [@Tai2026].
+Existing surveys often use different trust items and provide inconsistent country–year coverage, which makes results difficult to compare across studies.
+As a result, it is hard to evaluate competing claims across governance contexts and over time, or to distinguish whether conflicting results reflect real contextual heterogeneity or differences in measurement and coverage.
+
+This limitation is particularly consequential for research on trust in civil servants. 
+For public sectors, public trust is not only a fundamental element of governance [@Blind2007], but also a central normative objective of public administration [@Goodsell2006].
 For policy studies, trust in civil servants deserves particular attention because these officials directly interact with citizens, deliver public services, and translate policies into practice [@Morelock2021]. 
 With adequate trust, the public more readily accepts services and complies with policy directives [@Kim2005, p. 611]. 
 Conversely, low trust can impede officials' ability to implement policies effectively and secure public cooperation [@Yates1982; @VanRyzin2011].
-Despite this importance, existing research on trust in civil servants remains geographically and temporally constrained [@Morelock2021; @Choi2018; @Houston2016; @VandeWalle2022], limiting our ability to understand how trust dynamics influence policy process across different governance contexts.
-In addition, the scarcity of comparable data makes it challenging to test competing theories about the factors influencing trust in bureaucracy, whether it is government performance, governance quality, or other factors [@Bouckaert2012; @Kettl2000; @VandeWalle2022; @Morelock2021].
+
+Despite this importance, existing research on trust in civil servants remains geographically and temporally constrained [@Morelock2021; @Choi2018; @Houston2016; @VandeWalle2022], limiting our ability to understand how trust dynamics shape the policy process across different governance contexts.
+In addition, limited cross-nationally comparable data makes it challenging to test competing theories about the factors influencing trust in bureaucracy, whether it is government performance, governance quality, or other factors [@Bouckaert2012; @Kettl2000; @VandeWalle2022; @Morelock2021].
 
 To address this gap, we introduce the Trust in Civil Servants (TCS) dataset, which leverages 132 national and cross-national surveys covering 98 countries over 36 years (1986–2022) and applies recent advances in latent-variable modeling of public opinion [@Solt2020c].
 We validate the TCS data by demonstrating strong correlations with individual survey items and related measures, such as perceived corruption and trust in other political institutions.
@@ -958,7 +967,7 @@ internal_tscs_plot + internal_cs_plot + internal_ts_plot  +
   patchwork::plot_annotation(caption = "Note: Gray whiskers and shading represent 80% credible intervals.")
 ```
 
-Before using these estimates in analysis, we validate our trust civil service score through convergent validation and construct validation, since validation tests of cross-national latent variables are crucially important [see, e.g., @Hu2023].
+Before using these estimates in analysis, we validate our trust civil service score through convergent validation and construct validation, since validation tests of cross-national latent variables are crucially important [see, e.g., @Hu2025].
 Figure\nobreakspace{}\ref{internal_val} shows the measure's validity in tests of convergent validation that tests whether a measure is empirically associated with alternative indicators of the same concept [@Adcock2001, 540].
 We started with 'internal' convergent validation test [see, e.g., @Caughey2019, 689; @Solt2020c, 10] by comparing our TCS score with individual items from source-data to generate them. 
 
