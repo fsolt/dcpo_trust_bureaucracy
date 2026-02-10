@@ -883,10 +883,14 @@ The dispersion parameters of the survey items indicate that all of our source da
 The result is estimates, in all `r res_cy` country-years spanned by the source data, of public trust in civil servants, what we call TCS scores.
 Figure\nobreakspace{}\ref{cs_mry} displays the most recent available TCS score for each of the `r res_c` countries and territories in the dataset.
 
-Asian countries, especially those with a history of meritocracy, dominate the top of the list.
-The least corrupt counties, like Switzerland, Norway, Denmark and Finland, also rank highly. 
+Several Asian countries, such as China and Singapore, dominate the top of the list.
+Several Southeast Asian countries also rank highly.
+This pattern aligns with OECD/ADB reports documenting high self-reported satisfaction with core public services in the region in recent years [@OECD2019; @OECD2025].
+Several democracies, such as Switzerland, Norway, Denmark, and Finland, also rank highly.
 On the other hand, the latest scores for `r bottom5` have them as the places where the public has the lowest trust toward civil servants.
-The bottom-ranked countries are either among the most corrupt, like Venezuela, or have high crime rates, like Peru and Honduras.
+
+For transparency, we release the full set of country–year estimates and associated uncertainty.
+We treat unexpected estimates as prompts for further inquiry rather than definitive substantive claims, and we suggest that scholars interpret cross-national differences cautiously, especially for countries with sparse item coverage, where uncertainty is larger.
 
 ```{r ts, fig.cap="TCS Scores Over Time Within Selected Countries \\label{ts_plots}", fig.height=3.5,cache=FALSE}
 countries <- c("Germany","United States","United Kingdom","Spain",
@@ -920,7 +924,7 @@ ggplot(data = c_res, aes(x = year, y = mean)) +
   patchwork::plot_annotation(caption = "Note: Countries are ordered by their TCS scores in their most recent\navailable year; gray shading represents 80% credible intervals.")
 ```
 
-We show the changes of TCS over time in sixteen countries in Figure\nobreakspace{}\ref{ts_plots}.
+We then show the changes of TCS over time in sixteen countries in Figure\nobreakspace{}\ref{ts_plots}.
 As displayed in Figure\nobreakspace{}\ref{cs_mry}, the dataset covers a wide geographic breadth, allowing comparative studies of countries and regions too often neglected [see @Wilson2021].
 Figure\nobreakspace{}\ref{ts_plots} also shows that trust in civil servants has risen prominently in some countries, such as Germany and New Zealand, while remaining fairly constant over time in others, like Greece and Australia. 
 In contrast, TCS scores have fallen steadily in countries such as South Korea and the United States. 
