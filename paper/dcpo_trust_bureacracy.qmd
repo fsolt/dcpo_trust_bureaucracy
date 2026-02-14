@@ -395,7 +395,7 @@ process_dcpo_input_raw <- function(dcpo_input_raw_df) {
   dcpo_input_raw_df %>% 
     with_min_yrs(3) %>% 
     with_min_cy(5) %>% 
-    with_min_yrs(3) %>% #?
+    with_min_yrs(3) %>% 
     filter(year >= 1985 & n > 0) %>% 
     group_by(country) %>% 
     mutate(cc_rank = n()) %>% 
@@ -718,7 +718,9 @@ This expected probability, $\eta_{ktqr}$, is linked to latent trust via a popula
 Here $\bar{\theta'}_{kt}$ is the (unbounded) country–year mean of latent trust in civil servants and $\sigma_{kt}$ is country–year standard deviation. 
 The $\beta_{qr}$ parameter captures the difficulty of endorsing category $r$ to question $q$, $\alpha_{q}$ captures the dispersion/noisiness of question $q$ in measuring trust in civil servants, and $\delta_{kq}$ term represents country-specific item bias that allows the same survey item to function differently across countries.
 
-To address sparsity over time, DCPO places random-walk priors on the latent country–year parameters and estimates are therefore smoother in data-rich periods and more uncertain in data-sparse periods. For additional details, see Appendix \nobreakspace{}@sec-app-dcpo and @Solt2020c [, 3-8]. 
+To address sparsity over time, DCPO places random-walk priors on the latent country–year parameters and estimates are therefore smoother in data-rich periods and more uncertain in data-sparse periods. 
+Together, DCPO estimates latent trust and smooths estimates simultaneously in a single Bayesian model, with a random-walk evolution prior providing parsimonious regularization across sparse time series and naturally expanding uncertainty where coverage is thin.
+For additional details, see Appendix \nobreakspace{}@sec-app-dcpo and @Solt2020c [, 3-8]. 
 
 
 Intuitively, DCPO addresses item incomparability through the _difficulty_ and _dispersion_ parameters.
@@ -1572,15 +1574,23 @@ Within individual countries, some---like Germany and the United States---have ex
 These variations pose challenges for explaining the causes and consequences of trust in civil servants within a comparative context, while also providing opportunities for in-depth exploration of these changes in specific contexts. -->
 Our analysis reveals that while economic performance and public security influence trust in the short term, government quality and effectiveness in service delivery and policy implementation have more enduring effects.
 
-While this study focuses on the sources of trust in civil servants, the publicly accessible Trust in Civil Servants (TCS) dataset also offers new opportunities to examine critical policy questions. 
-Researchers can investigate how varying levels of trust in bureaucracy affect policy implementation, citizen compliance with regulations, and public acceptance of policy interventions. 
+While this study focuses on the sources of trust in civil servants, the publicly accessible TCS dataset also offers new opportunities to examine critical policy questions. 
+Researchers can investigate how varying levels of trust affect policy implementation, citizen compliance with regulations, and public acceptance of policy interventions. 
 The dataset's longitudinal nature enables analysis of how changes in trust relate to policy reforms, implementation strategies, and policy outcomes. 
 These applications are particularly relevant for complex policy challenges that require sustained public cooperation and support.
 
-By offering robust, comparable measures across countries and time, the TCS dataset provides a foundation for advancing our understanding of the intricate relationship between trust in civil servants and policy success.
-This contribution helps resolve ongoing debates about trust’s role in governance, offering actionable insights for both scholars and policymakers.
+TCS is a useful resource for studying trust in civil servants, but it also has limitations.
+As a country–year aggregate, it can mask case-specific dynamics that are better interpreted with country expertise. 
+In addition, the model-based smoothing needed to address sparse coverage implies measurement uncertainty; treating point estimates as error-free can distort downstream inferences [@Tai2024]. To support appropriate use, we release full posterior draws so researchers can incorporate uncertainty directly in subsequent analyses using established approaches [e.g., @Caughey2018; @Tai2024; @Woo2025].
 
+Despite these limitations, TCS advances research on trust and governance by enabling more comprehensive comparative analyses of the levels, trends, and correlates of trust in civil servants across countries and over time than has been feasible with prior data.
 
+TCS offers a valuable resource for studying trust in civil servants, but it has limitations.
+As an aggregate-level measure, it may obscure subnational variation, polarization in trust, or case-specific dynamics that require country expertise and qualitative or mixed methods to illuminate.
+Second, the smoothing approach introduces measurement uncertainty, and ignoring uncertainty risks distorting inferences [@Tai2024].
+We therefore release the full set of posterior draws, allowing researchers to propagate measurement uncertainty in downstream analyses using established strategies [see, e.g., @Caughey2018; @Tai2024; @Woo2025]. 
+
+Despite these limitations, TCS advances research on trust and governance by enabling more comprehensive comparative analyses of the levels, trends, and correlates of trust in civil servants across countries and over time than has been feasible with prior data.
 
 # References {.unnumbered}
 
@@ -1712,6 +1722,38 @@ items_summary %>%
   kableExtra::kable_styling(font_size = 7) %>%
   kableExtra::kable_styling(latex_options = c("repeat_header")) %>%
   kableExtra::kable_styling(latex_options = "striped")
+```
+
+\clearpage
+\pagebreak
+
+```{r obs_by_cy, fig.height = 9, fig.width = 6.5, fig.cap = "Source Data Observations by Country and Year \\label{obs_by_cy}"}
+
+dcpo_input_raw1 %>% 
+  mutate(country = str_replace(country, "’", "'")) %>% 
+  dplyr::distinct(country, year, item, cc_rank) %>% 
+  group_by(country, year) %>% 
+  dplyr::reframe(n = n(),
+            cc_rank = cc_rank) %>% 
+  ungroup() %>% 
+  distinct() %>% 
+  ggplot(aes(x = year, 
+             y = forcats::fct_reorder(country, cc_rank),
+             fill = n))  +
+  geom_tile() +
+  scale_fill_stepsn(colors = rev(hcl.colors(6, "inferno")),
+                    n.breaks = 6,
+                    show.limits = TRUE,
+                    right = FALSE,
+                    name = "Observations") +
+  labs(x = NULL, y = NULL) +
+  scale_x_continuous(breaks=seq(1986, 2022, 4),
+                     sec.axis = dup_axis()) +
+  scale_y_discrete(position = "right") +
+  theme(legend.justification=c(0, 0), 
+        legend.position=c(0.01, 0.01),
+        axis.text.y  = element_text(size = 7)) 
+
 ```
 
 \clearpage
