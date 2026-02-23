@@ -1156,7 +1156,7 @@ GDP per capita and inflation data were sourced from the International Monetary F
 Regarding income inequality, we relied on the Standardized World Income Inequality Database presented in @Solt2020, specifically the Gini index of inequality in disposable income.
 To measure physical insecurity, we collected the number of intentional homicides at the country-year level from the United Nations Office on Drugs and Crime.
 
-For the process-oriented quality of government, we include corruption perceptions, government effectiveness, and democracy [see, e.g., @Houston2016; @Choi2018; @Morelock2025]. 
+For the process-oriented quality of government, we include corruption perceptions, government effectiveness, and democracy [see, e.g., @Houston2016; @Choi2018; @Morelock2021]. 
 To capture the perceived level of corruption, we use the Corruption Perceptions Index from Transparency International, covering the years 1995 to 2022.
 The World Bank's Worldwide Governance Indicators provides its measure of Government Effectiveness, which reflects the overall quality of public services, the civil service, and policy formulation and implementation.
 And to account for the effect of democratic development on trust, we included the Liberal Democracy Index from the V-Dem dataset [@Coppedge2023; @Pemstein2023]. 
@@ -1500,11 +1500,11 @@ In terms of physical insecurity, the mean number of intentional homicides has a 
 A two-standard deviation increase in a country's mean number of homicides is associated with `r get_coef("b_victims_mean", results_df = coef_data_all) %>% str_remove("-")` points less trust.
 This result bolsters confidence that the finding of @Uddin2025, made in the context of Bangladesh, is generalizable across countries: high levels of violence and insecurity undermine public confidence in the administration’s competence to uphold law and order, diminishing trust in its civil service.
 
-This analysis provides no evidence that either inflation or income inequality significantly affects trust in civil servants in the short or long term when other factors are controlled, reinforcing conclusions of, e.g., @Houston2016 and @Morelock2018.
+This analysis provides no evidence that either inflation or income inequality significantly affects trust in civil servants in the short or long term when other factors are controlled, reinforcing conclusions of, e.g., @Houston2016 and @Morelock2021.
 
 Regarding process, these results show that a higher government effectiveness score has a strong positive long-term effect on trust in civil servants.
 A two-standard deviation increase in a country's mean effectiveness score is associated with `r get_coef("b_gee_mean", results_df = coef_data_all) %>% str_remove("-")` points more trust across countries.
-This finding suggests that improving the perceived quality of public services and policy formulation can lead to a sustained increase in trust, replicating findings of @Houston2018 and @Morelock2021.
+This finding suggests that improving the perceived quality of public services and policy formulation can lead to a sustained increase in trust, replicating findings of @Houston2016 and @Morelock2021.
 Coproduction of public value provides a compelling explanation, emphasizing how involving individuals in policy-making processes can strengthen trust in the public sector [@Schmidthuber2021].
 
 Although democratic capacity is found to mediate the relationship between government openness and public trust [@Schmidthuber2021], we found the development of democracy is associated with less trust in civil servants, both in the long run and in the short term.
