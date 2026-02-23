@@ -1,0 +1,1829 @@
+---
+output: 
+  pdf_document: #bookdown::word_document2:
+    fig_caption: yes
+    keep_tex: yes
+    toc: no
+    number_sections: no
+    latex_engine: xelatex
+    #pandoc_args: --lua-filter=multibib.lua
+title: |
+  | Trust in Civil Servants: 
+  | A Cross-National Dataset for Public Policy Research, 
+  | 1986–2022
+#date: "`r format(Sys.time(), '%B %d, %Y')`"
+editor_options: 
+  markdown: 
+    wrap: sentence
+tables: true # enable longtable and booktabs
+#citation_package: natbib
+#citeproc: false
+citeproc: true
+csl: https://raw.githubusercontent.com/citation-style-language/styles/master/sage-harvard.csl
+#sage-harvard.csl
+fontsize: 12pt
+indent: true
+linestretch: 1.5 # double spacing using linestretch 1.5
+bibliography: dcpo-trust-bureaucracy.bib
+#  text: dcpo-trust-bureaucracy.bib
+#  app: dcpo-trust-bureaucracy-app.bib
+#biblio-style: apsr
+citecolor: black
+linkcolor: black
+endnote: no
+header-includes:
+      - \usepackage{array}
+      - \usepackage{caption}
+      - \usepackage{graphicx}
+      - \usepackage{siunitx}
+      - \usepackage{colortbl}
+      - \usepackage{multirow}
+      - \usepackage{hhline}
+      - \usepackage{calc}
+      - \usepackage{tabularx}
+      - \usepackage{threeparttable}
+      - \usepackage{wrapfig}
+      - \usepackage{fullpage}
+      - \usepackage{lscape} #\usepackage{lscape} better for printing, page displayed vertically, content in landscape mode, \usepackage{pdflscape} better for screen, page displayed horizontally, content in landscape mode
+      - \newcommand{\blandscape}{\begin{landscape}}
+      - \newcommand{\elandscape}{\end{landscape}}
+      - \usepackage{titlesec}
+      - \titleformat*{\section}{\normalsize\bfseries}
+      - \titleformat*{\subsection}{\normalsize\itshape}
+      - \usepackage{titling} #use \maketitle repeatedly  
+---
+
+\pagenumbering{gobble}
+
+
+```{=tex}
+\renewcommand{\baselinestretch}{1}
+\selectfont
+\maketitle
+\renewcommand{\baselinestretch}{1.5}
+\selectfont
+```
+
+```{=tex}
+\begin{abstract}
+Trust in civil servants is essential for effective governance, enabling policy implementation, public service delivery, and compliance. However, the lack of comparable cross-national data on trust in bureaucracy has limited our ability to systematically examine these relationships. To address this gap, we develop the Trust in Civil Servants (TCS) dataset using an advanced latent-variable modeling technique, using 132 national and cross-national surveys from 98 countries (1986-2022). Our measures reveal variations in trust both within and between countries. We find that economic performance and public security enhance trust in the short term, whereas government quality and effectiveness have more enduring, long-term impacts on trust in civil service. The TCS dataset opens new avenues for examining connections between trust, governance quality, and complex policy challenges across different contexts.
+\end{abstract}
+
+Keywords: political trust, latent variable model, public administration, governance
+```
+
+
+# Authors {.unnumbered}
+- Yuehong Cassandra Tai, ORCID: <https://orcid.org/0000-0001-7303-7443>, Assistant Research Professor, Center for Social Data Analytics, Pennsylvania State University, [yhcasstai\@psu.edu](mailto:yhcasstai@psu.edu){.email}
+- Frederick Solt, ORCID: <https://orcid.org/0000-0002-3154-6132>, Professor, Department of Political Science, University of Iowa, [frederick-solt\@uiowa.edu](mailto:frederick-solt@uiowa.edu){.email}
+
+# Declaration of conflicting interest {.unnumbered}
+No potential conflict of interest was reported by the author(s).
+
+# Data availability {.unnumbered}
+The code used to generate the dataset and conduct validation test are openly available at: https://github.com/fsolt/dcpo_trust_bureaucracy.
+
+
+\pagebreak
+
+\pagenumbering{arabic}
+
+```{r setup, include=FALSE}
+options(tinytex.verbose = TRUE)
+
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  cache = TRUE,
+  dpi = 600,
+  fig.width=7,
+  fig.height = 2.5,
+  plot = function(x, options)  {
+    hook_plot_tex(x, options)
+  }
+)
+
+# If `DCPOtools` is not yet installed:
+#install.packages('loo')
+#install.packages('rstan')
+# remotes::install_github("fsolt/DCPOtools")
+# remotes::install_github("stan-dev/cmdstanr")
+# install.packages('BiocManager')
+# remotes::install_github("expersso/WHO")
+# install.packages("devtools")
+if (!require(pacman)) install.packages("pacman")
+library(pacman)
+#remotes::install_github("paul-buerkner/brms")
+#install.packages(c("brms", "Rcpp", "RcppEigen"))
+# load all the packages you will use below 
+p_load(
+  DCPOtools,
+  cmdstanr,
+  tidyverse,
+  here,
+  countrycode,
+  brms,
+  wbstats, 
+  tidybayes,
+  scales,
+  patchwork,
+  ggthemes,
+  modelsummary,
+  rsdmx,
+  osfr,
+  kableExtra,
+  bayesplot
+) 
+```
+
+```{r define_funs}
+# define functions
+validation_plot <- function(v_data_raw,
+                            lab_x = .38, lab_y = 92,
+                            theta_summary, theta_results) {
+    
+    # defaults per https://stackoverflow.com/a/49167744/2620381
+    if ("theta_summary" %in% ls(envir = .GlobalEnv) & missing(theta_summary))
+        theta_summary <- get("theta_summary", envir = .GlobalEnv)
+    if ("theta_results" %in% ls(envir = .GlobalEnv) & missing(theta_results))
+        theta_results <- get("theta_results", envir = .GlobalEnv)
+
+    median_val <- Vectorize(function(x) median(1:x),
+                            vectorize.args = "x")
+    
+    v_vars <- v_data_raw %>% 
+      select(item0 = item,
+             title = title) %>% 
+      distinct() %>% 
+      mutate(v_val = str_extract(item0, "\\d+") %>% 
+               as.numeric() %>% 
+               median_val(.) %>%
+               `+`(if_else(str_detect(item0, "disc3"), .1,
+                           if_else(str_detect(item0, "int5_allbus"),
+                                   0,
+                                   .6))) %>% 
+               round())
+    
+    validation_summarized <- v_data_raw %>% 
+      DCPOtools::format_dcpo(scale_q = v_vars$item0[[1]], # these arguments are required
+                             scale_cp = 1) %>% # but they don't matter
+      pluck("data") %>% 
+      mutate(item0 = str_remove(item, " \\d or higher")) %>% 
+      right_join(v_vars, by = "item0") %>%
+      arrange(title) %>% 
+      mutate(title = factor(title, 
+                            levels = v_data_raw %>%
+                              pull(title) %>%
+                              unique())) %>% 
+      filter(str_detect(item, paste(v_val, "or higher"))) %>%
+      mutate(iso2c = countrycode::countrycode(country,
+                                              origin = "country.name",
+                                              destination = "iso2c",
+                                              warn = FALSE),
+             prop = y_r/n_r,
+             se = sqrt((prop*(1-prop))/n),
+             prop_90 = prop + qnorm(.9)*se,
+             prop_10 = prop - qnorm(.9)*se) %>%
+      inner_join(theta_summary %>% select(-kk, -tt), by = c("country", "year"))
+    
+    validation_cor <- theta_results %>%
+      inner_join(validation_summarized %>%
+                   select(country, year, title, prop, se),
+                 by = c("country", "year")) %>% 
+      rowwise() %>% 
+      mutate(sim = rnorm(1, mean = prop, sd = se)) %>% 
+      ungroup() %>% 
+      select(title, theta, sim, draw) %>% 
+      nest(data = c(theta, sim)) %>% 
+      mutate(r = lapply(data, function(df) cor(df)[2,1]) %>% 
+               unlist()) %>%
+      select(-data) %>% 
+      group_by(title) %>% 
+      summarize(r = paste("R =", round(mean(r), 2)))
+
+    if ({validation_summarized %>%
+        pull(country) %>%
+        unique() %>% 
+        length()} > 1) {
+      val_plot <- validation_summarized %>%
+        ggplot(aes(x = mean,
+                   y = prop * 100)) +
+        geom_segment(aes(x = q10, xend = q90,
+                         y = prop * 100, yend = prop * 100),
+                     na.rm = TRUE,
+                     alpha = .2) +
+        geom_segment(aes(x = mean, xend = mean,
+                         y = prop_90 * 100, yend = prop_10 * 100),
+                     na.rm = TRUE,
+                     alpha = .2) +
+        geom_smooth(method = 'lm', formula = 'y ~ x', se = FALSE) +
+        facet_wrap(~ title, ncol = 4) +
+        geom_label(data = validation_cor, aes(x = lab_x,
+                                              y = lab_y,
+                                              label = r),
+                   size = 2)
+    } else {
+      val_plot <- validation_summarized %>%
+        ggplot(aes(x = year,
+                   y = mean)) +
+        geom_line() +
+        geom_ribbon(aes(ymin = q10,
+                        ymax = q90,
+                        linetype = NA),
+                    alpha = .2) +
+        geom_point(aes(y = prop),
+                   fill = "black",
+                   shape = 21,
+                   size = .5,
+                   na.rm = TRUE) +
+        geom_path(aes(y = prop),
+                  linetype = 3,
+                  na.rm = TRUE,
+                  alpha = .7) +
+        geom_segment(aes(x = year, xend = year,
+                         y = prop_90, yend = prop_10),
+                     na.rm = TRUE,
+                     alpha = .2) +
+        facet_wrap(~ title, ncol = 4) +
+        geom_label(data = validation_cor, aes(x = lab_x,
+                                              y = lab_y,
+                                              label = r),
+                   size = 2)
+    }
+    
+    return(val_plot)
+}
+
+covered_share_of_spanned <- function(dcpo_input_raw) {
+  n_cy <- dcpo_input_raw %>%
+    distinct(country, year) %>% 
+    nrow()
+  
+  spanned_cy <- dcpo_input_raw %>% 
+    group_by(country) %>% 
+    summarize(years = max(year) - min(year) + 1) %>% 
+    summarize(n = sum(years)) %>% 
+    pull(n)
+  
+  {(n_cy/spanned_cy) * 100}
+}
+
+get_coef <- function(iv, results_df = coef_data_all, type = "both", width = .95) {
+  result_var <- results_df %>% 
+    filter(.width == width) %>% 
+    pull(.variable) %>% 
+    str_subset(iv)
+  
+  if (!type=="both") {
+    res <- results_df %>% 
+      filter(.variable == result_var & .width == width) %>% 
+      pull({{type}})
+  } else {
+    sc <- results_df %>% 
+      filter(.variable == result_var & .width == width) %>% 
+      pull(std_coef)
+    
+    ci <- results_df %>% 
+      filter(.variable == result_var & .width == width) %>% 
+      pull(ci)
+    
+    res <- paste0(sc, " (95% c.i.: ", ci, ")")
+  }
+  
+  return(res)
+}
+
+by2sd <- function(var) {
+  dich <- stats::na.omit(unique(var)) %>% 
+    sort() %>% identical(c(0, 1))
+  if (dich) 
+    sd <- 1
+  else 
+    sd <- 2 * stats::sd(var, na.rm = TRUE)
+  
+  return(sd)
+}
+
+set.seed(324)
+```
+
+<!--Despite the long-standing call for comparative studies in public administration, much of the field remains focused on national contexts.
+Without comparative research, claims for a "science of public administration" remain unconvincing [@Dahl1947, pp. 8].
+Comparative studies offer valuable insights and innovative concepts but face significant methodological challenges [@Pollitt2011], with measurement equivalence being one of the most critical.
+Specifically, non-equivalent measures across countries pose a serious threat to comparative public administration study, yielding biased results, wrong theoretical conclusions, and misleading policy implications [@Jilke2015].-->
+
+Political trust is a foundation of regime support, democratic legitimacy, and governance [@Easton1975; @Norris2002; @Wuttke2020].
+It is also associated with civic duty and policy compliance [@Valgardhsson2021; @Bargain2020], as well as individuals’ well-being during crises [@Zaki2022; @Devine2021].
+For these reasons, political trust’s dynamics, determinants, and consequences have been a leading issue in political science and public administration.
+
+Yet despite its importance, empirical findings about whether and how political trust matters remain mixed.
+While examining redistribution policies, @Devine2024b finds negligible effects of political trust on policy preferences in the UK and Switzerland, contrasting with @Macdonald2021's evidence of trust shaping redistribution support in the United States.
+When the focus shifts to trust in administrative and implementing institutions, the evidence is also mixed: @Harring2018 found no effect of trust in administrative institutions on environmental policy support, while @Bergquist2022 demonstrated that public trust in implementing institutions has a stronger effect on supporting climate change policies than other institutional trust.
+
+These mixed findings illustrate that our empirical leverage remains limited. Comparative research on trust is hindered by the lack of comparable cross-national time-series measures [@Tai2026].
+Existing surveys often use different trust items and provide inconsistent country–year coverage, which makes results difficult to compare across studies.
+As a result, it is hard to evaluate competing claims across governance contexts and over time, or to distinguish whether conflicting results reflect real contextual heterogeneity or differences in measurement and coverage.
+
+This limitation is particularly consequential for research on trust in civil servants. 
+For public sectors, public trust is not only a fundamental element of governance [@Blind2007], but also a central normative objective of public administration [@Goodsell2006].
+For policy studies, trust in civil servants deserves particular attention because these officials directly interact with citizens, deliver public services, and translate policies into practice [@Morelock2021]. 
+With adequate trust, the public more readily accepts services and complies with policy directives [@Kim2005, p. 611]. 
+Conversely, low trust can impede officials' ability to implement policies effectively and secure public cooperation [@Yates1982; @VanRyzin2011].
+
+Despite this importance, existing research on trust in civil servants remains geographically and temporally constrained [@Morelock2021; @Choi2018; @Houston2016; @VandeWalle2022], limiting our ability to understand how trust dynamics shape the policy process across different governance contexts.
+In addition, limited cross-nationally comparable data makes it challenging to test competing theories about the factors influencing trust in bureaucracy, whether it is government performance, governance quality, or other factors [@Bouckaert2012; @Kettl2000; @VandeWalle2022; @Morelock2021].
+
+To address this gap, we introduce the Trust in Civil Servants (TCS) dataset, which leverages 132 national and cross-national surveys covering 98 countries over 36 years (1986–2022) and applies recent advances in latent-variable modeling of public opinion [@Solt2020c].
+We validate the TCS data by demonstrating strong correlations with individual survey items and related measures, such as perceived corruption and trust in other political institutions.
+
+Using the TCS data, we conduct a cross-national time-series analysis to examine competing theories on trust in civil servants, focusing on government outcomes versus government quality. 
+We find that government outcomes, such as economic performance and public security, have short-term effects on trust, while government quality including effectiveness, exerts more significant, enduring effects.
+This underscores that while both factors are important, the quality of governance plays a long-term role in fostering trust in civil servants.
+
+Our study contributes to comparative public administration and public policy by providing valid, comparable longitudinal data on trust in civil servants. 
+Recent research underscores the need to explore how trust in public institutions influence complex policy challenges like climate change and environmental mitigation support, CO2 emissions, and decarbonization in comparative context [@Davidovic2024; @Cole2024].
+The TCS dataset addresses these calls by enabling cross-national research on how trust interacts with governance quality and public sector performance, linking administrative practices to governance challenges and policy outcomes.
+Moreover, the TCS dataset contributes to ongoing policy debates on the role of institutional trust in shaping policy preferences.
+By facilitating comparative analyses, the TCS dataset allows researchers to explore whether and how trust influences support for complex policies across diverse contexts.
+
+
+```{r dcpo_input_raw, include=FALSE, eval=FALSE}
+surveys_tb <- read_csv(here::here("data-raw",
+                                  "surveys_bureaucracy.csv"),
+                       col_types = "cccccc")
+
+dcpo_input_raw <- DCPOtools::dcpo_setup(vars = surveys_tb,
+                                         datapath = here("..",
+                                                         "data",
+                                                         "dcpo_surveys"),
+                                         file = here("data",
+                                                     "dcpo_input_raw.csv"))
+```
+
+
+```{r tb_summary_stats}
+surveys_tb <- read_csv(here::here("data-raw",
+                                  "surveys_bureaucracy.csv"),
+                       col_types = "cccccc")
+
+
+n_raw_survey <- surveys_tb %>%
+  distinct(survey) %>% 
+  nrow()
+
+dcpo_input_raw <- read_csv(here::here("data", "dcpo_input_raw.csv"),
+                                  col_types = "cdcddcd")
+
+n_raw_country <- dcpo_input_raw %>%
+  distinct(country) %>% 
+  nrow()
+
+n_raw_year <- dcpo_input_raw %>%
+  distinct(year) %>% 
+  nrow()
+
+n_raw_item <- dcpo_input_raw %>%
+  distinct(item) %>% 
+  nrow()
+
+process_dcpo_input_raw <- function(dcpo_input_raw_df) {
+  dcpo_input_raw_df %>% 
+    with_min_yrs(3) %>% 
+    with_min_cy(5) %>% 
+    with_min_yrs(3) %>% 
+    filter(year >= 1985 & n > 0) %>% 
+    group_by(country) %>% 
+    mutate(cc_rank = n()) %>% 
+    ungroup() %>% 
+    arrange(-cc_rank) %>% 
+    mutate(item = str_remove_all(item, "_"))
+}
+
+dcpo_input_raw1 <- dcpo_input_raw %>% 
+  process_dcpo_input_raw()
+
+n_surveys <- surveys_tb %>% 
+  distinct(survey) %>% 
+  nrow()
+
+n_items <- dcpo_input_raw1 %>%
+  distinct(item) %>% 
+  nrow()
+
+n_countries <- dcpo_input_raw1 %>%
+  distinct(country) %>% 
+  nrow()
+
+n_cy <- dcpo_input_raw1 %>%
+  distinct(country, year) %>% 
+  nrow() %>% 
+  scales::comma()
+
+n_years <- as.integer(summary(dcpo_input_raw1$year)[6]-summary(dcpo_input_raw1$year)[1])
+
+spanned_cy <- dcpo_input_raw1 %>% 
+  group_by(country) %>% 
+  summarize(years = max(year) - min(year) + 1) %>% 
+  summarize(n = sum(years)) %>% 
+  pull(n) %>% 
+  scales::comma()
+
+total_cy <- {n_countries * n_years} %>% 
+  scales::comma()
+
+year_range <- paste("from",
+                    summary(dcpo_input_raw$year)[1],
+                    "to",
+                    summary(dcpo_input_raw$year)[6])
+
+n_cyi <- dcpo_input_raw1 %>% 
+  distinct(country, year, item) %>% 
+  nrow() %>% 
+  scales::comma()
+
+back_to_numeric <- function(string_number) {
+  string_number %>% 
+    str_replace(",", "") %>% 
+    as.numeric()
+}
+
+covered_share <- covered_share_of_spanned(dcpo_input_raw1)
+```
+
+# Debates on the Causes of Trust in Civil Servants
+
+A longstanding puzzle in public administration is understanding what explains trust in bureaucracy.
+One dominant theme is the belief that higher levels of government performance lead to greater trust in civil servants, based on the assumption that better performance correlates with higher trust and that lower trust toward bureaucrats reflects dissatisfaction with government performance  [@yang2006performance].
+A common approach to measuring performance is through macroeconomic outcomes, such as economic growth, unemployment rate, economic inequality, and inflation.
+However, the results from studies on macroeconomic outcomes are mixed. 
+For example, @Choi2018 found that GDP per capita positively affects trust in bureaucracies, while @Houston2016 did not find significant effects of GDP per capita and inflation rate on trust in civil servants.
+Instead, @Houston2016 found that the unemployment rate negatively influences trust in civil servants.
+Contrary to previous studies that found some evidence for the role of government outcomes, @Morelock2021 found that none of the outcome indicators, including GDP per capita, inflation rate, unemployment, and the Gini index, had a significant effect on trust in civil servants.
+
+Amidst these mixed results regarding macroeconomic outcomes, a growing body of literature emphasizes the role of government quality---or process---in explaining trust in bureaucracy.
+@VanRyzin2011 found that the quality of government, measured by the World Bank’s Worldwide Governance Indicators, plays a more crucial role than government outcomes measured by the UN's Human Development Index, which had a negative effect in his model.
+@Morelock2021 also highlights the positive role of government effectiveness, although @Houston2016 finds inconsistent role of government effectiveness.
+A relatively consistent finding across studies is the significant role of corruption.
+@VandeWalle2022 concluded that the perceived absence of corruption is more impactful on trust in bureaucracy than performance evaluations.
+The critical influence of perceived corruption and corruption control on public trust in civil servants is also supported by @Houston2016 and @Morelock2021.
+Beyond these findings, recent research has explored dimensions of government performance, including transparency, agency reputation, and the integration of input, process, and output measures.
+Studies show that both public and private elite actors’ trust in agencies is strongly influenced by performance [@Kappler2024].
+Moreover, transparency and perceived organizational reliability have been identified as key factors in shaping public trust [@Schmidthuber2023].
+Despite these advancements, variations in measures and modeling strategies—such as whether both outcomes and quality indicators are included in the same model—leave uncertainty about the consistency of these results.
+A more standardized approach is needed to clarify these relationships.
+
+These mixed results also reflect limitations in comparative data, including limited country coverage, reliance on cross-sectional rather than dynamic analysis, and the absence of comparable measures across countries or regions [@VanRyzin2011; @Houston2016; @Choi2018; @Morelock2021; @VandeWalle2022].
+These shortcomings hinder a deeper understanding of the relationship between government outcomes, quality, and trust in bureaucracy.
+
+To address these challenges, we developed the Trust in Civil Servants (TCS) dataset, a dynamic, cross-national measure that enables rigorous testing of competing theories about the sources of trust in civil servants.
+
+
+# Examining the Source Data on Trust in Civil Servants
+
+Over the past half-century, many national and cross-national surveys have asked questions on trust attitudes toward public administrations.
+Our goal is not to draw a sample of surveys, but to compile as much feasible set of relevant survey items as possible and then synthesize them into a comparable country–year series.
+
+We first defined the target construct as public trust in civil servants or public administration based on previous trust in civil servants studies.
+We then undertook an extensive effort to collect and compile relevant survey questions.
+This involved a systematic review of of survey documentation and raw data files to identify items that reference civil servants, government administrators, or public administration, and we recorded the corresponding question identifiers, response scales, fieldwork dates, and  survey weights when available.
+Candidate items were then cross-checked by two authors to resolve construct mismatches.
+This process finally included `r n_raw_survey` unique survey projects including both cross-national globe surveys and single country surveys and spanning `r n_raw_country` countries over `r n_raw_year` year to maximize broad geographic and temporal coverage and `r n_raw_item` unique candidate questions. ^[ 
+The complete list of trust in civil servants/public administration survey items and included survey projects is included in online Appendix \nobreakspace{}@sec-app-survey.] 
+
+We then processed raw files using DCPOtools [@Solt2019].
+To minimize the noise from the sparse data and increase comparability, drawn from the raw data, we followed a common approach [@Woo2023a] and excluded `r n_items` survey items that were asked in fewer than five country-years in countries surveyed at least twice.
+DCPOtools standardizes formats, applies consistent recoding and weighting, and outputs analysis data for model estimation.
+
+Together, the survey items in the source data were asked in `r n_countries` different countries in at least two time points over `r n_years` years, from 1986 to 2022, yielding a total of `r n_cyi` country-year-item observations.
+If all of these countries were surveyed in all of these years, we would have `r total_cy` observations per year and a total of `r {n_countries * n_years * n_items} %>% scales::comma()` country-year-item observations.
+However, the actual dataset is far more limited, with only `r n_cy` country-years containing at least some data on trust in civil servants.
+This accounts for `r round(covered_share)`% of the `r spanned_cy` country-years spanned by our dataset.
+Moreover, the many different survey items employed render these data incomparable and difficult to use together.
+
+
+```{r itemcountry, fig.cap="Countries and Years with the Most Observations in the Source Data \\label{item_country_plots}", fig.height=3.5, fig.pos='h', cache=FALSE}
+
+items_plot <- dcpo_input_raw1 %>%
+  distinct(country, year, item) %>%
+  count(item) %>%
+  arrange(desc(n)) %>% 
+  # head(12) %>% 
+  ggplot(aes(forcats::fct_reorder(item, n, .desc = TRUE), n)) +
+  geom_bar(stat = "identity") +
+  theme_bw() +
+  theme(axis.title.x = element_blank(),
+        axis.text.x  = element_text(angle = 90, vjust = .45, hjust = .95),
+        axis.title.y = element_text(size = 9),
+        plot.title = element_text(hjust = 0.5, size = 11)) +
+  ylab("Country-Years\nObserved") +
+  ggtitle("Items")
+
+trust4_cy <- dcpo_input_raw1 %>% 
+  filter(item == "trust4") %>%
+  distinct(country, year) %>%
+  nrow()
+
+trust4_surveys <- dcpo_input_raw1 %>%
+  filter(item == "trust4") %>%
+  distinct(survey) %>%
+  pull(survey) %>% 
+  str_split(", ") %>% 
+  unlist() %>% 
+  unique() %>% 
+  sort()
+
+
+countries_plot <- dcpo_input_raw1 %>%
+  mutate(country = if_else(stringr::str_detect(country, "United"),
+                           stringr::str_replace(country, "((.).*) ((.).*)", "\\2.\\4."),
+                           country)) %>% 
+  distinct(country, year, item) %>% 
+  count(country) %>%
+  arrange(desc(n)) %>% 
+  head(12) %>% 
+  ggplot(aes(forcats::fct_reorder(country, n, .desc = TRUE), n)) +
+  geom_bar(stat = "identity") +
+  theme_bw() +
+  theme(axis.title.x = element_blank(),
+        axis.text.x  = element_text(angle = 90, vjust = .45, hjust = .95),
+        axis.title.y = element_text(size = 9),
+        plot.title = element_text(hjust = 0.5, size = 11)) +
+  ylab("Year-Items\nObserved") +
+  ggtitle("Countries")
+
+cby_plot <- dcpo_input_raw1 %>%
+  mutate(country = if_else(stringr::str_detect(country, "United"),
+                           stringr::str_replace(country, "((.).*) ((.).*)", "\\2.\\4."),
+                           country),
+         country = stringr::str_replace(country, "South", "S.")) %>% 
+  distinct(country, year) %>%
+  count(country) %>% 
+  arrange(desc(n)) %>% 
+  head(12) %>% 
+  ggplot(aes(forcats::fct_reorder(country, n, .desc = TRUE), n)) +
+  geom_bar(stat = "identity") +
+  theme_bw() +
+  theme(axis.title.x = element_blank(),
+        axis.text.x  = element_text(angle = 90, vjust = .45, hjust = .95),
+        axis.title.y = element_text(size = 9),
+        plot.title = element_text(hjust = 0.5, size = 11)) +
+  ylab("Years\nObserved") +
+  ggtitle("Countries")
+
+
+ybc_plot <- dcpo_input_raw1 %>%
+  distinct(country, year) %>%
+  count(year, name = "nn") %>%
+  ggplot(aes(year, nn)) +
+  geom_bar(stat = "identity") +
+  theme_bw() +
+  theme(axis.title.x = element_blank(),
+        # axis.text.x  = element_text(angle = 90, vjust = .45, hjust = .95),
+        axis.title.y = element_text(size = 9),
+        plot.title = element_text(hjust = 0.5, size = 11)) +
+  ylab("Countries\nObserved") +
+  ggtitle("Years")
+
+ge_obs <- dcpo_input_raw1 %>% 
+  distinct(country, year, item) %>%
+  count(country) %>%
+  filter(country == "Germany") %>%
+  pull(n)
+
+others <- dcpo_input_raw1 %>%
+  distinct(country, year, item) %>%
+  count(country) %>%
+  arrange(desc(n)) %>%
+  slice(2:5) %>%
+  pull(country) %>% 
+  knitr::combine_words()
+
+countries_cp <- dcpo_input_raw1 %>%
+  mutate(country = if_else(stringr::str_detect(country, "United"),
+                           stringr::str_replace(country, "((.).*) ((.).*)", "\\2.\\4."),
+                           country),
+         country = stringr::str_replace(country, "South", "S.")) %>% 
+  distinct(country, year, item) %>%
+  count(country) %>% 
+  arrange(desc(n)) %>% 
+  head(12) %>% 
+  pull(country)
+
+countries_cbyp <- dcpo_input_raw1 %>%
+  mutate(country = if_else(stringr::str_detect(country, "United"),
+                           stringr::str_replace(country, "((.).*) ((.).*)", "\\2.\\4."),
+                           country),
+         country = stringr::str_replace(country, "South", "S.")) %>% 
+  distinct(country, year) %>%
+  count(country) %>% 
+  arrange(desc(n)) %>% 
+  head(12) %>% 
+  pull(country)
+
+adding <- setdiff(countries_cbyp, countries_cp) %>% 
+  knitr::combine_words()
+
+dropping <- setdiff(countries_cp, countries_cbyp) %>% 
+  knitr::combine_words()
+
+y_peak_year <- dcpo_input_raw1 %>%
+  distinct(country, year) %>%
+  count(year, name = "nn") %>% 
+  filter(nn == max(nn)) %>% 
+  pull(year)
+
+y_peak_nn <- dcpo_input_raw1 %>%
+  distinct(country, year) %>%
+  count(year, name = "nn") %>% 
+  filter(nn == max(nn)) %>% 
+  pull(nn)
+
+data_poorest <- dcpo_input_raw1 %>%
+  distinct(country, year, item) %>%
+  count(country) %>%
+  arrange(n) %>%
+  filter(n == 2) %>%
+  pull(country) %>% 
+  knitr::combine_words() %>% 
+  paste0("---", ., "---")
+
+wordify_numeral <- function(x) setNames(c("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", " seventeen", "eighteen", "nineteen"), 1:19)[x]
+
+n_data_poor <- {data_poorest %>%
+    str_split(",") %>% 
+    first()} %>% 
+  length() 
+
+  if(n_data_poor < 20) {
+    n_data_poorest <- n_data_poor %>% 
+      wordify_numeral()
+  } else {
+    n_data_poorest <- n_data_poor
+    data_poorest <- " "
+  }
+
+(countries_plot + cby_plot) / (ybc_plot)
+```
+
+Consider the most frequently asked item in the data we collected, which asks respondents whether they strongly agree, agree, disagree, or strongly disagree with the statement "I am going to name a number of institutions. For each one, could you tell me how much trust you have in them. Is it a great deal of trust, some trust, not very much trust or none at all? Civil service."^[Question text may vary slightly across survey datasets, but not, roughly speaking, by more than the translation differences across languages found within the typical cross-national survey dataset. In this case, some questions ask about "the public administration" or "government officials" rather than "the civil service," and some refer to "confidence" rather than "trust."  These words are often translated identically.]
+Employed by the Arab Barometer, the Asia Europe Survey, the Asian Barometer, the British Social Attitudes Survey, the Latino Barometer, the East Asian Social Survey, the European Values Survey, the Italian National Election Study, the South Asian Barometer, and the World Values Survey, this question was asked in a total of `r trust4_cy` different country-years.
+However, this represents only `r {trust4_cy*100/(spanned_cy %>% str_replace(",", "") %>% as.numeric())} %>% round()`% of the country-years spanned by our data, despite being the _most common_ survey item.
+This again underscores the sparse and often incomparable nature of the available public opinion data on this topic.
+
+
+The distribution of country-year-item observations further highlights the limitations of the raw dataset.
+As depicted in the upper left panel of Figure \nobreakspace{}\ref{item_country_plots}, Germany, with `r ge_obs` country-year-item observations, is the most represented country, followed by `r others %>% str_replace("United", "the United")`.
+The upper right panel expands on this by listing the twelve countries with the highest number of years observed, revealing overlaps and differences from the previous group; `r adding` join the list, replacing `r dropping`.
+The bottom panel counts the countries observed in each year and reveals just how few relevant survey items were asked before 1996.
+Country coverage reached its peak in `r y_peak_year`, when respondents in `r y_peak_nn` countries were asked items about trust in civil servants.
+
+In the next section, we describe how we leveraged this sparse and incomparable survey data to generate complete, comparable time-series TCS scores using a latent variable model.
+
+
+# Estimating Trust in Civil Servants
+
+To estimate trust in civil servants across countries and over time, we employ the recent and suitable method for handling data that is both incomparable and sparse: the Dynamic Comparative Public Opinion (DCPO) model developed by @Solt2020c.^[
+The DCPO model provides a better fit to survey data than the models proposed in @Claassen2019 or @Caughey2019 [@Solt2020c].
+The model put forward in @McGann2019 depends on dense survey data unlike the sparse data on trust in civil servants just described.
+Building on all of these four works, @Kolczynska2020 is the very most recent effort, but the multilevel regression and post-stratification (MRP) approach it offers depends both on dense survey data and on additional data describing population characteristics, so it too is inappropriate for our purposes here.]
+DCPO treats trust in civil servants as a latent trait that is not directly observable but can be inferred from respondents' answer to multiple relevant survey questions, accounting for differences in question wording and response scales. 
+DCPO has been applied in recent peer-reviewed work to produce comparable public-opinion time series from sparse and incomparable cross-national surveys [ e.g., @Tai2024; @Woo2023a; @Hu2025b].
+Formally, DCPO is a population-level two-parameter ordinal logistic item response theory (IRT) model with country-specific item-bias terms, addressing the two principal challenges posed by our source data: incomparability and sparsity.
+
+DCPO models the total number of survey responses expressing at least as much trust in civil servants as response category $r$ to each question $q$ in country $k$ at time $t$, $y_{ktqr}$, out of the total number of respondents surveyed, $n_{ktqr}$, using the beta-binomial distribution to accommodate overdispersion beyond sampling error:
+
+\begin{equation}
+a_{ktqr} = \phi\eta_{ktqr} \label{eq:bb_a}
+\end{equation}
+\begin{equation}
+b_{ktqr} = \phi(1 - \eta_{ktqr}) \label{eq:bb_b}
+\end{equation}
+\begin{equation}
+y_{ktqr} \sim \textrm{BetaBinomial}(n_{ktqr}, a_{ktqr}, b_{ktqr}) \label{eq:betabinomial}
+\end{equation}
+
+where $\eta_{ktqr}$ is the expected probability that a random person in country $k$ at time $t$ answers question $q$ in a category at least as positive as response $r$ and $\phi$ represents an overall dispersion parameter.
+
+This expected probability, $\eta_{ktqr}$, is linked to latent trust via a population-level ordinal IRT measurement equation:
+
+\begin{equation}
+\eta_{ktqr} = \textrm{logit}^{-1}(\frac{\bar{\theta'}_{kt} - (\beta_{qr} + \delta_{kq})}{\sqrt{\alpha_{q}^2 + (1.7*\sigma_{kt})^2}}) \label{eq:dcpo}
+\end{equation}
+
+Here $\bar{\theta'}_{kt}$ is the (unbounded) country–year mean of latent trust in civil servants and $\sigma_{kt}$ is country–year standard deviation. 
+The $\beta_{qr}$ parameter captures the difficulty of endorsing category $r$ to question $q$, $\alpha_{q}$ captures the dispersion/noisiness of question $q$ in measuring trust in civil servants, and $\delta_{kq}$ term represents country-specific item bias that allows the same survey item to function differently across countries.
+
+To address sparsity over time, DCPO places random-walk priors on the latent country–year parameters and estimates are therefore smoother in data-rich periods and more uncertain in data-sparse periods. 
+Together, DCPO estimates latent trust and smooths estimates simultaneously in a single Bayesian model, with a random-walk evolution prior providing parsimonious regularization across sparse time series and naturally expanding uncertainty where coverage is thin.
+For additional details, see Appendix \nobreakspace{}@sec-app-dcpo and @Solt2020c [, 3-8]. 
+
+
+Intuitively, DCPO addresses item incomparability through the _difficulty_ and _dispersion_ parameters.
+_Difficulty_ captures how much trust in civil servants is indicated by a given response. 
+For example, strongly agreeing with the statement "Most government administrators (civil servants) can be trusted to do what is best for the country," exhibits more trust in civil servants than simply agreeing, which shows more trust than responding "disagree," which in turn is a more trusting response than "strongly disagree."
+The same logic also applies across questions.
+Expressing "great trust" in civil servants "to look after your interests" likely expresses even more trust than just strongly agreeing that civil servants can be trusted to do what is right.
+_Dispersion_ captures how tightly a question's responses map onto the latent trait:  questions with lower dispersion provide a stronger signal of changes in trust, while noisier questions contribute weaker information.
+Together, by estimating difficulty and dispersion, DCPO maps responses from different questions and surveys onto a single latent scale, yielding comparable country–year estimates.
+
+Finally, the random-walk priors smooth trust estimates over time within each country. A given year's trust level is modeled as the previous year's estimate plus a random shock.
+This approach allows the generation of estimates even for years with little or no data, with uncertainty increasing as the time gap between observed years grows.
+We incorporate this uncertainty in downstream analyses as described below.
+
+
+```{r dcpo_input, eval=FALSE, include=FALSE, results=FALSE}
+dcpo_input <- DCPOtools::format_dcpo(dcpo_input_raw1,
+                                     scale_q = "trust4",
+                                     scale_cp = 2)
+save(dcpo_input, file = here::here("data", "dcpo_input.rda"))
+```
+
+```{r dcpo, eval=FALSE, include=FALSE, results=FALSE}
+iter <- 1000
+ 
+dcpo <- paste0(.libPaths(), "/DCPO/stan/dcpo.stan")[1] |> 
+  cmdstan_model()
+
+dcpo_output <- dcpo$sample(
+   data = dcpo_input[1:13], 
+   max_treedepth = 14,
+   adapt_delta = 0.99,
+   step_size = 0.005,
+   seed = 324, 
+   chains = 4, 
+   parallel_chains = 4,
+   iter_warmup = iter/2,
+   iter_sampling = iter/2,
+   refresh = iter/50
+ )
+
+results_path <- here::here(file.path("data", 
+                                     iter, 
+                                  {str_replace_all(Sys.time(),
+                                                      "[- :]",
+                                                   "") %>%
+                                         str_replace("\\d{2}.\\d{6}$",
+                                                     "")}))
+
+dir.create(results_path, 
+           showWarnings = FALSE, 
+           recursive = TRUE)
+
+dcpo_output$save_data_file(dir = results_path,
+                           random = FALSE)
+dcpo_output$save_output_files(dir = results_path,
+                              random = FALSE)
+```
+
+```{r dcpo_results}
+ if (!exists("results_path")) {
+   latest <- "202404171225"
+   results_path <- here::here("data", "1000", latest)
+   
+   # Define OSF_PAT in .Renviron: https://docs.ropensci.org/osfr/articles/auth
+   if (!file.exists(file.path(results_path, paste0("dcpo-", latest, "-1.csv")))) {
+     dir.create(results_path, showWarnings = FALSE, recursive = TRUE)
+     osf_retrieve_node("82w36") %>% 
+       osf_ls_files() %>% 
+       filter(str_detect(name, latest)) %>% 
+       osf_download(path = results_path)
+   }
+}
+ 
+dcpo_output <- as_cmdstan_fit(here(results_path,
+                                   list.files(results_path,
+                                              pattern="csv$")))
+
+```
+
+```{r dcpo_summary}
+load(file = here::here("data", "dcpo_input.rda"))
+theta_summary <- DCPOtools::summarize_dcpo_results(dcpo_input,
+                                                   dcpo_output,
+                                                   "theta")
+
+res_cy <- nrow(theta_summary) %>% 
+  scales::comma()
+
+res_c <- theta_summary %>% 
+  pull(country) %>% 
+  unique() %>% 
+  length()
+
+save(theta_summary, file = here::here("data",
+                                      "theta_summary.rda"))
+```
+
+```{r theta_results}
+theta_results <- extract_dcpo_results(dcpo_input,
+                                      dcpo_output,
+                                      par = "theta")
+```
+
+
+```{r cs, fig.cap="TCS Scores, Most Recent Available Year \\label{cs_mry}", fig.height=10, fig.width=8, cache=FALSE}
+n_panes <- 2
+axis_text_size <- 10
+
+p1_data <- theta_summary %>%
+  group_by(country) %>%
+  top_n(1, year) %>%
+  ungroup() %>%
+  arrange(mean) %>%
+  transmute(country_year = paste0(country, " (", year, ")") %>% 
+              str_replace("’", "'"),
+            estimate = mean,
+            conf.high = q90,
+            conf.low = q10,
+            pane = n_panes - (ntile(mean, n_panes) - 1),
+            ranked = as.factor(ceiling(row_number())))
+
+p_theta <- ggplot(p1_data,
+                  aes(x = estimate, y = ranked)) +
+  geom_segment(aes(x = conf.low, xend = conf.high,
+                   y = ranked, yend = ranked),
+               na.rm = TRUE,
+               alpha = .4) +
+  geom_point(fill = "black", shape = 21, size = .5, na.rm = TRUE) +
+  theme_bw() + theme(legend.position="none",
+                     axis.text.x  = element_text(size = axis_text_size,
+                                                 angle = 90,
+                                                 vjust = .45,
+                                                 hjust = .95),
+                     axis.text.y  = element_text(size = axis_text_size),
+                     axis.title = element_blank(),
+                     strip.background = element_blank(), 
+                     strip.text = element_blank(),
+                     panel.grid.major = element_line(size = .3),
+                     panel.grid.minor = element_line(size = .15)) +
+  scale_y_discrete(breaks = p1_data$ranked, labels=p1_data$country_year) +
+  coord_cartesian(xlim=c(0, 1)) +
+  facet_wrap(vars(pane), scales = "free", nrow = 1)
+
+
+p_theta +
+  plot_annotation(caption = "Note: Gray whiskers represent 80% credible intervals.")
+
+bottom5 <- p1_data %>% 
+  arrange(ranked) %>% 
+  slice(1:5) %>% 
+  pull(country_year) %>% 
+  str_replace(" \\(.*", "") %>% 
+  knitr::combine_words()
+
+```
+
+We estimated the model using the `DCPOtools` package for R [@Solt2020a], running four chains for 1,000 iterations each and discarding the first half as warmup, which left us with 2,000 samples.
+The $\hat{R}$ diagnostic had a maximum value of 1.01, indicating that the model converged.
+The dispersion parameters of the survey items indicate that all of our source data items load well on the latent variable (see Appendix \nobreakspace{}@sec-app-survey).
+
+The result is estimates, in all `r res_cy` country-years spanned by the source data, of public trust in civil servants, what we call TCS scores.
+Figure\nobreakspace{}\ref{cs_mry} displays the most recent available TCS score for each of the `r res_c` countries and territories in the dataset.
+
+Several Asian countries, such as China and Singapore, dominate the top of the list.
+Several Southeast Asian countries also rank highly.
+This pattern aligns with OECD/ADB reports documenting high self-reported satisfaction with core public services in the region in recent years [@OECD2019; @OECD2025].
+Several democracies, such as Switzerland, Norway, Denmark, and Finland, also rank highly.
+On the other hand, the latest scores for `r bottom5` have them as the places where the public has the lowest trust toward civil servants.
+
+For transparency, we release the full set of country–year estimates and associated uncertainty.
+We treat unexpected estimates as prompts for further inquiry rather than definitive substantive claims, and we suggest that scholars interpret cross-national differences cautiously, especially for countries with sparse item coverage, where uncertainty is larger.
+
+```{r ts, fig.cap="TCS Scores Over Time Within Selected Countries \\label{ts_plots}", fig.height=3.5,cache=FALSE}
+countries <- c("Germany","United States","United Kingdom","Spain",
+                "Greece", "Turkey","Australia","New Zealand", 
+               "China",  "Japan", "South Korea", "Philippines", 
+               "Algeria", "Chile", "Argentina", "Mexico")
+
+countries2 <- countries %>% 
+  str_replace("United States", "U.S.") %>% 
+  str_replace("United Kingdom", "U.K.")
+
+c_res <- theta_summary %>% 
+  filter(country %in% countries) %>%
+  mutate(country = str_replace(country, "United States", "U.S.") %>% 
+           str_replace("United Kingdom", "U.K.") %>% 
+           factor(levels = countries2))
+
+ggplot(data = c_res, aes(x = year, y = mean)) +
+  theme_bw() +
+  theme(legend.position = "none") +
+  coord_cartesian(xlim = c(1980, 2025), ylim = c(0, 1)) +
+  labs(x = NULL, y = "TCS Scores") +
+  geom_ribbon(data = c_res, aes(ymin = q10, ymax = q90, linetype=NA), alpha = .25) +
+  geom_line(data = c_res) +
+  facet_wrap(~country, nrow = 2) +
+  theme(axis.text.x  = element_text(size=7,
+                                    angle = 90,
+                                    vjust = .45,
+                                    hjust = .95),
+        strip.background = element_rect(fill = "white", colour = "white")) +
+  patchwork::plot_annotation(caption = "Note: Countries are ordered by their TCS scores in their most recent\navailable year; gray shading represents 80% credible intervals.")
+```
+
+We then show the changes of TCS over time in sixteen countries in Figure\nobreakspace{}\ref{ts_plots}.
+As displayed in Figure\nobreakspace{}\ref{cs_mry}, the dataset covers a wide geographic breadth, allowing comparative studies of countries and regions too often neglected [see @Wilson2021].
+Figure\nobreakspace{}\ref{ts_plots} also shows that trust in civil servants has risen prominently in some countries, such as Germany and New Zealand, while remaining fairly constant over time in others, like Greece and Australia. 
+In contrast, TCS scores have fallen steadily in countries such as South Korea and the United States. 
+Some countries exhibit fluctuations, as seen in the United Kingdom, where trust has advanced and retreated, or the Philippines, where trust has declined and later recovered.
+Together, the differences within countries over time and the differences across countries present a challenge to theories on the causes and consequences of trust in civil servants. 
+
+# Validating Trust in Civil Servants
+
+```{r internal_val_dat, include=FALSE}
+internal_tscs_dat <- dcpo_input_raw1 %>% 
+  filter(item == "trust4") %>%  
+  mutate(title = "All Country-Years",
+         neg = FALSE)
+
+internal_cs_dat <- dcpo_input_raw1 %>% 
+  filter(survey == "eb963") %>%  
+  mutate(title = "Eurobarometer 96.3 (2022)",
+         neg = FALSE)
+
+internal_ts_dat <- dcpo_input_raw1 %>% 
+  filter(survey == "usgss" & item == "trust3") %>%  
+  mutate(title = "United States",
+         neg = FALSE)
+```
+
+
+```{r internalval, fig.height = 4, fig.cap = "Convergent Validation: Correlations Between TSC Scores and Individual TSC Source-Data Survey Items \\label{internal_val}",cache=FALSE}
+
+internal_tscs_plot <- validation_plot(internal_tscs_dat,
+                                lab_x = .1,
+                                lab_y = 95) +
+  theme_bw() +
+  theme(legend.position="none",
+        axis.text  = element_text(size=8),
+        axis.title = element_text(size=9),
+        plot.title = element_text(hjust = 0.5, size = 9),
+        strip.background = element_blank()) +
+  coord_cartesian(xlim = c(0,1), ylim = c(0,100)) +
+  labs(x = "TCS Score",
+       y = "% Expressing Quite a Lot or a Great Deal of Trust")
+
+internal_cs_plot <- validation_plot(internal_cs_dat,
+                                lab_x = .1,
+                                lab_y = 95) +
+  theme_bw() +
+  theme(legend.position="none",
+        axis.text  = element_text(size=8),
+        axis.title = element_text(size=9),
+        plot.title = element_text(hjust = 0.5, size = 9),
+        # strip.text.x = element_text(size=5),
+        strip.background = element_blank()) +
+  coord_cartesian(xlim = c(0,1), ylim = c(0,100)) +
+  labs(x = "TCS Score",
+       y = "% Tending to Trust Public Administration in Country")
+
+internal_ts_plot <- validation_plot(internal_ts_dat,
+                                    lab_x = 1989,
+                                    lab_y = .95) +
+  theme_bw() +
+  theme(legend.position="none",
+        axis.text  = element_text(size=8),
+        axis.title = element_text(size=9),
+        plot.title = element_text(hjust = 0.5, size = 9),
+        strip.background = element_blank()) +
+  coord_cartesian(ylim = c(0,1)) +
+  labs(x = "Year",
+       y = "Score") +
+  annotate("text", x = 2005, y = .8, size = 2,
+           label = 'U.S. GSS') + #confidence in executive branch
+  annotate("text", x = 2008, y = .32, size = 2,
+           label = "TCS Score")
+
+internal_tscs_plot + internal_cs_plot + internal_ts_plot  +
+  patchwork::plot_annotation(caption = "Note: Gray whiskers and shading represent 80% credible intervals.")
+```
+
+Before using these estimates in analysis, we validate our trust civil service score through convergent validation and construct validation, since validation tests of cross-national latent variables are crucially important [see, e.g., @Hu2025].
+Figure\nobreakspace{}\ref{internal_val} shows the measure's validity in tests of convergent validation that tests whether a measure is empirically associated with alternative indicators of the same concept [@Adcock2001, 540].
+We started with 'internal' convergent validation test [see, e.g., @Caughey2019, 689; @Solt2020c, 10] by comparing our TCS score with individual items from source-data to generate them. 
+
+The left panel in Figure\nobreakspace{}\ref{internal_val} shows a scatterplot of country-years in which the TCS scores are plotted against the percentage of respondents who expressed "a quite a lot "or "a great deal" of trust in response to the question: "I am going to name a number of institutions. For each one, could you tell me how much trust you have in them. Is it a great deal of trust, some trust, not very much trust or none at all? Civil service."
+The strong correlation (R = 0.93) indicates that TCS scores effectively capture variations in trust in civil service across country-years.
+
+The middle panel plots our TCS score against the percentage who responded "Tend to trust." to the question, "I would like to ask you a question about how much trust you have in certain institutions. For each of the following institutions, please tell me if you tend to trust it or tend not to trust it: Public administration in (OUR COUNTRY)" in the Eurobarometer 96.3 January-February 2022 module.
+This question is asked in the most countries, and the strong correlation demonstrates the broad applicability of the TCS scores in capturing trust across diverse contexts.
+
+Finally, the right panel compares the trend of the longest item that has been asked since 1973 in U.S.General Social Survey, "I am going to name some institutions in this country. As far as the people running these institutions are concerned, would you say you have a great deal of confidence, only some confidence, or hardly any confidence at all in them? Executive branch of the federal government." to the trend of the TCS scores.
+The TCS scores align with trends in trust in the executive branch over time, effectively capturing historical changes. 
+
+
+```{r ext_val1_dat, eval=FALSE}
+ext_dat1 <- read_csv(here("data-raw",
+                         "surveys_inst.csv"))
+
+ext_wvs_gov_dat <- ext_dat1 %>%
+  filter(str_detect(survey, "wvs")) %>% 
+  DCPOtools::dcpo_setup(datapath = here("..",
+                                        "data",
+                                        "dcpo_surveys")) %>%  
+  mutate(title = "World Values Survey",
+         neg = FALSE)
+
+ext_lb_courts_dat <- ext_dat1 %>%
+  filter(str_detect(survey, "lb")) %>% 
+    DCPOtools::dcpo_setup(datapath = here("..",
+                                        "data",
+                                        "dcpo_surveys")) %>%   
+  mutate(title = "Latinobarómetro",
+         neg = FALSE) 
+
+ext_evs_parl_dat <- ext_dat1 %>%
+  filter(str_detect(survey, "evs")) %>%
+  DCPOtools::dcpo_setup(datapath = here("..",
+                                        "data",
+                                        "dcpo_surveys")) %>%  
+    mutate(title = "European Values Survey",
+           neg = FALSE)
+
+save(ext_wvs_gov_dat, ext_lb_courts_dat, ext_evs_parl_dat,
+     file = here::here("data", "extval1.rda"))
+```
+
+```{r extval1, fig.cap="Construct Validation: Correlations Between TCS Scores and Trust in Institutions Survey Items \\label{ext_val1}", fig.height=4,cache=FALSE}
+
+load(here::here("data", "extval1.rda"))
+
+ext_wvs_gov_plot <- validation_plot(ext_wvs_gov_dat,
+                                    lab_x = .1,
+                                    lab_y = 95) +
+  theme_bw() +
+  theme(legend.position="none",
+        axis.text  = element_text(size=8),
+        axis.title = element_text(size=9),
+        plot.title = element_text(hjust = 0.5, size = 9),
+        strip.background = element_blank()) +
+  coord_cartesian(xlim = c(0,1), ylim = c(0,100)) +
+  labs(x = "TCS Score",
+       y = "% Expressing Quite a Lot of Trust or More\nin National Government")
+
+ext_lb_courts_plot <- validation_plot(ext_lb_courts_dat,
+                                      lab_x = .1,
+                                      lab_y = 95) +
+  theme_bw() +
+  theme(legend.position="none",
+        axis.text  = element_text(size=8),
+        axis.title = element_text(size=9),
+        plot.title = element_text(hjust = 0.5, size = 9),
+        strip.background = element_blank()) +
+  coord_cartesian(xlim = c(0,1), ylim = c(0,100)) +
+  labs(x = "TCS Score",
+       y = "% Expressing Some Trust or More\nin Judiciary")
+
+ext_evs_parl_plot <- validation_plot(ext_evs_parl_dat,
+                                       lab_x = .1,
+                                       lab_y = 95) +
+  theme_bw() +
+  theme(legend.position="none",
+        axis.text  = element_text(size=8),
+        axis.title = element_text(size=9),
+        plot.title = element_text(hjust = 0.5, size = 9),
+        strip.background = element_blank()) +
+  coord_cartesian(xlim = c(0,1), ylim = c(0,100)) +
+  labs(x = "TCS Score",
+       y = "% Expressing Quite a Lot of Confidence or More\nin Parliament")
+
+ext_wvs_gov_plot + ext_evs_parl_plot + ext_lb_courts_plot +
+  plot_annotation(caption = "Note: Gray whiskers and shading represent 80% credible intervals.")
+```
+
+Figure\nobreakspace{}\ref{ext_val1} present three 'external' convergent validation tests, comparing TCS scores to responses to survey items that were *not* included in the source data: items that asked respondents' confidence and trust in national government,  parliament, and judiciary in their countries.
+In the left panel, we plot TCS score against data from seven rounds of World Value Survey, which asked respondents how much they trust their national government.
+The center plot shows data from European Values Surveys asking respondents' confidence in parliament.
+The right presents the percentage of respondents who expressed at least some trust in judiciary in their country in Latinobarometro.
+Our measure positively correlated with all of them, with a stronger correlation with trust in national government and mild correlation with trust in parliament and judiciary.
+
+There is a longstanding debate about the dimentionality of political trust [@Easton1965; @Marien2011; @Norris2011; @Rothstein2008; @Tai2022role].
+Trust in civil servants has been theoretically grouped within the same dimension as all three types of institutional trust [@Marien2011; @Hooghe2011], or one of them [@Norris2011; @Rothstein2008; @Tai2022role].
+However, the variation in correlations between TCS scores and trust in institutions requires empirical analysis of trust's dimensions.
+
+
+```{r ext_val2_dat, eval=FALSE}
+ext_dat2 <- read_csv(here("data-raw",
+                         "surveys_cor.csv"))
+
+ext_wvs_cor_dat <- ext_dat2 %>%
+  filter(str_detect(survey, "wvs")) %>% 
+  DCPOtools::dcpo_setup(datapath = here("..",
+                                        "data",
+                                        "dcpo_surveys")) %>%
+  mutate(title = "World Values Survey", 
+         neg = FALSE)
+
+ext_cor_dat <- ext_dat2 %>% 
+    filter(!str_detect(survey, "wvs") &
+             !str_detect(survey, "issp")) %>% 
+  DCPOtools::dcpo_setup(datapath = here("..",
+                                        "data",
+                                        "dcpo_surveys")) %>%
+  mutate(title = "Arab, Asian & New Europe\n Barometers and\nLatinobarómetro",
+         neg = FALSE)
+
+ext_issp_cor_dat <- ext_dat2 %>%
+  filter(str_detect(survey, "issp")) %>% 
+  DCPOtools::dcpo_setup(datapath = here("..",
+                                        "data",
+                                        "dcpo_surveys")) %>%  
+  mutate(title = "ISSP Citizenship I & II",
+         neg = FALSE)
+
+save(ext_wvs_cor_dat, ext_cor_dat, ext_issp_cor_dat,
+     file = here::here("data", "extval2.rda"))
+```
+
+```{r extval2, fig.height = 4, fig.cap = "Construct Validation: Correlations Between TCS Scores and Corruption of Public Servants Survey Items \\label{ext_val2}",cache=FALSE}
+load(here::here("data", "extval2.rda"))
+
+ext_wvs_cor_plot <- validation_plot(ext_wvs_cor_dat,
+                                    lab_x = .1,
+                                    lab_y = 95) +
+  theme_bw() +
+  theme(legend.position="none",
+        axis.text  = element_text(size=8),
+        axis.title = element_text(size=9),
+        plot.title = element_text(hjust = 0.5, size = 9),
+        strip.background = element_blank()) +
+  coord_cartesian(xlim = c(0,1), ylim = c(0,100)) +
+  labs(x = "TCS Score",
+       y = "% Saying Most or All State Authorities\nAre Involved in Corruption")
+
+ext_cor_plot <- validation_plot(ext_cor_dat,
+                                    lab_x = .1,
+                                    lab_y = 95) +
+  theme_bw() +
+  theme(legend.position="none",
+        axis.text  = element_text(size=8),
+        axis.title = element_text(size=9),
+        plot.title = element_text(hjust = 0.5, size = 9),
+        strip.background = element_blank()) +
+  coord_cartesian(xlim = c(0,1), ylim = c(0,100)) +
+  labs(x = "TCS Score",
+       y = "% Saying Most or Almost All\nGovernment Officials Are Corrupt")
+ 
+ext_issp_cor_plot <- validation_plot(ext_issp_cor_dat,
+                                    lab_x = .1,
+                                    lab_y = 95) +
+  theme_bw() +
+  theme(legend.position="none",
+        axis.text  = element_text(size=8),
+        axis.title = element_text(size=9),
+        plot.title = element_text(hjust = 0.5, size = 9),
+        strip.background = element_blank()) +
+  coord_cartesian(xlim = c(0,1), ylim = c(0,100)) +
+  labs(x = "TCS Score",
+       y = "% Saying a Lot or Almost Everyone in the\nCountry's Public Service Is Involved in Corruption")
+
+ext_wvs_cor_plot + ext_cor_plot + ext_issp_cor_plot + patchwork::plot_annotation(caption = "Note: Gray whiskers and shading represent 80% credible intervals.")
+```
+
+We next conduct tests of construct validation in Figure\nobreakspace{}\ref{ext_val2}.
+Construct validation assesses whether a given indicator is empirically correlated with other indicators in a way that conforms to theoretical expectations [@Adcock2001, 542].
+Corruption is often often argued as a likely contributor to distrust in civil servants and public administration [see, e.g., @Anderson2003; @VanRyzin2011; @VandeWalle2022].
+
+
+The left panel compares perceived widespread of corruption, measured as the percentage of those saying most or state authorities are involved in corruption in seven waves of the WVS, with the TCS scores.
+As anticipated, there is a clear negative relationship between the spread of perceived corruption and the TCS scores: when there is widespread perception of corruption in authorities, the public tends to distrust civil servants.
+The similar negative correlations between TCS scores and perceived corruption among government officials are also perceived in the center and right panel of Figure\nobreakspace{}\ref{ext_val2}, which used data from different regions.
+The center panel shows the data in developing or newly democratic countries surveyed in the Asian Barometer, the New Europe Barometer, and the Latinobarometro, and the right panel displays the data in countries surveyed in the International Social Survey Programme Citizenship module (2004, 2014).
+
+To sum up, the evidence of construct validation of TCS scores against the perceived extent of corruption in Figure\nobreakspace{}\ref{ext_val2}, together with the evidence of external validation in Figure\nobreakspace{}\ref{ext_val1} and convergent validation in Figure \nobreakspace{}\ref{internal_val}, demonstrates the validity of the TCS scores as measures of the public's trust in civil servants. 
+
+
+# Explaining Trust in Civil Servants
+
+With our time-series cross-national data on trust in civil servants, we are able to reexamine and perform a conceptual replication and generalization [see @Walker2017, 1225-1226] of the literature debating the causes of trust in bureaucracy that we describe above.
+That is, we investigate the same hypotheses as previous work using different measurement and analysis.
+With many more country-years observed, we are able to combine a wide range of contextual indicators of both outcome and quality in a single analysis to examine the factors influencing trust; previous studies, looking at smaller samples, are constrained to look at these indicators just one or a few at a time.
+For outcome indicators, we employ GDP per capita, inflation, unemployment, and income inequality from 1984 to 2022 as measures of macroeconomic performance [see, e.g., @Houston2016, @Morelock2021] as well as public safety with regard to physical insecurity [see @Uddin2025].
+GDP per capita and inflation data were sourced from the International Monetary Fund, while unemployment data were collected from the World Bank, which uses modeled International Labour Organization estimates.
+Regarding income inequality, we relied on the Standardized World Income Inequality Database presented in @Solt2020, specifically the Gini index of inequality in disposable income.
+To measure physical insecurity, we collected the number of intentional homicides at the country-year level from the United Nations Office on Drugs and Crime.
+
+For the process-oriented quality of government, we include corruption perceptions, government effectiveness, and democracy [see, e.g., @Houston2016; @Choi2018; @Morelock2021]. 
+To capture the perceived level of corruption, we use the Corruption Perceptions Index from Transparency International, covering the years 1995 to 2022.
+The World Bank's Worldwide Governance Indicators provides its measure of Government Effectiveness, which reflects the overall quality of public services, the civil service, and policy formulation and implementation.
+And to account for the effect of democratic development on trust, we included the Liberal Democracy Index from the V-Dem dataset [@Coppedge2023; @Pemstein2023]. 
+
+We adopted a Bayesian multilevel model with varying intercepts for each country and each year.
+The varying intercepts for each country account for heteroskedasticity across countries, while those for each year account for 'time shocks' that impact all countries simultaneously [@Shor2007].
+To differentiate between short-term and historical effects, we used the 'within-between random effects' specification as described by @Bell2015 [see also @Woo2023a].
+This approach models, for each time-varying predictor, the time-invariant country mean alongside the time-varying difference from this mean for each country-year.
+
+Finally, we addressed measurement uncertainty in the data for trust in bureaucracy, income inequality, and the Corruption Perceptions Index by incorporating it into the analysis [see @Tai2024]. 
+The model was estimated using the `brms` R package [@Burkner2017].
+
+```{r data_combo,eval=FALSE, include=FALSE, results=FALSE}
+
+#Economic data ####
+
+## IMF: GDPpc and Inflation 
+
+###"Inflation rate, average consumer prices (Annual percent change)"
+imf_inflation <- readxl::read_excel(here::here("data","imf/2023/imf-inflation-export-20230730.xls"))[2:228,1:45] %>%
+  rename (country = colnames(.)[1]) %>%
+  gather(year, inflation, "1980":"2023") %>%
+  transmute(
+    year = as.numeric(year),
+    imf_inflation = as.numeric(inflation),
+    country =  countrycode(country, origin = 'country.name', destination = 'country.name')
+  ) %>%
+  filter(!is.na(country)) %>%
+  filter(year > 1983)
+
+###"GDP per capita, current prices (Purchasing power parity; international dollars per capita)"
+imf_gdppc <- readxl::read_excel(here::here("data","imf/2023/imf-gdppc-export-20230730.xls"))[2:228,1:45] %>%
+  rename (country = colnames(.)[1]) %>%
+  gather(year, gdppc, "1980":"2023") %>%
+  transmute(
+    year = as.numeric(year),
+    imf_gdppc = as.numeric(gdppc),
+    country =  countrycode(country, origin = 'country.name', destination = 'country.name')
+  ) %>%
+  filter(!is.na(country))  %>%
+  filter(year > 1983)
+
+
+imf_data <- imf_gdppc %>%
+  left_join(imf_inflation)
+  
+
+## WB: Unemployment 
+
+wb_unemployment <- wbstats::wb_data("SL.UEM.TOTL.ZS")[3:5] %>% 
+  rename (wb_unemploy = colnames(.)[3], 
+          year = date) %>%
+  filter(year > 1983) %>%
+  mutate(country =  countrycode(country, origin = 'country.name', destination = 'country.name'))
+#modelled ILO
+
+economic_data <- wb_unemployment %>%
+  left_join(imf_data)
+
+colSums(is.na(economic_data))
+
+
+## Swiid: Inequality 
+swiid9_4 <- load(here::here("data","swiid9_4/swiid9_4.rda"))
+swiid_summary <- swiid_summary %>% 
+    mutate(country = countrycode::countrycode(country,
+                                              "country.name",
+                                              "country.name",
+                                              warn = FALSE)) %>% 
+    select(country, year, gini_disp, gini_disp_se)
+
+
+
+#Quality data ####
+##cpi 1995
+load(here::here("data","cpi2022/cpi_95_22_error.rda"))
+ 
+cpi_95_22_error <-  cpi_95_22_error %>%
+  mutate(relative_error = cpi_error/cpi) %>%
+  dplyr::group_by(country) %>%
+  mutate(h_re = max(relative_error,na.rm = T),
+         h_re = ifelse(h_re =="-Inf",NA,h_re)) %>%
+  dplyr::ungroup() %>%
+  mutate(cpi_error = ifelse(is.na(cpi_error), cpi*h_re,cpi_error)) %>%
+  group_by(country) %>%
+  arrange(country,year) %>%
+  dplyr::select(-h_re, -relative_error)
+
+
+##wgi  1996
+wgidataset <- rio::import(here::here("data","qog/wgi2022/wgidataset.dta")) %>%
+  dplyr::select(code,countryname,year,vae, vas, pve,pvs, gee,ges,rqe,rqs,rle,rls,cce,ccs) %>%
+  mutate(country = countrycode::countrycode(countryname,origin = "country.name", destination = "country.name")) %>%
+  dplyr::select(-code,-countryname)
+
+#Others ####
+##unodc-- intentional_homicide
+unodc_homi <- readxl::read_excel(here::here("data","UNODC/data_cts_intentional_homicide.xlsx"), 
+                                   skip = 2) %>%
+  filter(Indicator == "Victims of intentional homicide") %>%
+  filter(Dimension == "Total") %>%
+  filter(Category == "Total") %>%
+  filter(Sex == "Total") %>%
+  filter(Age == "Total") %>%
+  filter(`Unit of measurement` == "Rate per 100,000 population")  %>%
+  transmute(year = Year,
+            country = countrycode::countrycode(Iso3_code,
+                                               origin = "iso3c",
+                                               destination = "country.name"), 
+            cname = Country,
+            victims_inthomi = VALUE
+            ) %>%
+  mutate(country = ifelse(cname =="Kosovo under UNSCR 1244", "Kosovo", country)) %>%
+  filter(year > 1983) %>%
+  filter(!is.na(country)) %>%
+  dplyr::select(-cname) %>%
+  filter(!is.na(victims_inthomi))
+
+####Vdem data
+load(here::here("data","vdem13cnry_libdem_1960full.rda"))
+load(here::here("data","vdem13_regime.rda"))
+
+vdem13 <- vdem13cnry_libdem_1960full %>%
+          select(country,year, libdem, libdem_sd) %>%
+          filter( year > 1983) %>%
+  left_join(vdem13_regime %>%
+          filter( year > 1983) )
+
+
+
+
+#Data combo ####
+data_combo <- theta_summary %>% 
+    left_join(cpi_95_22_error,
+              by = c("country", "year")) %>% 
+    left_join(wgidataset,
+              by = c("country", "year")) %>% 
+    left_join(swiid_summary %>%
+                filter(!(country == "Russia" & year == 1990 & gini_disp ==
+24.2)),
+              by = c("country", "year")) %>% #why russia has two values?
+    left_join(vdem13,
+              by = c("country", "year")) %>% 
+    left_join(unodc_homi,
+              by = c("country", "year")) %>%
+    left_join(economic_data,
+              by = c("country", "year")) %>%
+     dplyr::select(-gpi_ss, -homi_100t) %>% # too many NAs
+    mutate(democracy = ifelse((!is.na(Vdem_regime)) & Vdem_regime < 2, 0, 
+                              ifelse((!is.na(Vdem_regime)) & Vdem_regime > 1, 1, Vdem_regime))) 
+  
+#save(data_combo, file =  here::here("data","data_combo.rda"))
+
+```
+
+
+```{r m_results, include=FALSE, eval=FALSE}
+
+
+   
+   # Define OSF_PAT in .Renviron: https://docs.ropensci.org/osfr/articles/auth
+if (!file.exists(file.path(here::here("data","data_combo.rda")))) {
+     osf_retrieve_node("82w36") %>% 
+       osf_ls_files() %>% 
+       filter(str_detect(name, "data_combo")) %>% 
+       osf_download(path = here::here("data"))
+   }
+
+
+load(here::here("data","data_combo.rda"))
+
+data_combo_all <- data_combo %>%
+    dplyr::select(country , year, mean, sd, libdem,libdem_sd, democracy,imf_gdp,imf_gdppc,imf_inflation,
+                  wb_unemploy,gini_disp, gini_disp_se, victims_inthomi,cpi, cpi_error,gee) %>%    
+  drop_na(mean:imf_gdppc, gini_disp:gee) %>%
+    group_by(country) %>% 
+    mutate( gini_mean = mean(gini_disp),
+           gini_mean_se = sqrt(sum(gini_disp_se^2))/
+             length(gini_disp),   
+           gini_diff = (gini_disp - gini_mean),
+           gini_diff_se = sqrt(gini_disp_se^2 + gini_mean_se^2)/2,
+           gdppc_mean = mean(imf_gdppc/1000),
+           gdppc_diff = imf_gdppc/1000 - gdppc_mean,
+           inf_mean = mean(sign(imf_inflation) * log(abs(imf_inflation) +1)),
+            inf_diff = (sign(imf_inflation) * log(abs(imf_inflation) +1)) - inf_mean,
+            #log_inf = sign(imf_inflation) * log(abs(imf_inflation) +1),
+          # log_une = log(wb_unemploy),
+          unemploy_mean = mean(wb_unemploy),
+          unemploy_diff = wb_unemploy - unemploy_mean,
+           gee_mean = mean(gee*10),
+           gee_diff = (gee*10 - gee_mean),
+           cpi_mean = mean(cpi),
+           cpi_mean_se = sqrt(sum(cpi_error^2))/
+            length(cpi),   
+           cpi_diff = (cpi - cpi_mean),
+           cpi_diff_se = sqrt(cpi_error^2 + cpi_mean_se^2)/2,
+            victims_mean = mean(victims_inthomi),
+           victims_diff = victims_inthomi - victims_mean,
+            libdem_mean = mean(libdem*100),
+           libdem_diff = libdem*100 - libdem_mean
+    ) %>% 
+    ungroup()
+
+
+
+ m_wgi_gee <- brms::brm(bf(mean*100 | mi(sd*100) ~ 
+                           me(gini_mean, gini_mean_se) +
+                           me(gini_diff, gini_diff_se) +
+                             gdppc_mean + gdppc_diff +
+                            inf_mean + inf_diff +
+                            unemploy_mean + unemploy_diff +
+                            victims_mean +  victims_diff +
+                            me(cpi_mean, cpi_mean_se) +
+                            me(cpi_diff, cpi_diff_se) +
+                             gee_mean + gee_diff +
+                            libdem_mean + libdem_diff +
+                              (1 | country) + (1 | year)),  
+             data = data_combo_all,
+            # backend = "cmdstanr",
+             warmup = 1500, 
+             iter = 3000, 
+             control = list(max_treedepth = 14,
+                               adapt_delta = .9),
+             chains = 4, 
+             cores = 4,
+             seed = 313) 
+ 
+#summary(m_wgi_gee) 
+#summary(m_wgi_gee,prob = 0.9) 
+#summary(m_wgi_gee,prob = 0.8) 
+
+#save(m_wgi_gee , file = here::here("output", "m_wgi_gee.rda"))
+#load(here::here("output", "m_wgi_gee.rda"))
+
+```
+
+
+```{r resplot, fig.cap="Predicting Trust in Civil Servants Across Countries Over Time \\label{model}", fig.height=6, fig.width=7.5,cache=FALSE}
+
+# Define OSF_PAT in .Renviron: https://docs.ropensci.org/osfr/articles/auth
+#if(!file.exists(here::here("data", "m_wgi_gee.rda"))) {
+#  dir.create(here::here("data"), showWarnings = FALSE, recursive = TRUE)
+#  osf_retrieve_node("82w36") %>% 
+#    osf_ls_files(pattern = "m_wgi_gee") %>% 
+#    osf_download(path = here::here("data"))
+#}
+
+
+
+load(here::here("data", "m_wgi_gee.rda"))
+
+
+named_vars <- tribble(~var_name, ~`.variable`, ~order,
+                        "GDPpc, Mean", "b_gdppc_mean", 1,
+                      "GDPpc, Difference", "b_gdppc_diff", 2, 
+                      "Inflation, Mean", "b_inf_mean", 3,
+                      "Inflation, Difference", "b_inf_diff", 4,
+                      "Unemployment, Mean", "b_unemploy_mean", 5, 
+                      "Unemployment, Difference", "b_unemploy_diff", 6,
+                      "Income Inequality, Mean", "bsp_megini_meangini_mean_se", 7,
+                      "Income Inequality, Difference",
+                      "bsp_megini_diffgini_diff_se", 8,
+                                            
+                      "Physical Insecurity, Mean", "b_victims_mean", 9,
+                      "Physical Insecurity, Difference", "b_victims_diff", 10,
+                      "Corruption Perception Index, Mean", "bsp_mecpi_meancpi_mean_se", 11,
+                      "Corruption Perception Index, Difference", "bsp_mecpi_diffcpi_diff_se", 12,                      
+                      "Government Effectiveness, Mean", "b_gee_mean",13,
+                      "Government Effectiveness, Difference", "b_gee_diff",14,
+                      "Level of Liberal Democracy, Mean", "b_libdem_mean",15,
+                      "Level of Liberal Democracy, Difference",  "b_libdem_diff",16)
+
+ doubled_sd_all <- m_wgi_gee$data %>% 
+    select(-`mean * 100`, -mean, -sd,
+           -country, -year, -ends_with("_se")) %>% 
+    summarize(across(everything(), by2sd)) %>% 
+    pivot_longer(everything()) %>% 
+    transmute(`.variable` = case_when(name == "gini_mean" ~ 
+                                        "bsp_megini_meangini_mean_se",
+                                      name == "gini_diff" ~
+                                        "bsp_megini_diffgini_diff_se",
+                                      name == "cpi_mean" ~ 
+                                        "bsp_mecpi_meancpi_mean_se",
+                                      name == "cpi_diff" ~
+                                        "bsp_mecpi_diffcpi_diff_se",
+                                      TRUE ~ paste0("b_", name)),
+              sd2 = value) %>% 
+    left_join(named_vars, by = join_by(`.variable`)) %>% 
+    arrange(order)
+  
+  coef_data0_all <- m_wgi_gee %>% 
+    tidybayes::gather_draws(`bs?p?_.*`, regex = TRUE) %>% 
+    filter(!`.variable`=="b_Intercept") %>% 
+    left_join(doubled_sd_all, by = join_by(.variable))
+  
+  cy_summary_all <- m_wgi_gee$data %>%
+    count(country) %>%
+    pull(n) %>%
+    summary()
+
+ordered <- doubled_sd_all %>%
+  pull(var_name) %>% 
+  rev()
+
+coef_data_all <- coef_data0_all %>% 
+  mutate(std_coef = round(.value * sd2, 1), #to reflect their variability, making them easier to compare.
+         term = factor(var_name, levels = ordered)) %>%
+  ggdist::median_qi(std_coef, .width = c(.95)) %>%
+  mutate(ci = paste0(round(.lower, 1), " to ", round(.upper, 1))) %>%
+  left_join(doubled_sd_all, ., by = join_by(.variable))
+#This can be particularly useful for interpreting the relative impact of coefficients when considering their uncertainty.
+
+
+coef_data0_all %>% 
+  mutate(std_coef = round(.value * sd2, 1),
+         term = factor(var_name, levels = ordered)) %>% 
+  ggplot(aes(y = term,
+             x = std_coef)) +
+  stat_halfeye(.width = c(.95),
+               alpha = .5,
+               point_alpha = 1,
+               size = 1.2) +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  theme_light()  +
+  coord_cartesian(xlim = c(-40, 50)) +
+  xlab(NULL) +
+  ylab(NULL) +
+  plot_annotation(caption = "Notes: Dots indicate posterior means; whiskers describe \n95% credible intervals; shading depicts the posterior probability density function.")
+```
+
+The results are presented in Figure\nobreakspace{}\ref{model}.
+In terms of economic outcomes, the increase in GDP per capita is associated with a higher level of trust in civil servants in the short term.
+A two-standard-deviation year-to-year change in per capita income increases trust by `r get_coef("b_gdppc_diff", results_df = coef_data_all) %>% str_remove("-")` point.
+This significant but relatively small effect suggests that GDP growth alone may not be sufficient to sustain high levels of trust in civil servants, given that economic growth may not transfer to effective resource management and service delivery.
+Still, it indicates that the null findings of the literature are the consequence of underpowered analyses: @Houston2016 examines only 21 country-year contexts and @Morelock2021 just 23, compared to the 1411 country-years that we are able to examine using the new TCS dataset.
+
+Unemployment exhibits a strong negative effect on trust in civil servants, with a two-standard-deviation year-to-year increase in unemployment decreasing trust in civil servants by `r get_coef("b_unemploy_diff", results_df = coef_data_all) %>% str_remove("-")` points.
+As @Houston2016 concludes---and contrary to null findings elsewhere [see, e.g., @Morelock2021]---high unemployment rates can signal government inefficiency or failure to address critical economic challenges, eroding trust in civil servants [see also @Choi2018, 124].
+
+In terms of physical insecurity, the mean number of intentional homicides has a long-term negative impact on trust in civil servants.
+A two-standard deviation increase in a country's mean number of homicides is associated with `r get_coef("b_victims_mean", results_df = coef_data_all) %>% str_remove("-")` points less trust.
+This result bolsters confidence that the finding of @Uddin2025, made in the context of Bangladesh, is generalizable across countries: high levels of violence and insecurity undermine public confidence in the administration’s competence to uphold law and order, diminishing trust in its civil service.
+
+This analysis provides no evidence that either inflation or income inequality significantly affects trust in civil servants in the short or long term when other factors are controlled, reinforcing conclusions of, e.g., @Houston2016 and @Morelock2021.
+
+Regarding process, these results show that a higher government effectiveness score has a strong positive long-term effect on trust in civil servants.
+A two-standard deviation increase in a country's mean effectiveness score is associated with `r get_coef("b_gee_mean", results_df = coef_data_all) %>% str_remove("-")` points more trust across countries.
+This finding suggests that improving the perceived quality of public services and policy formulation can lead to a sustained increase in trust, replicating findings of @Houston2016 and @Morelock2021.
+Coproduction of public value provides a compelling explanation, emphasizing how involving individuals in policy-making processes can strengthen trust in the public sector [@Schmidthuber2021].
+
+Although democratic capacity is found to mediate the relationship between government openness and public trust [@Schmidthuber2021], we found the development of democracy is associated with less trust in civil servants, both in the long run and in the short term.
+This is contrary to the positive result found by @Choi2018.
+Critical citizens in more democratic countries may trust civil servant only critically and have higher expectations of them [@Norris1999].
+However, perceived corruption was not consistently associated with trust in civil servants in either the long term or short run when controlling for the other factors in our model; contrary to the smaller studies in this literature, which concomitantly test single variables at a time, the estimates presented here are close to zero.
+
+This conceptual replication of the literature on the causes of trust in civil servants sheds new light on some debates and reinforces some conclusions.
+It finds evidence for arguments on both government outcomes and government quality. 
+However, government quality, measured by mean government effectiveness—exerts larger effects over long term than economic and public security outcomes like GDP per capita, unemployment, and homicide rates.
+To sustain trust in civil servants, policymakers and practitioners should prioritize institutional reforms that enhance effectiveness and inclusiveness.
+
+# Discussion {.unlisted .unnumbered}
+
+The study of trust’s role in policy processes has long been hindered by the absence of comparable measures of trust in civil servants---key actors in policy implementation—across countries and over time.
+This gap has impeded efforts to identify the causes and consequences of bureaucratic trust, resulting in mixed findings regarding its origins and influence on policy support and implementation.
+
+Using a state-of-the-art latent-variable model [@Solt2020c], we develop a dynamic, comparative measure of trust in civil servants that uncovers significant variations both within and across countries.
+<!---For example, Asian countries with a history of meritocracy and rapid economic development, such as China and Singapore, as well as the least corrupt countries like Switzerland and Norway, exhibit high levels of trust in civil servants.
+In contrast, countries plagued by widespread corruption or high crime rates, like Venezuela, Mexico, and Peru, show the lowest levels of trust.
+Within individual countries, some---like Germany and the United States---have experienced steady increasing or declining trends in trust, while others maintain consistently high or low levels, as seen in China and Mexico, or display fluctuations, as observed in Spain and Turkey.
+These variations pose challenges for explaining the causes and consequences of trust in civil servants within a comparative context, while also providing opportunities for in-depth exploration of these changes in specific contexts. -->
+Our analysis reveals that while economic performance and public security influence trust in the short term, government quality and effectiveness in service delivery and policy implementation have more enduring effects.
+
+While this study focuses on the sources of trust in civil servants, the publicly accessible TCS dataset also offers new opportunities to examine critical policy questions. 
+Researchers can investigate how varying levels of trust affect policy implementation, citizen compliance with regulations, and public acceptance of policy interventions. 
+The dataset's longitudinal nature enables analysis of how changes in trust relate to policy reforms, implementation strategies, and policy outcomes. 
+These applications are particularly relevant for complex policy challenges that require sustained public cooperation and support.
+
+TCS is a useful resource for studying trust in civil servants, but it also has limitations.
+As a country–year aggregate, it can mask case-specific dynamics that are better interpreted with country expertise. 
+In addition, the model-based smoothing needed to address sparse coverage implies measurement uncertainty; treating point estimates as error-free can distort downstream inferences [@Tai2024]. To support appropriate use, we release full posterior draws so researchers can incorporate uncertainty directly in subsequent analyses using established approaches [e.g., @Caughey2018; @Tai2024; @Woo2025].
+
+Despite these limitations, TCS advances research on trust and governance by enabling more comprehensive comparative analyses of the levels, trends, and correlates of trust in civil servants across countries and over time than has been feasible with prior data.
+
+TCS offers a valuable resource for studying trust in civil servants, but it has limitations.
+As an aggregate-level measure, it may obscure subnational variation, polarization in trust, or case-specific dynamics that require country expertise and qualitative or mixed methods to illuminate.
+Second, the smoothing approach introduces measurement uncertainty, and ignoring uncertainty risks distorting inferences [@Tai2024].
+We therefore release the full set of posterior draws, allowing researchers to propagate measurement uncertainty in downstream analyses using established strategies [see, e.g., @Caughey2018; @Tai2024; @Woo2025]. 
+
+Despite these limitations, TCS advances research on trust and governance by enabling more comprehensive comparative analyses of the levels, trends, and correlates of trust in civil servants across countries and over time than has been feasible with prior data.
+
+# References {.unnumbered}
+
+::: {#refs}
+:::
+
+\pagebreak
+
+```{=tex}
+\renewcommand{\baselinestretch}{1}
+\selectfont
+\maketitle
+\selectfont
+```
+```{=tex}
+\pagenumbering{arabic}
+\renewcommand*{\thepage}{A\arabic{page}}
+```
+```{=tex}
+\setcounter{figure}{0}
+\renewcommand*{\thefigure}{A\arabic{figure}}
+```
+```{=tex}
+\vspace{-.5in}
+\begin{center}
+\begin{Large}
+Appendices
+\end{Large}
+\end{center}
+```
+
+# Appendix A: Survey Items Used to Estimate Trust in Civil Servants {#sec-app-survey}
+National and cross-national surveys have often included questions tapping trusting attitudes over the past half-century, but the resulting data are both sparse, that is, unavailable for many countries and years, and incomparable, generated by many different survey items.
+In all, we identified `r n_items` such survey items that were asked in no fewer than five country-years in countries surveyed at least twice; these items were drawn from `r n_surveys` different survey datasets.
+These items are listed in the table below, along with the dispersion ($\alpha$) and difficulty ($\beta$) scores estimated for each from the DCPO model.
+Question text may vary slightly across survey datasets, but not, roughly speaking, by more than the translation differences across languages found within the typical cross-national survey dataset.
+Lower values of dispersion indicate questions that better identify publics with a higher level of trust from those with lower.
+Items have one less difficulty score than the number of response categories.
+Survey dataset codes correspond to those used in the `DCPOtools` R package; they appear in decreasing order of country-years contributed.
+
+Together, the survey items in the source data were asked in `r n_countries` different countries in at least two time points over `r n_years` years, `r year_range`, yielding a total of `r n_cyi` country-year-item observations.
+The TCS scores of country-years with more observed items are likely to be estimated more precisely.
+The estimates for country-years with fewer (or no) observed items rely more heavily (or entirely) on the random-walk prior and are therefore less certain.
+
+\noindent Table A1: Indicators Used in the Unidimensional Latent Variable Model of Democratic Support
+
+```{r alpha_beta, eval=FALSE}
+alpha_results <- summarize_dcpo_results(dcpo_input,
+                                        dcpo_output = dcpo_output,
+                                        pars = "alpha") %>% 
+  transmute(item = question,
+            dispersion = mean)
+
+beta_results <- summarize_dcpo_results(dcpo_input,
+                                       dcpo_output,
+                                       "beta") %>% 
+  group_by(question) %>% 
+  summarize(difficulties0 = paste0(sprintf("%.2f", round(mean, 2)),
+                                   collapse = ", ")) %>% 
+  mutate(item = question,
+         cp = if_else(str_detect(item, "threestate"),
+                      2, 
+                      as.numeric(str_extract(item, "\\d+")) - 1),
+         term = str_glue("(( ?-?[0-9].[0-9][0-9]?,?){{{cp}}})"),
+         difficulties = str_extract(difficulties0, 
+                                    term) %>%
+           str_replace(",$", "") %>% 
+           str_trim()) %>% 
+  transmute(item, difficulties)
+
+save(alpha_results,
+     file = here::here("data",
+                       "alpha_results.rda"))
+
+save(beta_results,
+     file = here::here("data",
+                       "beta_results.rda"))
+```                                    
+
+```{r dcpo_items}
+load(here::here("data",
+                "alpha_results.rda"))
+
+load(here::here("data",
+                "beta_results.rda"))
+
+items_summary <- dcpo_input_raw1 %>%
+  dplyr::select(country, year, item, survey) %>%
+  distinct() %>%
+  separate(survey, c("surv1", "surv2", "surv3"), sep=", ", fill = "left") %>%
+  pivot_longer(cols = starts_with("surv"), values_to = "survey") %>%
+  filter(!is.na(survey)) %>% 
+  group_by(item) %>% 
+  mutate(survey = str_extract(survey, "^[a-z]*"),
+         all_surveys = paste0(unique(survey), collapse = ", ")) %>% 
+  ungroup() %>% 
+  distinct(country, year, item, .keep_all = TRUE) %>% 
+  group_by(item) %>% 
+  mutate(n_cy = n()) %>% 
+  ungroup() %>%
+  distinct(item, n_cy, all_surveys) %>% 
+  left_join(surveys_tb %>%
+              mutate(item = str_remove(item, "_")) %>% 
+              select(item, question_text, response_categories) %>%
+              distinct(item, .keep_all = TRUE),
+            by = "item") %>% 
+  left_join(alpha_results, by = "item") %>% 
+  left_join(beta_results, by = "item") %>% 
+  arrange(-n_cy)
+```
+
+```{r tsc_items_table}  
+items_summary %>% 
+  transmute(`Survey\nItem\nCode` = item,
+            `Country-Years` = as.character(n_cy),
+            `Question Text` = str_replace(question_text, "([^(]*)\\(.*", "\\1"),
+            `Response Categories` = response_categories,
+            `Dispersion` = dispersion,
+            `Difficulties`= difficulties,
+            `Survey Dataset Codes` = all_surveys) %>% 
+  modelsummary::datasummary_df(output = "kableExtra",
+                               longtable = TRUE) %>% 
+  kableExtra::column_spec(1, width = "7em") %>%
+  kableExtra::column_spec(2, width = "4em") %>%
+  kableExtra::column_spec(3, width = "13em") %>%
+  kableExtra::column_spec(4, width = "16em") %>%
+  kableExtra::column_spec(5, width = "4em") %>%
+  kableExtra::column_spec(c(6, 7), width = "8em") %>% 
+  kableExtra::kable_styling(font_size = 7) %>%
+  kableExtra::kable_styling(latex_options = c("repeat_header")) %>%
+  kableExtra::kable_styling(latex_options = "striped")
+```
+
+\clearpage
+\pagebreak
+
+```{r obs_by_cy, fig.height = 9, fig.width = 6.5, fig.cap = "Source Data Observations by Country and Year \\label{obs_by_cy}"}
+
+dcpo_input_raw1 %>% 
+  mutate(country = str_replace(country, "’", "'")) %>% 
+  dplyr::distinct(country, year, item, cc_rank) %>% 
+  group_by(country, year) %>% 
+  dplyr::reframe(n = n(),
+            cc_rank = cc_rank) %>% 
+  ungroup() %>% 
+  distinct() %>% 
+  ggplot(aes(x = year, 
+             y = forcats::fct_reorder(country, cc_rank),
+             fill = n))  +
+  geom_tile() +
+  scale_fill_stepsn(colors = rev(hcl.colors(6, "inferno")),
+                    n.breaks = 6,
+                    show.limits = TRUE,
+                    right = FALSE,
+                    name = "Observations") +
+  labs(x = NULL, y = NULL) +
+  scale_x_continuous(breaks=seq(1986, 2022, 4),
+                     sec.axis = dup_axis()) +
+  scale_y_discrete(position = "right") +
+  theme(legend.justification=c(0, 0), 
+        legend.position=c(0.01, 0.01),
+        axis.text.y  = element_text(size = 7)) 
+
+```
+
+\clearpage
+\pagebreak
+
+# Appendix B: The DCPO Model {#sec-app-dcpo}
+A number of recent studies have developed latent variable models of public opinion based on cross-national survey data [see @Claassen2019; @Caughey2019; @McGann2019; @Kolczynska2020].
+To estimate trust in civil servants across countries and over time, we employ the latest of these methods that is appropriate for data that is not only incomparable but also sparse, the Dynamic Comparative Public Opinion (DCPO) model elaborated in @Solt2020c.^[
+@Solt2020c demonstrates that the DCPO model provides a better fit to survey data than the models put forward by @Claassen2019 or @Caughey2019.
+The @McGann2019 model depends on dense survey data unlike the sparse data on trust in civil servants described in the preceding section.
+@Kolczynska2020 is the very most recent of these five works and builds on each of the others, but the MRP approach developed in that piece is suitable not only when the available survey data are dense but also when ancillary data on population characteristics are available, so it is similarly inappropriate to this application.]
+The DCPO model is a population-level two-parameter ordinal logistic item response theory (IRT) model with country-specific item-bias terms.
+
+DCPO models the total number of survey responses expressing at least as much trust in civil servants as response category $r$ to each question $q$ in country $k$ at time $t$, $y_{ktqr}$, out of the total number of respondents surveyed, $n_{ktqr}$, using the beta-binomial distribution:
+
+\begin{equation}
+a_{ktqr} = \phi\eta_{ktqr} \label{eq:bb_a}
+\end{equation}
+\begin{equation}
+b_{ktqr} = \phi(1 - \eta_{ktqr}) \label{eq:bb_b}
+\end{equation}
+\begin{equation}
+y_{ktqr} \sim \textrm{BetaBinomial}(n_{ktqr}, a_{ktqr}, b_{ktqr}) \label{eq:betabinomial}
+\end{equation}
+
+where $\phi$ represents an overall dispersion parameter to account for additional sources of survey error beyond sampling error and $\eta_{ktqr}$ is the expected probability that a random person in country $k$ at time $t$ answers question $q$ with a response at least as positive as response $r$.^[
+The ordinal responses to question $q$ are coded to range from 1 (expressing the least trust in civil servants) to $R$ (expressing the most trust in civil servants), and $r$ takes on all values greater than 1 and less than or equal to $R$.]
+
+This expected probability, $\eta_{ktqr}$, is in turn estimated as follows:
+
+\begin{equation}
+\eta_{ktqr} = \textrm{logit}^{-1}(\frac{\bar{\theta'}_{kt} - (\beta_{qr} + \delta_{kq})}{\sqrt{\alpha_{q}^2 + (1.7*\sigma_{kt})^2}}) \label{eq:dcpo}
+\end{equation}
+
+In this equation, $\beta_{qr}$ represents the difficulty of response $r$ to question $q$, that is, the degree of trust in civil servants the response expresses.  The $\delta_{kq}$ term represents country-specific item bias: the extent to which all responses to a particular question $q$ may be more (or less) difficult in a given country $k$ due to translation issues, cultural differences in response styles, or other idiosyncrasies that render the same survey item not equivalent across countries.^[
+Estimating $\delta_{kq}$ requires repeated administrations of question $q$ in country $k$, so
+when responses to question $q$ are observed in country $k$ in only a single year, the DCPO model sets $\delta_{kq}$ to zero by assumption, increasing the error of the model by any country-item bias that is present.
+Questions that are asked repeatedly over time in only a single country pose no risk of country-specific item bias, so $\delta_{kq}$ in such cases are also set to zero.]
+The dispersion of question $q$, its noisiness in relation to our latent variable, is $\alpha_{q}$. The mean and standard deviation of the unbounded latent trait of trust in civil servants are $\bar{\theta'}_{kt}$ and $\sigma_{kt}$, respectively.
+
+Random-walk priors are used to account for the dynamics in $\bar{\theta'}_{kt}$ and $\sigma_{kt}$, and weakly informative priors are placed on the other parameters.^[
+The dispersion parameters $\alpha_{q}$ are drawn from standard half-normal prior distributions, that is, the positive half of N(0, 1).
+The first difficulty parameters for each question, $\beta_{q1}$, are drawn from standard normal prior distributions, and the differences between $\beta$s for each $r$ for the same question $q$ are drawn from standard half-normal prior distributions.
+The item-bias parameters $\delta_{kq}$ receive normally-distributed hierarchical priors with mean 0 and standard deviations drawn from standard half-normal prior distributions.
+The initial value of the mean unbounded latent trait for each country, $\bar{\theta'}_{k1}$, is assigned a standard normal prior, as are the transition variances $\sigma_{\bar{\theta'}}^2$ and $\sigma_{\sigma}^2$; the initial value of the standard deviation of the unbounded latent trait for each country, $\sigma_{k1}$, is drawn from a standard lognormal prior distribution.
+The overall dispersion, $\phi$, receives a somewhat more informative prior drawn from a gamma(4, 0.1) distribution that yields values that are well scaled for that parameter.]
+The dispersion parameters $\alpha_q$ are constrained to be positive and all survey responses are coded with high values indicating more trust in civil servants to fix direction.
+For each question $q$ the difficulties for increasing response categories $r$ are constrained to be increasing.
+The sum of $\delta_{kq}$ across all countries $k$ is set to zero for each question $q$:
+
+\begin{equation}
+\sum_{k = 1}^K \delta_{kq} = 0
+\end{equation}
+
+Finally, the logistic function is used to transform $\bar{\theta'}_{kt}$ to the unit interval and so give the bounded mean of latent trust in civil servants, $\bar{\theta}_{kt}$, which is our parameter of interest here [see @Solt2020c, 3-8].
+
+
+The DCPO model accounts for the incomparability of different survey questions with two parameters.
+First, it incorporates the _difficulty_ of each question's responses, that is, how much trust in civil servants is indicated by a given response. 
+That each response evinces more or less of our latent trait is most easily seen with regard to the ordinal responses to the same question: strongly agreeing with the statement "Most government administrators (civil servants) can be trusted to do what is best for the country," exhibits more trust in civil servants than simply agreeing, which shows more trust than responding "disagree," which in turn is a more trusting response than "strongly disagree."
+But this is also true across questions.
+Second, the DCPO model accounts for each question's _dispersion_, its noisiness with regard to our latent trait.
+The lower a question's dispersion, the better that changes in responses to the question map onto changes in trust in civil servants.
+Together, the model's difficulty and dispersion estimates work to generate comparable estimates of the latent variable of trust in civil servants from the available but incomparable source data.
+
+To address the sparsity of the source data---the fact that there are gaps in the time series of each country, and even many observed country-years have only one or few observed items---DCPO uses simple local-level dynamic linear models, i.e., random-walk priors, for each country.
+That is, within each country, each year's value of trust in civil servants is modeled as the previous year's estimate plus a random shock.
+These dynamic models smooth the estimates of trust in civil servants over time and allow estimation even in years for which little or no survey data is available, albeit at the expense of greater measurement uncertainty.
+
+

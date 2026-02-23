@@ -1,0 +1,1468 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+\documentclass[
+  12pt,
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage{setspace}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+% definitions for citeproc citations
+\NewDocumentCommand\citeproctext{}{}
+\NewDocumentCommand\citeproc{mm}{%
+  \begingroup\def\citeproctext{#2}\cite{#1}\endgroup}
+\makeatletter
+ % allow citations to break across lines
+ \let\@cite@ofmt\@firstofone
+ % avoid brackets around text for \cite:
+ \def\@biblabel#1{}
+ \def\@cite#1#2{{#1\if@tempswa , #2\fi}}
+\makeatother
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newenvironment{CSLReferences}[2] % #1 hanging-indent, #2 entry-spacing
+ {\begin{list}{}{%
+  \setlength{\itemindent}{0pt}
+  \setlength{\leftmargin}{0pt}
+  \setlength{\parsep}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+   \setlength{\leftmargin}{\cslhangindent}
+   \setlength{\itemindent}{-1\cslhangindent}
+  \fi
+  % set entry spacing
+  \setlength{\itemsep}{#2\baselineskip}}}
+ {\end{list}}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{array}
+\usepackage{caption}
+\usepackage{graphicx}
+\usepackage{siunitx}
+\usepackage{colortbl}
+\usepackage{multirow}
+\usepackage{hhline}
+\usepackage{calc}
+\usepackage{tabularx}
+\usepackage{threeparttable}
+\usepackage{wrapfig}
+\usepackage{fullpage}
+\usepackage{lscape}
+\newcommand{\blandscape}{\begin{landscape}}
+\newcommand{\elandscape}{\end{landscape}}
+\usepackage{titlesec}
+\titleformat*{\section}{\normalsize\bfseries}
+\titleformat*{\subsection}{\normalsize\itshape}
+\usepackage{titling}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  colorlinks=true,
+  linkcolor={black},
+  filecolor={Maroon},
+  citecolor={black},
+  urlcolor={Blue},
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Trust in Civil Servants:\\
+A Cross-National Dataset for Public Policy Research,\\
+1986--2022}
+\author{}
+\date{\vspace{-2.5em}}
+
+\begin{document}
+\maketitle
+
+\setstretch{1.5}
+\pagenumbering{gobble}
+
+\renewcommand{\baselinestretch}{1}
+\selectfont
+\maketitle
+\renewcommand{\baselinestretch}{1.5}
+\selectfont
+
+\begin{abstract}
+Trust in civil servants is essential for effective governance, enabling policy implementation, public service delivery, and compliance. However, the lack of comparable cross-national data on trust in bureaucracy has limited our ability to systematically examine these relationships. To address this gap, we develop the Trust in Civil Servants (TCS) dataset using an advanced latent-variable modeling technique, using 132 national and cross-national surveys from 98 countries (1986-2022). Our measures reveal variations in trust both within and between countries. We find that economic performance and public security enhance trust in the short term, whereas government quality and effectiveness have more enduring, long-term impacts on trust in civil service. The TCS dataset opens new avenues for examining connections between trust, governance quality, and complex policy challenges across different contexts.
+\end{abstract}
+
+Keywords: political trust, latent variable model, public administration, governance
+
+\section*{Authors}\label{authors}
+\addcontentsline{toc}{section}{Authors}
+
+\begin{itemize}
+\tightlist
+\item
+  Yuehong Cassandra Tai, ORCID:
+  \url{https://orcid.org/0000-0001-7303-7443}, Assistant Research
+  Professor, Center for Social Data Analytics, Pennsylvania State
+  University,
+  \href{mailto:yhcasstai@psu.edu}{\nolinkurl{yhcasstai@psu.edu}}
+\item
+  Frederick Solt, ORCID: \url{https://orcid.org/0000-0002-3154-6132},
+  Professor, Department of Political Science, University of Iowa,
+  \href{mailto:frederick-solt@uiowa.edu}{\nolinkurl{frederick-solt@uiowa.edu}}
+\end{itemize}
+
+\section*{Declaration of conflicting
+interest}\label{declaration-of-conflicting-interest}
+\addcontentsline{toc}{section}{Declaration of conflicting interest}
+
+No potential conflict of interest was reported by the author(s).
+
+\section*{Data availability}\label{data-availability}
+\addcontentsline{toc}{section}{Data availability}
+
+The code used to generate the dataset and conduct validation test are
+openly available at:
+\url{https://github.com/fsolt/dcpo_trust_bureaucracy}.
+
+\pagebreak
+
+\pagenumbering{arabic}
+
+Political trust is a foundation of regime support, democratic
+legitimacy, and governance (Easton, 1975; Norris et al., 2002; Wuttke et
+al., 2020). It is also associated with civic duty and policy compliance
+(Bargain and Aminjonov, 2020; Valgarsson et al., 2021), as well as
+individuals' well-being during crises (Devine et al., 2021; Zaki et al.,
+2022). For these reasons, political trust's dynamics, determinants, and
+consequences have been a leading issue in political science and public
+administration.
+
+Yet despite its importance, empirical findings about whether and how
+political trust matters remain mixed. While examining redistribution
+policies, Devine (2024) finds negligible effects of political trust on
+policy preferences in the UK and Switzerland, contrasting with Macdonald
+(2021)'s evidence of trust shaping redistribution support in the United
+States. When the focus shifts to trust in administrative and
+implementing institutions, the evidence is also mixed: Harring (2018)
+found no effect of trust in administrative institutions on environmental
+policy support, while Bergquist et al. (2022) demonstrated that public
+trust in implementing institutions has a stronger effect on supporting
+climate change policies than other institutional trust.
+
+These mixed findings illustrate that our empirical leverage remains
+limited. Comparative research on trust is hindered by the lack of
+comparable cross-national time-series measures (Tai, 2025). Existing
+surveys often use different trust items and provide inconsistent
+country--year coverage, which makes results difficult to compare across
+studies. As a result, it is hard to evaluate competing claims across
+governance contexts and over time, or to distinguish whether conflicting
+results reflect real contextual heterogeneity or differences in
+measurement and coverage.
+
+This limitation is particularly consequential for research on trust in
+civil servants. For public sectors, public trust is not only a
+fundamental element of governance (Blind, 2007), but also a central
+normative objective of public administration (Goodsell, 2006). For
+policy studies, trust in civil servants deserves particular attention
+because these officials directly interact with citizens, deliver public
+services, and translate policies into practice (Morelock, 2021). With
+adequate trust, the public more readily accepts services and complies
+with policy directives (Kim, 2005: 611). Conversely, low trust can
+impede officials' ability to implement policies effectively and secure
+public cooperation (Van Ryzin, 2011; Yates, 1982).
+
+Despite this importance, existing research on trust in civil servants
+remains geographically and temporally constrained (Choi, 2018; Houston
+et al., 2016; Morelock, 2021; Van de Walle and Migchelbrink, 2022),
+limiting our ability to understand how trust dynamics shape the policy
+process across different governance contexts. In addition, limited
+cross-nationally comparable data makes it challenging to test competing
+theories about the factors influencing trust in bureaucracy, whether it
+is government performance, governance quality, or other factors
+(Bouckaert, 2012; Kettl, 2000; Morelock, 2021; Van de Walle and
+Migchelbrink, 2022).
+
+To address this gap, we introduce the Trust in Civil Servants (TCS)
+dataset, which leverages 132 national and cross-national surveys
+covering 98 countries over 36 years (1986--2022) and applies recent
+advances in latent-variable modeling of public opinion (Solt, 2020c). We
+validate the TCS data by demonstrating strong correlations with
+individual survey items and related measures, such as perceived
+corruption and trust in other political institutions.
+
+Using the TCS data, we conduct a cross-national time-series analysis to
+examine competing theories on trust in civil servants, focusing on
+government outcomes versus government quality. We find that government
+outcomes, such as economic performance and public security, have
+short-term effects on trust, while government quality including
+effectiveness, exerts more significant, enduring effects. This
+underscores that while both factors are important, the quality of
+governance plays a long-term role in fostering trust in civil servants.
+
+Our study contributes to comparative public administration and public
+policy by providing valid, comparable longitudinal data on trust in
+civil servants. Recent research underscores the need to explore how
+trust in public institutions influence complex policy challenges like
+climate change and environmental mitigation support, CO2 emissions, and
+decarbonization in comparative context (Cole et al., 2024; Davidovic,
+Forthcoming). The TCS dataset addresses these calls by enabling
+cross-national research on how trust interacts with governance quality
+and public sector performance, linking administrative practices to
+governance challenges and policy outcomes. Moreover, the TCS dataset
+contributes to ongoing policy debates on the role of institutional trust
+in shaping policy preferences. By facilitating comparative analyses, the
+TCS dataset allows researchers to explore whether and how trust
+influences support for complex policies across diverse contexts.
+
+\section{Debates on the Causes of Trust in Civil
+Servants}\label{debates-on-the-causes-of-trust-in-civil-servants}
+
+A longstanding puzzle in public administration is understanding what
+explains trust in bureaucracy. One dominant theme is the belief that
+higher levels of government performance lead to greater trust in civil
+servants, based on the assumption that better performance correlates
+with higher trust and that lower trust toward bureaucrats reflects
+dissatisfaction with government performance (Yang and Holzer, 2006). A
+common approach to measuring performance is through macroeconomic
+outcomes, such as economic growth, unemployment rate, economic
+inequality, and inflation. However, the results from studies on
+macroeconomic outcomes are mixed. For example, Choi (2018) found that
+GDP per capita positively affects trust in bureaucracies, while Houston
+et al. (2016) did not find significant effects of GDP per capita and
+inflation rate on trust in civil servants. Instead, Houston et al.
+(2016) found that the unemployment rate negatively influences trust in
+civil servants. Contrary to previous studies that found some evidence
+for the role of government outcomes, Morelock (2021) found that none of
+the outcome indicators, including GDP per capita, inflation rate,
+unemployment, and the Gini index, had a significant effect on trust in
+civil servants.
+
+Amidst these mixed results regarding macroeconomic outcomes, a growing
+body of literature emphasizes the role of government quality---or
+process---in explaining trust in bureaucracy. Van Ryzin (2011) found
+that the quality of government, measured by the World Bank's Worldwide
+Governance Indicators, plays a more crucial role than government
+outcomes measured by the UN's Human Development Index, which had a
+negative effect in his model. Morelock (2021) also highlights the
+positive role of government effectiveness, although Houston et al.
+(2016) finds inconsistent role of government effectiveness. A relatively
+consistent finding across studies is the significant role of corruption.
+Van de Walle and Migchelbrink (2022) concluded that the perceived
+absence of corruption is more impactful on trust in bureaucracy than
+performance evaluations. The critical influence of perceived corruption
+and corruption control on public trust in civil servants is also
+supported by Houston et al. (2016) and Morelock (2021). Beyond these
+findings, recent research has explored dimensions of government
+performance, including transparency, agency reputation, and the
+integration of input, process, and output measures. Studies show that
+both public and private elite actors' trust in agencies is strongly
+influenced by performance (Kappler et al., 2024). Moreover, transparency
+and perceived organizational reliability have been identified as key
+factors in shaping public trust (Schmidthuber et al., 2023). Despite
+these advancements, variations in measures and modeling
+strategies---such as whether both outcomes and quality indicators are
+included in the same model---leave uncertainty about the consistency of
+these results. A more standardized approach is needed to clarify these
+relationships.
+
+These mixed results also reflect limitations in comparative data,
+including limited country coverage, reliance on cross-sectional rather
+than dynamic analysis, and the absence of comparable measures across
+countries or regions (Choi, 2018; Houston et al., 2016; Morelock, 2021;
+Van de Walle and Migchelbrink, 2022; Van Ryzin, 2011). These
+shortcomings hinder a deeper understanding of the relationship between
+government outcomes, quality, and trust in bureaucracy.
+
+To address these challenges, we developed the Trust in Civil Servants
+(TCS) dataset, a dynamic, cross-national measure that enables rigorous
+testing of competing theories about the sources of trust in civil
+servants.
+
+\section{Examining the Source Data on Trust in Civil
+Servants}\label{examining-the-source-data-on-trust-in-civil-servants}
+
+Over the past half-century, many national and cross-national surveys
+have asked questions on trust attitudes toward public administrations.
+Our goal is not to draw a sample of surveys, but to compile as much
+feasible set of relevant survey items as possible and then synthesize
+them into a comparable country--year series.
+
+We first defined the target construct as public trust in civil servants
+or public administration based on previous trust in civil servants
+studies. We then undertook an extensive effort to collect and compile
+relevant survey questions. This involved a systematic review of of
+survey documentation and raw data files to identify items that reference
+civil servants, government administrators, or public administration, and
+we recorded the corresponding question identifiers, response scales,
+fieldwork dates, and survey weights when available. Candidate items were
+then cross-checked by two authors to resolve construct mismatches. This
+process finally included 132 unique survey projects including both
+cross-national globe surveys and single country surveys and spanning 125
+countries over 49 year to maximize broad geographic and temporal
+coverage and 27 unique candidate questions. \footnote{ The complete list
+  of trust in civil servants/public administration survey items and
+  included survey projects is included in online Appendix
+  \nobreakspace{}(\textbf{sec-app-survey?}).}
+
+We then processed raw files using DCPOtools (Solt et al., 2019). To
+minimize the noise from the sparse data and increase comparability,
+drawn from the raw data, we followed a common approach (Woo et al.,
+2023) and excluded 17 survey items that were asked in fewer than five
+country-years in countries surveyed at least twice. DCPOtools
+standardizes formats, applies consistent recoding and weighting, and
+outputs analysis data for model estimation.
+
+Together, the survey items in the source data were asked in 98 different
+countries in at least two time points over 36 years, from 1986 to 2022,
+yielding a total of 1,814 country-year-item observations. If all of
+these countries were surveyed in all of these years, we would have 3,528
+observations per year and a total of 59,976 country-year-item
+observations. However, the actual dataset is far more limited, with only
+1,344 country-years containing at least some data on trust in civil
+servants. This accounts for 54\% of the 2,475 country-years spanned by
+our dataset. Moreover, the many different survey items employed render
+these data incomparable and difficult to use together.
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio]{dcpo_trust_bureaucracy_files/figure-latex/itemcountry-1.pdf}}
+\caption{Countries and Years with the Most Observations in the Source
+Data \label{item_country_plots}}
+\end{figure}
+
+Consider the most frequently asked item in the data we collected, which
+asks respondents whether they strongly agree, agree, disagree, or
+strongly disagree with the statement ``I am going to name a number of
+institutions. For each one, could you tell me how much trust you have in
+them. Is it a great deal of trust, some trust, not very much trust or
+none at all? Civil service.''\footnote{Question text may vary slightly
+  across survey datasets, but not, roughly speaking, by more than the
+  translation differences across languages found within the typical
+  cross-national survey dataset. In this case, some questions ask about
+  ``the public administration'' or ``government officials'' rather than
+  ``the civil service,'' and some refer to ``confidence'' rather than
+  ``trust.'' These words are often translated identically.} Employed by
+the Arab Barometer, the Asia Europe Survey, the Asian Barometer, the
+British Social Attitudes Survey, the Latino Barometer, the East Asian
+Social Survey, the European Values Survey, the Italian National Election
+Study, the South Asian Barometer, and the World Values Survey, this
+question was asked in a total of 614 different country-years. However,
+this represents only 25\% of the country-years spanned by our data,
+despite being the \emph{most common} survey item. This again underscores
+the sparse and often incomparable nature of the available public opinion
+data on this topic.
+
+The distribution of country-year-item observations further highlights
+the limitations of the raw dataset. As depicted in the upper left panel
+of Figure \nobreakspace{}\ref{item_country_plots}, Germany, with 50
+country-year-item observations, is the most represented country,
+followed by Spain, Finland, the United Kingdom, and Sweden. The upper
+right panel expands on this by listing the twelve countries with the
+highest number of years observed, revealing overlaps and differences
+from the previous group; Ireland, Italy, Austria, and Bulgaria join the
+list, replacing Sweden, Slovenia, Netherlands, and France. The bottom
+panel counts the countries observed in each year and reveals just how
+few relevant survey items were asked before 1996. Country coverage
+reached its peak in 2001, when respondents in 70 countries were asked
+items about trust in civil servants.
+
+In the next section, we describe how we leveraged this sparse and
+incomparable survey data to generate complete, comparable time-series
+TCS scores using a latent variable model.
+
+\section{Estimating Trust in Civil
+Servants}\label{estimating-trust-in-civil-servants}
+
+To estimate trust in civil servants across countries and over time, we
+employ the recent and suitable method for handling data that is both
+incomparable and sparse: the Dynamic Comparative Public Opinion (DCPO)
+model developed by Solt (2020c).\footnote{ The DCPO model provides a
+  better fit to survey data than the models proposed in Claassen (2019)
+  or Caughey et al. (2019; Solt, 2020c). The model put forward in McGann
+  et al. (2019) depends on dense survey data unlike the sparse data on
+  trust in civil servants just described. Building on all of these four
+  works, Kolczynska et al. (2020) is the very most recent effort, but
+  the multilevel regression and post-stratification (MRP) approach it
+  offers depends both on dense survey data and on additional data
+  describing population characteristics, so it too is inappropriate for
+  our purposes here.} DCPO treats trust in civil servants as a latent
+trait that is not directly observable but can be inferred from
+respondents' answer to multiple relevant survey questions, accounting
+for differences in question wording and response scales. DCPO has been
+applied in recent peer-reviewed work to produce comparable
+public-opinion time series from sparse and incomparable cross-national
+surveys (Hu and Solt, 2025; e.g., Tai et al., 2024; Woo et al., 2023).
+Formally, DCPO is a population-level two-parameter ordinal logistic item
+response theory (IRT) model with country-specific item-bias terms,
+addressing the two principal challenges posed by our source data:
+incomparability and sparsity.
+
+DCPO models the total number of survey responses expressing at least as
+much trust in civil servants as response category \(r\) to each question
+\(q\) in country \(k\) at time \(t\), \(y_{ktqr}\), out of the total
+number of respondents surveyed, \(n_{ktqr}\), using the beta-binomial
+distribution to accommodate overdispersion beyond sampling error:
+
+\begin{equation}
+a_{ktqr} = \phi\eta_{ktqr} \label{eq:bb_a}
+\end{equation} \begin{equation}
+b_{ktqr} = \phi(1 - \eta_{ktqr}) \label{eq:bb_b}
+\end{equation} \begin{equation}
+y_{ktqr} \sim \textrm{BetaBinomial}(n_{ktqr}, a_{ktqr}, b_{ktqr}) \label{eq:betabinomial}
+\end{equation}
+
+where \(\eta_{ktqr}\) is the expected probability that a random person
+in country \(k\) at time \(t\) answers question \(q\) in a category at
+least as positive as response \(r\) and \(\phi\) represents an overall
+dispersion parameter.
+
+This expected probability, \(\eta_{ktqr}\), is linked to latent trust
+via a population-level ordinal IRT measurement equation:
+
+\begin{equation}
+\eta_{ktqr} = \textrm{logit}^{-1}(\frac{\bar{\theta'}_{kt} - (\beta_{qr} + \delta_{kq})}{\sqrt{\alpha_{q}^2 + (1.7*\sigma_{kt})^2}}) \label{eq:dcpo}
+\end{equation}
+
+Here \(\bar{\theta'}_{kt}\) is the (unbounded) country--year mean of
+latent trust in civil servants and \(\sigma_{kt}\) is country--year
+standard deviation. The \(\beta_{qr}\) parameter captures the difficulty
+of endorsing category \(r\) to question \(q\), \(\alpha_{q}\) captures
+the dispersion/noisiness of question \(q\) in measuring trust in civil
+servants, and \(\delta_{kq}\) term represents country-specific item bias
+that allows the same survey item to function differently across
+countries.
+
+To address sparsity over time, DCPO places random-walk priors on the
+latent country--year parameters and estimates are therefore smoother in
+data-rich periods and more uncertain in data-sparse periods. Together,
+DCPO estimates latent trust and smooths estimates simultaneously in a
+single Bayesian model, with a random-walk evolution prior providing
+parsimonious regularization across sparse time series and naturally
+expanding uncertainty where coverage is thin. For additional details,
+see Appendix \nobreakspace{}(\textbf{sec-app-dcpo?}) and Solt (2020c:
+3--8).
+
+Intuitively, DCPO addresses item incomparability through the
+\emph{difficulty} and \emph{dispersion} parameters. \emph{Difficulty}
+captures how much trust in civil servants is indicated by a given
+response. For example, strongly agreeing with the statement ``Most
+government administrators (civil servants) can be trusted to do what is
+best for the country,'' exhibits more trust in civil servants than
+simply agreeing, which shows more trust than responding ``disagree,''
+which in turn is a more trusting response than ``strongly disagree.''
+The same logic also applies across questions. Expressing ``great trust''
+in civil servants ``to look after your interests'' likely expresses even
+more trust than just strongly agreeing that civil servants can be
+trusted to do what is right. \emph{Dispersion} captures how tightly a
+question's responses map onto the latent trait: questions with lower
+dispersion provide a stronger signal of changes in trust, while noisier
+questions contribute weaker information. Together, by estimating
+difficulty and dispersion, DCPO maps responses from different questions
+and surveys onto a single latent scale, yielding comparable
+country--year estimates.
+
+Finally, the random-walk priors smooth trust estimates over time within
+each country. A given year's trust level is modeled as the previous
+year's estimate plus a random shock. This approach allows the generation
+of estimates even for years with little or no data, with uncertainty
+increasing as the time gap between observed years grows. We incorporate
+this uncertainty in downstream analyses as described below.
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio]{dcpo_trust_bureaucracy_files/figure-latex/cs-1.pdf}}
+\caption{TCS Scores, Most Recent Available Year \label{cs_mry}}
+\end{figure}
+
+We estimated the model using the \texttt{DCPOtools} package for R (Solt,
+2020a), running four chains for 1,000 iterations each and discarding the
+first half as warmup, which left us with 2,000 samples. The \(\hat{R}\)
+diagnostic had a maximum value of 1.01, indicating that the model
+converged. The dispersion parameters of the survey items indicate that
+all of our source data items load well on the latent variable (see
+Appendix \nobreakspace{}(\textbf{sec-app-survey?})).
+
+The result is estimates, in all 2,475 country-years spanned by the
+source data, of public trust in civil servants, what we call TCS scores.
+Figure\nobreakspace{}\ref{cs_mry} displays the most recent available TCS
+score for each of the 98 countries and territories in the dataset.
+
+Several Asian countries, such as China and Singapore, dominate the top
+of the list. Several Southeast Asian countries also rank highly. This
+pattern aligns with OECD/ADB reports documenting high self-reported
+satisfaction with core public services in the region in recent years
+(OECD and Asian Development Bank, 2019, 2025). Several democracies, such
+as Switzerland, Norway, Denmark, and Finland, also rank highly. On the
+other hand, the latest scores for Peru, Mexico, Honduras, Guatemala, and
+Ecuador have them as the places where the public has the lowest trust
+toward civil servants.
+
+For transparency, we release the full set of country--year estimates and
+associated uncertainty. We treat unexpected estimates as prompts for
+further inquiry rather than definitive substantive claims, and we
+suggest that scholars interpret cross-national differences cautiously,
+especially for countries with sparse item coverage, where uncertainty is
+larger.
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio]{dcpo_trust_bureaucracy_files/figure-latex/ts-1.pdf}}
+\caption{TCS Scores Over Time Within Selected Countries
+\label{ts_plots}}
+\end{figure}
+
+We then show the changes of TCS over time in sixteen countries in
+Figure\nobreakspace{}\ref{ts_plots}. As displayed in
+Figure\nobreakspace{}\ref{cs_mry}, the dataset covers a wide geographic
+breadth, allowing comparative studies of countries and regions too often
+neglected (see Wilson and Knutsen, 2022).
+Figure\nobreakspace{}\ref{ts_plots} also shows that trust in civil
+servants has risen prominently in some countries, such as Germany and
+New Zealand, while remaining fairly constant over time in others, like
+Greece and Australia. In contrast, TCS scores have fallen steadily in
+countries such as South Korea and the United States. Some countries
+exhibit fluctuations, as seen in the United Kingdom, where trust has
+advanced and retreated, or the Philippines, where trust has declined and
+later recovered. Together, the differences within countries over time
+and the differences across countries present a challenge to theories on
+the causes and consequences of trust in civil servants.
+
+\section{Validating Trust in Civil
+Servants}\label{validating-trust-in-civil-servants}
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio]{dcpo_trust_bureaucracy_files/figure-latex/internalval-1.pdf}}
+\caption{Convergent Validation: Correlations Between TSC Scores and
+Individual TSC Source-Data Survey Items \label{internal_val}}
+\end{figure}
+
+Before using these estimates in analysis, we validate our trust civil
+service score through convergent validation and construct validation,
+since validation tests of cross-national latent variables are crucially
+important (see, e.g., Hu et al., 2025).
+Figure\nobreakspace{}\ref{internal_val} shows the measure's validity in
+tests of convergent validation that tests whether a measure is
+empirically associated with alternative indicators of the same concept
+(Adcock and Collier, 2001: 540). We started with `internal' convergent
+validation test (see, e.g., Caughey et al., 2019: 689; Solt, 2020c: 10)
+by comparing our TCS score with individual items from source-data to
+generate them.
+
+The left panel in Figure\nobreakspace{}\ref{internal_val} shows a
+scatterplot of country-years in which the TCS scores are plotted against
+the percentage of respondents who expressed ``a quite a lot''or ``a
+great deal'' of trust in response to the question: ``I am going to name
+a number of institutions. For each one, could you tell me how much trust
+you have in them. Is it a great deal of trust, some trust, not very much
+trust or none at all? Civil service.'' The strong correlation (R = 0.93)
+indicates that TCS scores effectively capture variations in trust in
+civil service across country-years.
+
+The middle panel plots our TCS score against the percentage who
+responded ``Tend to trust.'' to the question, ``I would like to ask you
+a question about how much trust you have in certain institutions. For
+each of the following institutions, please tell me if you tend to trust
+it or tend not to trust it: Public administration in (OUR COUNTRY)'' in
+the Eurobarometer 96.3 January-February 2022 module. This question is
+asked in the most countries, and the strong correlation demonstrates the
+broad applicability of the TCS scores in capturing trust across diverse
+contexts.
+
+Finally, the right panel compares the trend of the longest item that has
+been asked since 1973 in U.S.General Social Survey, ``I am going to name
+some institutions in this country. As far as the people running these
+institutions are concerned, would you say you have a great deal of
+confidence, only some confidence, or hardly any confidence at all in
+them? Executive branch of the federal government.'' to the trend of the
+TCS scores. The TCS scores align with trends in trust in the executive
+branch over time, effectively capturing historical changes.
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio]{dcpo_trust_bureaucracy_files/figure-latex/extval1-1.pdf}}
+\caption{Construct Validation: Correlations Between TCS Scores and Trust
+in Institutions Survey Items \label{ext_val1}}
+\end{figure}
+
+Figure\nobreakspace{}\ref{ext_val1} present three `external' convergent
+validation tests, comparing TCS scores to responses to survey items that
+were \emph{not} included in the source data: items that asked
+respondents' confidence and trust in national government, parliament,
+and judiciary in their countries. In the left panel, we plot TCS score
+against data from seven rounds of World Value Survey, which asked
+respondents how much they trust their national government. The center
+plot shows data from European Values Surveys asking respondents'
+confidence in parliament. The right presents the percentage of
+respondents who expressed at least some trust in judiciary in their
+country in Latinobarometro. Our measure positively correlated with all
+of them, with a stronger correlation with trust in national government
+and mild correlation with trust in parliament and judiciary.
+
+There is a longstanding debate about the dimentionality of political
+trust (Easton, 1965; Marien and Hooghe, 2011; Norris, 2011; Rothstein
+and Stolle, 2008; Tai, 2022). Trust in civil servants has been
+theoretically grouped within the same dimension as all three types of
+institutional trust (Hooghe, 2011; Marien and Hooghe, 2011), or one of
+them (Norris, 2011; Rothstein and Stolle, 2008; Tai, 2022). However, the
+variation in correlations between TCS scores and trust in institutions
+requires empirical analysis of trust's dimensions.
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio]{dcpo_trust_bureaucracy_files/figure-latex/extval2-1.pdf}}
+\caption{Construct Validation: Correlations Between TCS Scores and
+Corruption of Public Servants Survey Items \label{ext_val2}}
+\end{figure}
+
+We next conduct tests of construct validation in
+Figure\nobreakspace{}\ref{ext_val2}. Construct validation assesses
+whether a given indicator is empirically correlated with other
+indicators in a way that conforms to theoretical expectations (Adcock
+and Collier, 2001: 542). Corruption is often often argued as a likely
+contributor to distrust in civil servants and public administration
+(see, e.g., Anderson and Tverdova, 2003; Van de Walle and Migchelbrink,
+2022; Van Ryzin, 2011).
+
+The left panel compares perceived widespread of corruption, measured as
+the percentage of those saying most or state authorities are involved in
+corruption in seven waves of the WVS, with the TCS scores. As
+anticipated, there is a clear negative relationship between the spread
+of perceived corruption and the TCS scores: when there is widespread
+perception of corruption in authorities, the public tends to distrust
+civil servants. The similar negative correlations between TCS scores and
+perceived corruption among government officials are also perceived in
+the center and right panel of Figure\nobreakspace{}\ref{ext_val2}, which
+used data from different regions. The center panel shows the data in
+developing or newly democratic countries surveyed in the Asian
+Barometer, the New Europe Barometer, and the Latinobarometro, and the
+right panel displays the data in countries surveyed in the International
+Social Survey Programme Citizenship module (2004, 2014).
+
+To sum up, the evidence of construct validation of TCS scores against
+the perceived extent of corruption in
+Figure\nobreakspace{}\ref{ext_val2}, together with the evidence of
+external validation in Figure\nobreakspace{}\ref{ext_val1} and
+convergent validation in Figure \nobreakspace{}\ref{internal_val},
+demonstrates the validity of the TCS scores as measures of the public's
+trust in civil servants.
+
+\section{Explaining Trust in Civil
+Servants}\label{explaining-trust-in-civil-servants}
+
+With our time-series cross-national data on trust in civil servants, we
+are able to reexamine and perform a conceptual replication and
+generalization (see Walker et al., 2017: 1225--1226) of the literature
+debating the causes of trust in bureaucracy that we describe above. That
+is, we investigate the same hypotheses as previous work using different
+measurement and analysis. With many more country-years observed, we are
+able to combine a wide range of contextual indicators of both outcome
+and quality in a single analysis to examine the factors influencing
+trust; previous studies, looking at smaller samples, are constrained to
+look at these indicators just one or a few at a time. For outcome
+indicators, we employ GDP per capita, inflation, unemployment, and
+income inequality from 1984 to 2022 as measures of macroeconomic
+performance Morelock (2021) as well as public safety with regard to
+physical insecurity (see Uddin, 2025). GDP per capita and inflation data
+were sourced from the International Monetary Fund, while unemployment
+data were collected from the World Bank, which uses modeled
+International Labour Organization estimates. Regarding income
+inequality, we relied on the Standardized World Income Inequality
+Database presented in Solt (2020b), specifically the Gini index of
+inequality in disposable income. To measure physical insecurity, we
+collected the number of intentional homicides at the country-year level
+from the United Nations Office on Drugs and Crime.
+
+For the process-oriented quality of government, we include corruption
+perceptions, government effectiveness, and democracy (Choi, 2018; see,
+e.g., Houston et al., 2016; Morelock, 2021). To capture the perceived
+level of corruption, we use the Corruption Perceptions Index from
+Transparency International, covering the years 1995 to 2022. The World
+Bank's Worldwide Governance Indicators provides its measure of
+Government Effectiveness, which reflects the overall quality of public
+services, the civil service, and policy formulation and implementation.
+And to account for the effect of democratic development on trust, we
+included the Liberal Democracy Index from the V-Dem dataset (Coppedge et
+al., 2023; Pemstein et al., 2023).
+
+We adopted a Bayesian multilevel model with varying intercepts for each
+country and each year. The varying intercepts for each country account
+for heteroskedasticity across countries, while those for each year
+account for `time shocks' that impact all countries simultaneously (Shor
+et al., 2007). To differentiate between short-term and historical
+effects, we used the `within-between random effects' specification as
+described by Bell and Jones (2015; see also Woo et al., 2023). This
+approach models, for each time-varying predictor, the time-invariant
+country mean alongside the time-varying difference from this mean for
+each country-year.
+
+Finally, we addressed measurement uncertainty in the data for trust in
+bureaucracy, income inequality, and the Corruption Perceptions Index by
+incorporating it into the analysis (see Tai et al., 2024). The model was
+estimated using the \texttt{brms} R package (Bürkner, 2017).
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio]{dcpo_trust_bureaucracy_files/figure-latex/resplot-1.pdf}}
+\caption{Predicting Trust in Civil Servants Across Countries Over Time
+\label{model}}
+\end{figure}
+
+The results are presented in Figure\nobreakspace{}\ref{model}. In terms
+of economic outcomes, the increase in GDP per capita is associated with
+a higher level of trust in civil servants in the short term. A
+two-standard-deviation year-to-year change in per capita income
+increases trust by 1 (95\% c.i.: 0 to 1.9) point. This significant but
+relatively small effect suggests that GDP growth alone may not be
+sufficient to sustain high levels of trust in civil servants, given that
+economic growth may not transfer to effective resource management and
+service delivery. Still, it indicates that the null findings of the
+literature are the consequence of underpowered analyses: Houston et al.
+(2016) examines only 21 country-year contexts and Morelock (2021) just
+23, compared to the 1411 country-years that we are able to examine using
+the new TCS dataset.
+
+Unemployment exhibits a strong negative effect on trust in civil
+servants, with a two-standard-deviation year-to-year increase in
+unemployment decreasing trust in civil servants by 4 (95\% c.i.: -4.9 to
+-3.2) points. As Houston et al. (2016) concludes---and contrary to null
+findings elsewhere (see, e.g., Morelock, 2021)---high unemployment rates
+can signal government inefficiency or failure to address critical
+economic challenges, eroding trust in civil servants (see also Choi,
+2018: 124).
+
+In terms of physical insecurity, the mean number of intentional
+homicides has a long-term negative impact on trust in civil servants. A
+two-standard deviation increase in a country's mean number of homicides
+is associated with 9.7 (95\% c.i.: -16.8 to -2.5) points less trust.
+This result bolsters confidence that the finding of Uddin (2025), made
+in the context of Bangladesh, is generalizable across countries: high
+levels of violence and insecurity undermine public confidence in the
+administration's competence to uphold law and order, diminishing trust
+in its civil service.
+
+This analysis provides no evidence that either inflation or income
+inequality significantly affects trust in civil servants in the short or
+long term when other factors are controlled, reinforcing conclusions of,
+e.g., Houston et al. (2016) and Morelock (2021).
+
+Regarding process, these results show that a higher government
+effectiveness score has a strong positive long-term effect on trust in
+civil servants. A two-standard deviation increase in a country's mean
+effectiveness score is associated with 28.5 (95\% c.i.: 6.9 to 50.3)
+points more trust across countries. This finding suggests that improving
+the perceived quality of public services and policy formulation can lead
+to a sustained increase in trust, replicating findings of Houston et al.
+(2016) and Morelock (2021). Coproduction of public value provides a
+compelling explanation, emphasizing how involving individuals in
+policy-making processes can strengthen trust in the public sector
+(Schmidthuber et al., 2021).
+
+Although democratic capacity is found to mediate the relationship
+between government openness and public trust (Schmidthuber et al.,
+2021), we found the development of democracy is associated with less
+trust in civil servants, both in the long run and in the short term.
+This is contrary to the positive result found by Choi (2018). Critical
+citizens in more democratic countries may trust civil servant only
+critically and have higher expectations of them (Norris, 1999). However,
+perceived corruption was not consistently associated with trust in civil
+servants in either the long term or short run when controlling for the
+other factors in our model; contrary to the smaller studies in this
+literature, which concomitantly test single variables at a time, the
+estimates presented here are close to zero.
+
+This conceptual replication of the literature on the causes of trust in
+civil servants sheds new light on some debates and reinforces some
+conclusions. It finds evidence for arguments on both government outcomes
+and government quality. However, government quality, measured by mean
+government effectiveness---exerts larger effects over long term than
+economic and public security outcomes like GDP per capita, unemployment,
+and homicide rates. To sustain trust in civil servants, policymakers and
+practitioners should prioritize institutional reforms that enhance
+effectiveness and inclusiveness.
+
+\section*{Discussion}\label{discussion}
+
+The study of trust's role in policy processes has long been hindered by
+the absence of comparable measures of trust in civil servants---key
+actors in policy implementation---across countries and over time. This
+gap has impeded efforts to identify the causes and consequences of
+bureaucratic trust, resulting in mixed findings regarding its origins
+and influence on policy support and implementation.
+
+Using a state-of-the-art latent-variable model (Solt, 2020c), we develop
+a dynamic, comparative measure of trust in civil servants that uncovers
+significant variations both within and across countries. Our analysis
+reveals that while economic performance and public security influence
+trust in the short term, government quality and effectiveness in service
+delivery and policy implementation have more enduring effects.
+
+While this study focuses on the sources of trust in civil servants, the
+publicly accessible TCS dataset also offers new opportunities to examine
+critical policy questions. Researchers can investigate how varying
+levels of trust affect policy implementation, citizen compliance with
+regulations, and public acceptance of policy interventions. The
+dataset's longitudinal nature enables analysis of how changes in trust
+relate to policy reforms, implementation strategies, and policy
+outcomes. These applications are particularly relevant for complex
+policy challenges that require sustained public cooperation and support.
+
+TCS is a useful resource for studying trust in civil servants, but it
+also has limitations. As a country--year aggregate, it can mask
+case-specific dynamics that are better interpreted with country
+expertise. In addition, the model-based smoothing needed to address
+sparse coverage implies measurement uncertainty; treating point
+estimates as error-free can distort downstream inferences (Tai et al.,
+2024). To support appropriate use, we release full posterior draws so
+researchers can incorporate uncertainty directly in subsequent analyses
+using established approaches (e.g., Caughey and Warshaw, 2018; Tai et
+al., 2024; Woo et al., 2025).
+
+Despite these limitations, TCS advances research on trust and governance
+by enabling more comprehensive comparative analyses of the levels,
+trends, and correlates of trust in civil servants across countries and
+over time than has been feasible with prior data.
+
+TCS offers a valuable resource for studying trust in civil servants, but
+it has limitations. As an aggregate-level measure, it may obscure
+subnational variation, polarization in trust, or case-specific dynamics
+that require country expertise and qualitative or mixed methods to
+illuminate. Second, the smoothing approach introduces measurement
+uncertainty, and ignoring uncertainty risks distorting inferences (Tai
+et al., 2024). We therefore release the full set of posterior draws,
+allowing researchers to propagate measurement uncertainty in downstream
+analyses using established strategies (see, e.g., Caughey and Warshaw,
+2018; Tai et al., 2024; Woo et al., 2025).
+
+Despite these limitations, TCS advances research on trust and governance
+by enabling more comprehensive comparative analyses of the levels,
+trends, and correlates of trust in civil servants across countries and
+over time than has been feasible with prior data.
+
+\section*{References}\label{references}
+\addcontentsline{toc}{section}{References}
+
+\phantomsection\label{refs}
+\begin{CSLReferences}{1}{1}
+\bibitem[\citeproctext]{ref-Adcock2001}
+Adcock R and Collier D (2001) Measurement validity: A shared standard
+for qualitative and quantitative research. \emph{American Political
+Science Review} 95(3): 529--546.
+
+\bibitem[\citeproctext]{ref-Anderson2003}
+Anderson CJ and Tverdova YV (2003) Corruption, political allegiances,
+and attitudes toward government in contemporary democracies.
+\emph{American journal of political science} 47(1). Wiley Online
+Library: 91--109.
+
+\bibitem[\citeproctext]{ref-Bargain2020}
+Bargain O and Aminjonov U (2020) Trust and compliance to public health
+policies in times of COVID-19. \emph{Journal of public economics} 192.
+Elsevier: 104316.
+
+\bibitem[\citeproctext]{ref-Bell2015}
+Bell A and Jones K (2015) Explaining fixed effects: Random effects
+modeling of time-series cross-sectional and panel data. \emph{Political
+Science Research and Methods} 3(1): 133--153.
+
+\bibitem[\citeproctext]{ref-Bergquist2022}
+Bergquist M, Nilsson A, Harring N, et al. (2022) Meta-analyses of
+fifteen determinants of public opinion about climate change taxes and
+laws. \emph{Nature Climate Change} 12(3). Nature Publishing Group UK
+London: 235--240.
+
+\bibitem[\citeproctext]{ref-Blind2007}
+Blind PK (2007) Building trust in government in the twenty-first
+century: Review of literature and emerging issues. In: \emph{7th global
+forum on reinventing government building trust in government}, 2007, pp.
+26--29. June, Vienna, Austria.
+
+\bibitem[\citeproctext]{ref-Bouckaert2012}
+Bouckaert G (2012) Trust and public administration.
+\emph{Administration} 60(1): 91--115.
+
+\bibitem[\citeproctext]{ref-Burkner2017}
+Bürkner P-C (2017) {brms}: An {R} package for bayesian multilevel models
+using stan. \emph{Journal of Statistical Software} 80: 1--28.
+
+\bibitem[\citeproctext]{ref-Caughey2018}
+Caughey D and Warshaw C (2018) Policy preferences and policy change:
+Dynamic responsiveness in the american states, 1936--2014.
+\emph{American Political Science Review} 112(2). Cambridge University
+Press: 249--266.
+
+\bibitem[\citeproctext]{ref-Caughey2019}
+Caughey D, O'Grady T and Warshaw C (2019) Policy ideology in european
+mass publics, 1981--2016. \emph{American Political Science Review}
+113(3): 674--693.
+
+\bibitem[\citeproctext]{ref-Choi2018}
+Choi S (2018) Bureaucratic characteristics and citizen trust in civil
+service in OECD member nations. \emph{International Area Studies Review}
+21(2): 114--133.
+
+\bibitem[\citeproctext]{ref-Claassen2019}
+Claassen C (2019) Estimating smooth country--year panels of public
+opinion. \emph{Political Analysis} 27(1): 1--20.
+
+\bibitem[\citeproctext]{ref-Cole2024}
+Cole M, Sun J, Jiang W, et al. (2024) Governmental capabilities and
+responsiveness: Global investigations into CO2 emissions and
+decarbonization. The ultimate super wicked problem! \emph{International
+Journal of Public Administration}. Taylor \& Francis: 1--19.
+
+\bibitem[\citeproctext]{ref-Coppedge2023}
+Coppedge M, Gerring J, Knutsen CH, et al. (2023) V-dem
+{[}country-year/country-date{]} dataset v13. Varieties of Democracy
+(V-Dem) Project.
+
+\bibitem[\citeproctext]{ref-Davidovic2024}
+Davidovic D (Forthcoming) Quality of government and public support for
+taxation for climate change mitigation: Evidence from 135 european
+regions. \emph{European Political Science Review} FirstView. Cambridge
+University Press: 1--26.
+
+\bibitem[\citeproctext]{ref-Devine2024b}
+Devine D (2024) Political trust and redistribution preferences.
+\emph{Journal of European Public Policy}. Taylor \& Francis: 1--24.
+
+\bibitem[\citeproctext]{ref-Devine2021}
+Devine D, Gaskell J, Jennings W, et al. (2021) Trust and the coronavirus
+pandemic: What are the consequences of and for trust? An early review of
+the literature. \emph{Political Studies Review} 19(2). SAGE Publications
+Sage UK: London, England: 274--285.
+
+\bibitem[\citeproctext]{ref-Easton1965}
+Easton D (1965) A systems analysis of political life. Epub ahead of
+print 1965.
+
+\bibitem[\citeproctext]{ref-Easton1975}
+Easton D (1975) A re-assessment of the concept of political support.
+\emph{British Journal of Political Science} 5(4): 435--457.
+
+\bibitem[\citeproctext]{ref-Goodsell2006}
+Goodsell CT (2006) A new vision for public administration. \emph{Public
+Administration Review} 66(4). Wiley Online Library: 623--635.
+
+\bibitem[\citeproctext]{ref-Harring2018}
+Harring N (2018) Trust and state intervention: Results from a swedish
+survey on environmental policy support. \emph{Environmental Science \&
+Policy} 82. Elsevier: 1--8.
+
+\bibitem[\citeproctext]{ref-Hooghe2011}
+Hooghe M (2011) Why {There} is {Basically} {Only} {One} {Form} of
+{Political} {Trust}. \emph{The British Journal of Politics \&
+International Relations} 13(2): 269--275.
+
+\bibitem[\citeproctext]{ref-Houston2016}
+Houston DJ, Aitalieva NR, Morelock AL, et al. (2016) Citizen trust in
+civil servants: A cross-national examination. \emph{International
+Journal of Public Administration} 39(14): 1203--1214.
+
+\bibitem[\citeproctext]{ref-Hu2025b}
+Hu Y and Solt F (2025) Macrointerest across countries. \emph{British
+Journal of Political Science} 55(e71): 1--10.
+
+\bibitem[\citeproctext]{ref-Hu2025}
+Hu Y, Tai YC, Ko H, et al. (2025) An incomplete recipe: One-dimensional
+latent variables do not capture the full flavor of democratic support.
+\emph{Research \& politics} 12(2). SAGE Publications Sage UK: London,
+England: 20531680251341857.
+
+\bibitem[\citeproctext]{ref-Kappler2024}
+Kappler M, Verhoest K, Bach T, et al. (2024) What drives trust in
+regulatory agencies? Probing the relevance of governmental level and
+performance through a cross-national elite experiment on EU regulation.
+\emph{European Political Science Review}. Cambridge University Press:
+1--18.
+
+\bibitem[\citeproctext]{ref-Kettl2000}
+Kettl DF (2000) \emph{The Global Public Management Revolution: A Report
+on the Transformation of Governance}. Brookings Institution Press.
+
+\bibitem[\citeproctext]{ref-Kim2005}
+Kim S-E (2005) The role of trust in the modern administrative state: An
+integrative model. \emph{Administration \& Society} 37(5). Sage
+Publications Sage CA: Thousand Oaks, CA: 611--635.
+
+\bibitem[\citeproctext]{ref-Kolczynska2020}
+Kolczynska M, Bürkner P-C, Kennedy L, et al. (2020) Trust in state
+institutions in europe, 1989-2019. SocArXiv.
+\texttt{https://osf.io/preprints/socarxiv/3v5g7/}.
+
+\bibitem[\citeproctext]{ref-Macdonald2021}
+Macdonald D (2021) Political trust and support for immigration in the
+american mass public. \emph{British Journal of Political Science} 51(4).
+Cambridge University Press: 1402--1420.
+
+\bibitem[\citeproctext]{ref-Marien2011}
+Marien S and Hooghe M (2011) Does political trust matter? {An} empirical
+investigation into the relation between political trust and support for
+law compliance. \emph{European Journal of Political Research} 50(2):
+267--291.
+
+\bibitem[\citeproctext]{ref-McGann2019}
+McGann A, Dellepiane-Avellaneda S and Bartle J (2019) Parallel lines?
+Policy mood in a plurinational democracy. \emph{Electoral Studies} 58:
+48--57.
+
+\bibitem[\citeproctext]{ref-Morelock2021}
+Morelock AL (2021) In bureaucrats we trust? Good governance and trust in
+civil servants. \emph{Public Administration Quarterly} 45(3). Southern
+Public Administration Education Foundation: 315--337.
+
+\bibitem[\citeproctext]{ref-Norris1999}
+Norris P (1999) Introduction: The growth of critical citizens?
+\emph{Critical citizens: Global support for democratic government}.
+Oxford University Press Oxford: 1--27.
+
+\bibitem[\citeproctext]{ref-Norris2002}
+Norris P et al. (2002) \emph{Democratic Phoenix: Reinventing Political
+Activism}. Cambridge University Press.
+
+\bibitem[\citeproctext]{ref-Norris2011}
+Norris P (2011) \emph{Democratic Deficit: Critical Citizens Revisited}.
+Cambridge University Press.
+
+\bibitem[\citeproctext]{ref-OECD2019}
+OECD and Asian Development Bank (2019) \emph{Government at a Glance
+Southeast Asia 2019}. Paris: OECD Publishing.
+
+\bibitem[\citeproctext]{ref-OECD2025}
+OECD and Asian Development Bank (2025) \emph{Government at a Glance:
+Southeast Asia 2025}. Paris: OECD Publishing.
+
+\bibitem[\citeproctext]{ref-Pemstein2023}
+Pemstein D, Marquardt KL, Tzelgov E, et al. (2023) \emph{The v-dem
+measurement model: Latent variable analysis for cross-national and
+cross-temporal expert-coded data}. V-Dem Working Paper No. 21, 8th
+edition. University of Gothenburg: Varieties of Democracy Institute.
+
+\bibitem[\citeproctext]{ref-Rothstein2008}
+Rothstein B and Stolle D (2008) The {State} and {Social} {Capital}: {An}
+{Institutional} {Theory} of {Generalized} {Trust}. \emph{Comparative
+Politics} 40(4): 441--459.
+
+\bibitem[\citeproctext]{ref-Schmidthuber2021}
+Schmidthuber L, Ingrams A and Hilgers D (2021) Government openness and
+public trust: The mediating role of democratic capacity. \emph{Public
+Administration Review} 81(1). Wiley Online Library: 91--109.
+
+\bibitem[\citeproctext]{ref-Schmidthuber2023}
+Schmidthuber L, Willems J and Krabina B (2023) Trust in public
+performance information: The effect of data accessibility and data
+source. \emph{Public Administration Review} 83(2). Wiley Online Library:
+279--295.
+
+\bibitem[\citeproctext]{ref-Shor2007}
+Shor B, Bafumi J, Keele L, et al. (2007) A bayesian multilevel modeling
+approach to time-series cross-sectional data. \emph{Political Analysis}
+15(2): 165--181.
+
+\bibitem[\citeproctext]{ref-Solt2020a}
+Solt F (2020a) {DCPO}: Dynamic comparative public opinion. Available at
+the Comprehensive R Archive Network (CRAN).
+\texttt{https://CRAN.R-project.org/package=DCPO}.
+
+\bibitem[\citeproctext]{ref-Solt2020}
+Solt F (2020b) Measuring income inequality across countries and over
+time: The standardized world income inequality database. \emph{Social
+Science Quarterly} 101(3): 1183--1199.
+
+\bibitem[\citeproctext]{ref-Solt2020c}
+Solt F (2020c) Modeling dynamic comparative public opinion. SocArXiv.
+\texttt{https://osf.io/\ preprints/socarxiv/d5n9p}.
+
+\bibitem[\citeproctext]{ref-Solt2019}
+Solt F, Hu Y and Tai Y (2019) {DCPOtools}: {Tools} for {Dynamic
+Comparative Public Opinion}. Available at:
+\url{https://github.com/fsolt/DCPOtools} (accessed 18 February 2022).
+
+\bibitem[\citeproctext]{ref-Tai2022role}
+Tai YC (2022) \emph{The role of trust in governance: Public health and
+tax compliance in cross-national comparative perspective}. PhD thesis.
+The University of Iowa.
+
+\bibitem[\citeproctext]{ref-Tai2026}
+Tai YC (2025) Introducing the trust in government (TrustGov) dataset: A
+new resource for cross-national time-series trust research. SocArXiv.
+Available at: \url{https://osf.io/preprints/socarxiv/k7caz_v1}.
+
+\bibitem[\citeproctext]{ref-Tai2024}
+Tai YC, Hu Y and Solt F (2024) Democracy, public support, and
+measurement uncertainty. \emph{American Political Science Review}
+118(1): 512--518.
+
+\bibitem[\citeproctext]{ref-Uddin2025}
+Uddin N (2025) Impact of crime and insecurity on citizen trust in public
+institutions: Evidence from bangladesh. \emph{International Journal of
+Public Administration} 48(4). Routledge: 238--249.
+
+\bibitem[\citeproctext]{ref-Valgardhsson2021}
+Valgarsson V, Stoker G, Devine D, et al. (2021) Disengagement and
+political trust: Divergent pathways. \emph{Oxford handbook of political
+participation}. Oxford University Press.
+
+\bibitem[\citeproctext]{ref-VandeWalle2022}
+Van de Walle S and Migchelbrink K (2022) Institutional quality,
+corruption, and impartiality: The role of process and outcome for
+citizen trust in public administration in 173 european regions.
+\emph{Journal of Economic Policy Reform} 25(1): 9--27.
+
+\bibitem[\citeproctext]{ref-VanRyzin2011}
+Van Ryzin GG (2011) Outcomes, process, and trust of civil servants.
+\emph{Journal of Public Administration Research and Theory} 21(4).
+Oxford University Press: 745--760.
+
+\bibitem[\citeproctext]{ref-Walker2017}
+Walker RM, James O and Brewer GA (2017) Replication, experiments and
+knowledge in public management research. \emph{Public Management Review}
+19(9). Routledge: 1221--1234.
+
+\bibitem[\citeproctext]{ref-Wilson2021}
+Wilson MC and Knutsen CH (2022) Geographical coverage in political
+science research. \emph{Perspectives on Politics} 20(3): 1024--1039.
+
+\bibitem[\citeproctext]{ref-Woo2023a}
+Woo B-D, Goldberg LA and Solt F (2023) Public gender egalitarianism: A
+dataset of dynamic comparative public opinion toward egalitarian gender
+roles in the public sphere. \emph{British Journal of Political Science}
+53(2). Cambridge University Press: 766--775.
+
+\bibitem[\citeproctext]{ref-Woo2025}
+Woo B-D, Ko H, Tai YC, et al. (2025) Public support for gay rights
+across countries and over time. \emph{Social Science Quarterly} 106(1).
+Wiley Online Library: e13478.
+
+\bibitem[\citeproctext]{ref-Wuttke2020}
+Wuttke A, Schimpf C and Schoen H (2020) When the whole is greater than
+the sum of its parts: On the conceptualization and measurement of
+populist attitudes and other multidimensional constructs. \emph{American
+Political Science Review} 114(2). Cambridge University Press: 356--374.
+
+\bibitem[\citeproctext]{ref-yang2006performance}
+Yang K and Holzer M (2006) The performance--trust link: Implications for
+performance measurement. \emph{Public administration review} 66(1).
+Wiley Online Library: 114--126.
+
+\bibitem[\citeproctext]{ref-Yates1982}
+Yates D (1982) \emph{Bureaucratic Democracy: The Search for Democracy
+and Efficiency in American Government}. Harvard University Press.
+
+\bibitem[\citeproctext]{ref-Zaki2022}
+Zaki BL, Nicoli F, Wayenberg E, et al. (2022) In trust we trust: The
+impact of trust in government on excess mortality during the COVID-19
+pandemic. \emph{Public Policy and Administration} 37(2). SAGE
+Publications Sage UK: London, England: 226--252.
+
+\end{CSLReferences}
+
+\pagebreak
+
+\renewcommand{\baselinestretch}{1}
+\selectfont
+\maketitle
+\selectfont
+
+\pagenumbering{arabic}
+\renewcommand*{\thepage}{A\arabic{page}}
+
+\setcounter{figure}{0}
+\renewcommand*{\thefigure}{A\arabic{figure}}
+
+\vspace{-.5in}
+\begin{center}
+\begin{Large}
+Appendices
+\end{Large}
+\end{center}
+
+\section{Appendix A: Survey Items Used to Estimate Trust in Civil
+Servants}\label{sec-app-survey}
+
+National and cross-national surveys have often included questions
+tapping trusting attitudes over the past half-century, but the resulting
+data are both sparse, that is, unavailable for many countries and years,
+and incomparable, generated by many different survey items. In all, we
+identified 17 such survey items that were asked in no fewer than five
+country-years in countries surveyed at least twice; these items were
+drawn from 132 different survey datasets. These items are listed in the
+table below, along with the dispersion (\(\alpha\)) and difficulty
+(\(\beta\)) scores estimated for each from the DCPO model. Question text
+may vary slightly across survey datasets, but not, roughly speaking, by
+more than the translation differences across languages found within the
+typical cross-national survey dataset. Lower values of dispersion
+indicate questions that better identify publics with a higher level of
+trust from those with lower. Items have one less difficulty score than
+the number of response categories. Survey dataset codes correspond to
+those used in the \texttt{DCPOtools} R package; they appear in
+decreasing order of country-years contributed.
+
+Together, the survey items in the source data were asked in 98 different
+countries in at least two time points over 36 years, from 1973 to 2022,
+yielding a total of 1,814 country-year-item observations. The TCS scores
+of country-years with more observed items are likely to be estimated
+more precisely. The estimates for country-years with fewer (or no)
+observed items rely more heavily (or entirely) on the random-walk prior
+and are therefore less certain.
+
+\noindent Table A1: Indicators Used in the Unidimensional Latent
+Variable Model of Democratic Support
+
+\begingroup\fontsize{7}{9}\selectfont
+
+\begin{longtable}[t]{>{\raggedright\arraybackslash}p{7em}>{\raggedright\arraybackslash}p{4em}>{\raggedright\arraybackslash}p{13em}>{\raggedright\arraybackslash}p{16em}>{\raggedright\arraybackslash}p{4em}>{\raggedright\arraybackslash}p{8em}>{\raggedright\arraybackslash}p{8em}}
+\toprule
+Survey
+Item
+Code & Country-Years & Question Text & Response Categories & Dispersion & Difficulties & Survey Dataset Codes\\
+\midrule
+\endfirsthead
+\multicolumn{7}{@{}l}{\textit{(continued)}}\\
+\toprule
+Survey
+Item
+Code & Country-Years & Question Text & Response Categories & Dispersion & Difficulties & Survey Dataset Codes\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!10}{trust4} & \cellcolor{gray!10}{614} & \cellcolor{gray!10}{And how much trust do you have in... Civil service / public administration} & \cellcolor{gray!10}{1 A great deal of trust / 2 Quite a lot of trust / 3 Not a lot of trust / 4 No trust at all} & \cellcolor{gray!10}{\num{0.88}} & \cellcolor{gray!10}{-1.39, 1.00, 3.86} & \cellcolor{gray!10}{evs, wvs, ases, lb, bsa, asianb, eass, itanes, kgss, sasianb, arabb}\\
+trust2 & 348 & I would like to ask you a question about how much�trust�you have in certain�institutions. For each of the following�institutions, please tell me if you tend to�trustit or tend not to�trust�it? Civil service & 1 Tend to trust / 2 Tend not to trust & \num{1.13} & 0.79 & eb, cceb\\
+\cellcolor{gray!10}{runswell4} & \cellcolor{gray!10}{197} & \cellcolor{gray!10}{How would you judge the current situation in each of the following? The way public administration runs in} & \cellcolor{gray!10}{1 Very good / 2 Rather good / 3 Rather bad / 4 Very bad} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{eb}\\
+right5 & 109 & Most of the time we can trust people in government to do what is right. & 1 Strongly agree / 5 Strongly disagree & \num{0.85} & -1.11, 0.65, 2.00, 4.66 & issp, usgss\\
+\cellcolor{gray!10}{best5} & \cellcolor{gray!10}{94} & \cellcolor{gray!10}{Most government administrators} & \cellcolor{gray!10}{1 Strongly agree / 5 Strongly disagree} & \cellcolor{gray!10}{\num{1.24}} & \cellcolor{gray!10}{-1.61, 0.53, 2.32, 5.65} & \cellcolor{gray!10}{issp, usgss, kgss}\\
+image4 & 89 & Could you please tell me for each of the following, whether the term brings to mind something very positive, fairly positive, fairly negative or very negative.  Public administration & 1 Very positive / 2 Fairly positive / 3 Fairly negative / 4 Very negative & \num{0.83} & -1.80, 0.30, 3.03 & eb\\
+\cellcolor{gray!10}{trustmun4} & \cellcolor{gray!10}{81} & \cellcolor{gray!10}{Generally speaking, the public administration of [CITY NAME] can be trusted} & \cellcolor{gray!10}{1 Strongly agree / 4 Strongly disagree} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{feb, lb}\\
+trustff4 & 73 & Please look at this card and tell me how much confidence you have in each of the following groups, institutions or persons mentioned on the list: a lot, some, a little or no confidence? Firefighters & 1 A lot / 2 Some / 3 A little / 4 None &  &  & lb\\
+\cellcolor{gray!10}{right4} & \cellcolor{gray!10}{60} & \cellcolor{gray!10}{You can generally trust the people who run our government to do what is right.} & \cellcolor{gray!10}{1 Strongly agree / 4 Strongly disagree} & \cellcolor{gray!10}{\num{0.54}} & \cellcolor{gray!10}{-0.58, 1.18, 3.44} & \cellcolor{gray!10}{asianb}\\
+trust3 & 32 & Trust in Ministries and Government Agencies & 1 Very much / 2 Some / 3 Not very much & \num{1.02} & -0.02, 3.02 & usgss, jgss\\
+\cellcolor{gray!10}{trusteuro2} & \cellcolor{gray!10}{30} & \cellcolor{gray!10}{If you would�trust�information�they provide on the changeover to the euro:�Public�administration} & \cellcolor{gray!10}{1 trust / 2 do not trust} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{feb}\\
+trustpollution5 & 26 & How much�trust�do you have in each of the following groups to give you correct information about causes of pollution? Government departments & 1 A great deal of trust / 2 Quite a lot of trust / 3 Some trust / 4 Not much trust / 5 Hardly any trust &  &  & issp\\
+\cellcolor{gray!10}{trust5} & \cellcolor{gray!10}{23} & \cellcolor{gray!10}{Confidence in the Civil Service?} & \cellcolor{gray!10}{1 Complete confidence / 2 A great deal of confidence / 3 Some confidence / 4 Very little confidence / 5 No confidence at all} & \cellcolor{gray!10}{\num{0.54}} & \cellcolor{gray!10}{-0.81, 0.41, 1.88, 3.38} & \cellcolor{gray!10}{issp, gles, fsdtrust, fsdeva, bsa}\\
+trust11 & 16 & Now, thinking about institutions like Parliament, please use the scale of 0 to 10 to indicate how much trust you have for each of the following, where 0 is no trust and 10 is a great deal of trust: & 0 No trust / 10 A great deal of trust & \num{0.56} & -1.36, -1.01, -0.55, -0.08, 0.32, 1.04, 1.50, 2.15, 3.11, 3.96 & cid, fsdelection, bes\\
+\cellcolor{gray!10}{right4a} & \cellcolor{gray!10}{10} & \cellcolor{gray!10}{In general, do you feel that the people in government are too often interested in looking after themselves, or do you feel that they can be trusted to do the right thing nearly all the time?} & \cellcolor{gray!10}{1 Usually look after themselves / 2 Sometimes look after themselves / 3 Sometimes can be trusted to do the right thing / 4 Usually can be trusted to do the right thing} & \cellcolor{gray!10}{\num{0.81}} & \cellcolor{gray!10}{0.48, 1.49, 2.93} & \cellcolor{gray!10}{aes}\\
+interests7 & 8 & To what extent do you trust each of these political institutions to look after your interests? Civil servants & 1 No trust / 7 Great trust & \num{0.40} & -1.14, 0.20, 0.84, 1.53, 2.86, 3.46 & neb\\
+\cellcolor{gray!10}{trustmun7} & \cellcolor{gray!10}{4} & \cellcolor{gray!10}{Please tell me for each institution or organisation how much trust you place in it.  The municipal administration} & \cellcolor{gray!10}{1 Absolutely no trust at all / 23456 / 7 A great deal of trust} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{} & \cellcolor{gray!10}{allbus}\\*
+\end{longtable}
+\endgroup{}
+
+\clearpage
+\pagebreak
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio]{dcpo_trust_bureaucracy_files/figure-latex/obs_by_cy-1.pdf}}
+\caption{Source Data Observations by Country and Year \label{obs_by_cy}}
+\end{figure}
+
+\clearpage
+\pagebreak
+
+\section{Appendix B: The DCPO Model}\label{sec-app-dcpo}
+
+A number of recent studies have developed latent variable models of
+public opinion based on cross-national survey data (Caughey et al.,
+2019; see Claassen, 2019; Kolczynska et al., 2020; McGann et al., 2019).
+To estimate trust in civil servants across countries and over time, we
+employ the latest of these methods that is appropriate for data that is
+not only incomparable but also sparse, the Dynamic Comparative Public
+Opinion (DCPO) model elaborated in Solt (2020c).\footnote{ Solt (2020c)
+  demonstrates that the DCPO model provides a better fit to survey data
+  than the models put forward by Claassen (2019) or Caughey et al.
+  (2019). The McGann et al. (2019) model depends on dense survey data
+  unlike the sparse data on trust in civil servants described in the
+  preceding section. Kolczynska et al. (2020) is the very most recent of
+  these five works and builds on each of the others, but the MRP
+  approach developed in that piece is suitable not only when the
+  available survey data are dense but also when ancillary data on
+  population characteristics are available, so it is similarly
+  inappropriate to this application.} The DCPO model is a
+population-level two-parameter ordinal logistic item response theory
+(IRT) model with country-specific item-bias terms.
+
+DCPO models the total number of survey responses expressing at least as
+much trust in civil servants as response category \(r\) to each question
+\(q\) in country \(k\) at time \(t\), \(y_{ktqr}\), out of the total
+number of respondents surveyed, \(n_{ktqr}\), using the beta-binomial
+distribution:
+
+\begin{equation}
+a_{ktqr} = \phi\eta_{ktqr} \label{eq:bb_a}
+\end{equation} \begin{equation}
+b_{ktqr} = \phi(1 - \eta_{ktqr}) \label{eq:bb_b}
+\end{equation} \begin{equation}
+y_{ktqr} \sim \textrm{BetaBinomial}(n_{ktqr}, a_{ktqr}, b_{ktqr}) \label{eq:betabinomial}
+\end{equation}
+
+where \(\phi\) represents an overall dispersion parameter to account for
+additional sources of survey error beyond sampling error and
+\(\eta_{ktqr}\) is the expected probability that a random person in
+country \(k\) at time \(t\) answers question \(q\) with a response at
+least as positive as response \(r\).\footnote{ The ordinal responses to
+  question \(q\) are coded to range from 1 (expressing the least trust
+  in civil servants) to \(R\) (expressing the most trust in civil
+  servants), and \(r\) takes on all values greater than 1 and less than
+  or equal to \(R\).}
+
+This expected probability, \(\eta_{ktqr}\), is in turn estimated as
+follows:
+
+\begin{equation}
+\eta_{ktqr} = \textrm{logit}^{-1}(\frac{\bar{\theta'}_{kt} - (\beta_{qr} + \delta_{kq})}{\sqrt{\alpha_{q}^2 + (1.7*\sigma_{kt})^2}}) \label{eq:dcpo}
+\end{equation}
+
+In this equation, \(\beta_{qr}\) represents the difficulty of response
+\(r\) to question \(q\), that is, the degree of trust in civil servants
+the response expresses. The \(\delta_{kq}\) term represents
+country-specific item bias: the extent to which all responses to a
+particular question \(q\) may be more (or less) difficult in a given
+country \(k\) due to translation issues, cultural differences in
+response styles, or other idiosyncrasies that render the same survey
+item not equivalent across countries.\footnote{ Estimating
+  \(\delta_{kq}\) requires repeated administrations of question \(q\) in
+  country \(k\), so when responses to question \(q\) are observed in
+  country \(k\) in only a single year, the DCPO model sets
+  \(\delta_{kq}\) to zero by assumption, increasing the error of the
+  model by any country-item bias that is present. Questions that are
+  asked repeatedly over time in only a single country pose no risk of
+  country-specific item bias, so \(\delta_{kq}\) in such cases are also
+  set to zero.} The dispersion of question \(q\), its noisiness in
+relation to our latent variable, is \(\alpha_{q}\). The mean and
+standard deviation of the unbounded latent trait of trust in civil
+servants are \(\bar{\theta'}_{kt}\) and \(\sigma_{kt}\), respectively.
+
+Random-walk priors are used to account for the dynamics in
+\(\bar{\theta'}_{kt}\) and \(\sigma_{kt}\), and weakly informative
+priors are placed on the other parameters.\footnote{ The dispersion
+  parameters \(\alpha_{q}\) are drawn from standard half-normal prior
+  distributions, that is, the positive half of N(0, 1). The first
+  difficulty parameters for each question, \(\beta_{q1}\), are drawn
+  from standard normal prior distributions, and the differences between
+  \(\beta\)s for each \(r\) for the same question \(q\) are drawn from
+  standard half-normal prior distributions. The item-bias parameters
+  \(\delta_{kq}\) receive normally-distributed hierarchical priors with
+  mean 0 and standard deviations drawn from standard half-normal prior
+  distributions. The initial value of the mean unbounded latent trait
+  for each country, \(\bar{\theta'}_{k1}\), is assigned a standard
+  normal prior, as are the transition variances
+  \(\sigma_{\bar{\theta'}}^2\) and \(\sigma_{\sigma}^2\); the initial
+  value of the standard deviation of the unbounded latent trait for each
+  country, \(\sigma_{k1}\), is drawn from a standard lognormal prior
+  distribution. The overall dispersion, \(\phi\), receives a somewhat
+  more informative prior drawn from a gamma(4, 0.1) distribution that
+  yields values that are well scaled for that parameter.} The dispersion
+parameters \(\alpha_q\) are constrained to be positive and all survey
+responses are coded with high values indicating more trust in civil
+servants to fix direction. For each question \(q\) the difficulties for
+increasing response categories \(r\) are constrained to be increasing.
+The sum of \(\delta_{kq}\) across all countries \(k\) is set to zero for
+each question \(q\):
+
+\begin{equation}
+\sum_{k = 1}^K \delta_{kq} = 0
+\end{equation}
+
+Finally, the logistic function is used to transform
+\(\bar{\theta'}_{kt}\) to the unit interval and so give the bounded mean
+of latent trust in civil servants, \(\bar{\theta}_{kt}\), which is our
+parameter of interest here (see Solt, 2020c: 3--8).
+
+The DCPO model accounts for the incomparability of different survey
+questions with two parameters. First, it incorporates the
+\emph{difficulty} of each question's responses, that is, how much trust
+in civil servants is indicated by a given response. That each response
+evinces more or less of our latent trait is most easily seen with regard
+to the ordinal responses to the same question: strongly agreeing with
+the statement ``Most government administrators (civil servants) can be
+trusted to do what is best for the country,'' exhibits more trust in
+civil servants than simply agreeing, which shows more trust than
+responding ``disagree,'' which in turn is a more trusting response than
+``strongly disagree.'' But this is also true across questions. Second,
+the DCPO model accounts for each question's \emph{dispersion}, its
+noisiness with regard to our latent trait. The lower a question's
+dispersion, the better that changes in responses to the question map
+onto changes in trust in civil servants. Together, the model's
+difficulty and dispersion estimates work to generate comparable
+estimates of the latent variable of trust in civil servants from the
+available but incomparable source data.
+
+To address the sparsity of the source data---the fact that there are
+gaps in the time series of each country, and even many observed
+country-years have only one or few observed items---DCPO uses simple
+local-level dynamic linear models, i.e., random-walk priors, for each
+country. That is, within each country, each year's value of trust in
+civil servants is modeled as the previous year's estimate plus a random
+shock. These dynamic models smooth the estimates of trust in civil
+servants over time and allow estimation even in years for which little
+or no survey data is available, albeit at the expense of greater
+measurement uncertainty.
+
+\end{document}
