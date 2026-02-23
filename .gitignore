@@ -2,18 +2,31 @@
 .Rhistory
 .RData
 .DS_Store
+# LaTeX build artifacts
 *.aux
 *.bbl
 *.blg
 *.log
 *.out
-*.tex
 *.nav
 *.snm
 *.toc
-dev/*
-framed.sty
-paper/*cache/*
-data/1000/
-data-raw/old/*
-output/*
+*.fdb_latexmk
+*.fls
+
+# Quarto / knitr outputs & caches (repo-wide)
+*_cache/
+*_files/
+.quarto/
+
+# Paper-generated folders (keep paper/*.pdf, ignore auto outputs)
+paper/*_cache/
+paper/*_files/
+
+# Scratch / generated outputs
+dev/
+output/
+
+# Large data (choose ONE strategy below)
+data/
+data-raw/
