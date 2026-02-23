@@ -12,76 +12,78 @@ We are grateful to the reviewers for their thoughtful reviews, their enthusiasm 
 Their feedback has substantially improved the paper.
 Below we address each comment point by point and indicate the corresponding changes in the revised manuscript.
 
-1.1. Reviewer 1 suggested that it would help justify our dataset to use it to replicate existing studies.  We agree entirely.  We have revised and reframed our analysis of the sources of trust in civil servants as what @Walker2017 [, 1225-1226] calls a conceptual replication and extension.  That is, we investigate the same hypotheses as previous work using different measurement and analysis. While previous studies look at smaller samples and are therefore constrained to look at indicators of outcomes and process just one or a few at a time, the much larger number of country-years observed in the TCS data allow us to combine a wide range of contextual indicators of both outcome and quality in a single analysis. The results, which both support and conflict previous findings, underscore the value of our contribution, and we appreciate the suggestion to move in this direction.
+1.1. Reviewer 1 suggested that it would help justify our dataset to use it to replicate existing studies.
+
+We agree entirely.
+We have revised and reframed our analysis of the sources of trust in civil servants as what @Walker2017 [, 1225-1226] calls a conceptual replication and extension [pp.16-17,20].
+That is, we investigate the same hypotheses as previous work using different measurement and analysis. While previous studies look at smaller samples and are therefore constrained to look at indicators of outcomes and process just one or a few at a time, the much larger number of country-years observed in the TCS data allow us to combine a wide range of contextual indicators of both outcome and quality in a single analysis.
+The results, which both support and conflict previous findings, underscore the value of our contribution, and we appreciate the suggestion to move in this direction [pp. 18-19].
 
 
 1.2. R1 suggested that we should provide more details about sampling of source data, survey items, and country-years, to reduce any confusion about our raw data collection. 
 
 We thank R1 for this suggestion and agree that the data-construction process should be described in detail.
-We have revised the manuscript to clarify how we assembled the source data and arrived at the final set of data for measurement (pp. XX–XX).
+We have revised the manuscript to clarify how we assembled the source data and arrived at the final set of data for estimation [pp. 4-5].
 We emphasize that we do not “sample” surveys in a statistical sense.
 Instead, our goal is to compile the broadest feasible cross-national, over-time dataset of survey items measuring public trust/confidence in civil servants or public administration.
 
 Specifically, we (1) defined the target construct (trust/confidence in civil servants/public administration); (2) conducted a systematic review of survey documentation and raw files to identify candidate items; (3) recorded key metadata for each item (question identifiers, response scales, fieldwork dates, and survey weights when available); (4) cross-checked candidate items between two authors to resolve ambiguities and ensure construct consistency; and (5) processed the raw files using DCPOtools [@Solt2019], which standardizes formats, applies consistent recoding and weighting, and produces aggregates for model estimation. 
-We also direct readers to Online Appendix A for the complete list of survey projects and included items.
 
 We also point readers to Online Appendix A for the full survey and item list. 
 
 
 1.3. R1 also suggested that we should present a brief formal discussion of the DCPO model in the main text.
 
-We agree and have added a brief formal specification of the DCPO model in the main text (pp. XX–XX), including the measurement equation (ordinal IRT link), key item parameters, and the random-walk prior for the latent country–year series, accompanied by an intuitive explanation of these components.
+We agree and have added a brief formal specification of the DCPO model in the main text [pp.8], including the measurement equation (ordinal IRT link), key item parameters, and the random-walk prior for the latent country–year series, accompanied by an intuitive explanation of these components.
 The full derivation and prior specification remain in Appendix B.
-We also note that DCPO has been applied in recent peer-reviewed work (e.g., @Tai2024; @Woo2023a; @Hu2025b).
+We also note that DCPO has been applied in recent peer-reviewed work (e.g., @Tai2024; @Woo2023a; @Hu2025b)[pp. 7].
 
 
 1.4 Finally, R1 recommended alternative imputation techniques for missing data to the random-walk prior. 
-
 We understand R1 as suggesting that, once trust is estimated from the available survey information, one could consider alternative approaches for linking country-years with no data (e.g., moving averages, kNN, regression) in place of the random-walk evolution.
 We agree that sparse coverage requires careful treatment.
-Our use of a random-walk evolution prior follows the DCPO framework and related latent public-opinion models [e.g., @Caughey2019; @Claassen2019], which estimate the measurement component and the temporal dynamics jointly within a single Bayesian model, rather than treating smoothing as a separate, post-hoc imputation step.
-In this integrated framework, the random-walk prior provides a parsimonious way to regularize sparse country-year series while allowing uncertainty to expand in data-poor periods.
+Our use of a random-walk evolution prior follows the DCPO framework and related latent public-opinion models [e.g., @Caughey2019; @Claassen2019], which estimate the measurement component and the temporal dynamics jointly within a single Bayesian model, rather than applying a separate, two-step “gap-filling” procedure after estimation.
+We believe this integrated approach is preferable here for several reasons.
 
-While moving averages, kNN, and regression can be viewed as alternative gap-filling rules, they are less suitable here for three reasons.
-First, with irregular spacing and long gaps, as shown in Figure A1 about source data distribution in Appendix A, moving-average windows and time-based kNN neighborhoods require ad hoc choices (window size, k) that can mechanically smooth away variation.
-For example, in this context, moving averages are not well-defined because the “window” often contains no observations.
-Similarly, since kNN requires a meaningful notion of “nearness,” long gaps make “nearest years” far apart and produce extrapolation from distant observations.
+First, given the long gaps and irregular spacing shown in Appendix Figure A1, common smoothing rules are not straightforward to apply. 
+Moving-average windows are frequently undefined because many windows contain no observations.
+Similarly, time-based kNN requires a meaningful notion of “nearness,” but long gaps can yield imputations based on observations that are far apart in time when “nearness” is stretched across several years.
 
-Second, these approaches typically yield point extrapolations and do not preserve the expanding uncertainty that is central when coverage is sparse; by contrast, DCPO’s evolution prior is embedded in the joint Bayesian model and produces posterior uncertainty that increases naturally as information decreases. 
+Second, regression-based imputation requires specifying predictors of trust.
+If we were to use governance indicators to "fill gaps," we would risk "baking in" the very relationships we later test in our analysis.
 
-Third, regression-based imputation requires specifying predictors of trust; using governance or other relevant covariates for this purpose can be circular when those same covariates are later used to study correlates of trust.
-In that case, imputation mechanically builds the hypothesized relationships into the constructed series.
+Third, these alternative gap-filling approaches typically produce point imputations and do not, by default, carry forward uncertainty that increases as coverage becomes thinner.
+In contrast, DCPO yields posterior uncertainty that expands naturally in country-years with sparse item coverage or long gaps.
+This provides a more transparent representation of the limits of the available information and signals where estimates are less precise.
 
-For these reasons, DCPO, as a joint measurement model that was designed specifically for sparse and incomparable cross-national survey data, can not only infer from multiple non-comparable items but also simultaneously smooth data within the same framework through a standard dynamic prior used in latent public-opinion measurement.
+For these reasons, we retain DCPO’s integrated approach, which jointly estimates item parameters, the latent trust series, and temporal dynamics within a single Bayesian framework.
 
-Importantly, DCPO does not “fill in” missing values as if they were observed; it yields a posterior distribution for each country-year estimate, and uncertainty appropriately expands in country-years with sparse/no item coverage or long gaps.
+We fully acknowledge that uncertainty is largest in data-sparse contexts. 
+This is precisely why we (i) conduct comprehensive validation against external indicators and known patterns and (ii) propagate measurement uncertainty into downstream analyses rather than treating means as error-free quantities.
 
-We fully acknowledge that random-walk priors introduce uncertainty, especially in data-sparse contexts. 
-This is precisely why we (i) conduct comprehensive validation and known patterns and (ii) propagate measurement uncertainty into downstream analyses rather than treating means as error-free quantities.
-Together, these steps address the core risks that ad hoc imputation methods would exacerbate: they would understate uncertainty.
-
-We have revised the manuscript to clarify why DCPO is appropriate (on page xxx -xxx) and to more describe how uncertainty is carried through subsequent analyses.
+We have revised the manuscript to clarify why DCPO is appropriate [pp. 8-9] and to more clearly describe how uncertainty is carried through subsequent analyses [pp. 17, 21].
 
 2.1. Reviewer 2 recommended that the introduction establishes why trust matters and prior to engaging with the scholarly debate. 
+
 We thank the reviewer for this thoughtful and constructive comment.
-In the revision, we started the discussion on the importance of trust in democracy and social science/administration studies before moving to the discussion on the lack of comparable data at the aggregate level. 
+In the revision, we started the discussion on the importance of trust in democracy and social science/administration studies before moving to the discussion on the lack of comparable data at the aggregate level [pp. 1]. 
 
 2.2. R2 also raised the issue of ex-post explanations.
 
-We thank R2 for this comment. 
-In the revision, we substantially reduce interpretive claims and focus on descriptive patterns in the estimates.
+We thank R2 for the caution regarding ex-post explanations. 
+In the revision, we substantially reduced interpretive claims and focused on descriptive patterns in the estimates [pp. 11].
 To provide limited contextual background for Southeast Asian cases, we reference OECD/ADB reports documenting high self-reported satisfaction with core public services in the region in recent years [@OECD2019; @OECD2025]. 
 We present this as background context rather than as a mechanism or causal explanation for our trust estimates.
 
 For transparency, we also state more explicitly that we release the full set of country–year estimates along with associated uncertainty. 
 We frame unexpected rankings/patterns as prompts for further inquiry, particularly by regional and country experts, rather than definitive claims.
-We further encourage readers to interpret estimates cautiously, especially in country-years with sparse item coverage, where posterior uncertainty is larger.
-Finally, we strengthen the conclusion by noting that, as an aggregate country–year measure, TCS may obscure subnational variation and case-specific dynamics that are better evaluated with country expertise and qualitative or mixed-methods research.
+We further encourage readers to interpret estimates cautiously, especially in country-years with sparse item coverage, where posterior uncertainty is larger [pp. 11].
+Finally, we strengthen the conclusion by noting that, as an aggregate country–year measure, TCS may obscure case-specific dynamics that are better evaluated with country expertise [pp.21].
 
-2.3 R2 noted that the Figure 10 application contributes positively to the debate and strengthens the manuscript’s contribution beyond presenting the dataset.
+2.3 R2 noted that the Figure 7 application contributes positively to the debate and strengthens the manuscript’s contribution beyond presenting the dataset.
 
 We thank R2 for this assessment. 
-In the conclusion, we clarify that the new dataset enables more comprehensive comparative analyses of the levels and correlates of trust in civil servants across countries and over time than has been possible in prior work.
+In the conclusion, we clarify that the new dataset enables more comprehensive comparative analyses of the levels and correlates of trust in civil servants across countries and over time than has been possible in prior work [pp.21].
 
 
 # References
