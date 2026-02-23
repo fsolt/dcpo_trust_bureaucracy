@@ -1200,16 +1200,18 @@ To sum up, the evidence of construct validation of TCS scores against the percei
 
 # Explaining Trust in Civil Servants
 
-With our time-series cross-national data on trust in civil servants, we combined both outcome and quality indicators to examine the factors influencing this trust.
-For outcome indicators, we followed previous studies and used GDP per capita, inflation, and unemployment from 1984 to 2022 as measures of macroeconomic performance.
+With our time-series cross-national data on trust in civil servants, we are able to reexamine and perform a conceptual replication and generalization [see @Walker2017, 1225-1226] of the literature debating the causes of trust in bureaucracy that we describe above.
+That is, we investigate the same hypotheses as previous work using different measurement and analysis.
+With many more country-years observed, we are able to combine a wide range of contextual indicators of both outcome and quality in a single analysis to examine the factors influencing trust; previous studies, looking at smaller samples, are constrained to look at these indicators just one or a few at a time.
+For outcome indicators, we employ GDP per capita, inflation, unemployment, and income inequality from 1984 to 2022 as measures of macroeconomic performance [see, e.g., @Houston2016, @Morelock2021] as well as public safety with regard to physical insecurity [see @Uddin2025].
 GDP per capita and inflation data were sourced from the International Monetary Fund, while unemployment data were collected from the World Bank, which uses modeled International Labour Organization estimates.
 Regarding income inequality, we relied on the Standardized World Income Inequality Database presented in @Solt2020, specifically the Gini index of inequality in disposable income.
+To measure physical insecurity, we collected the number of intentional homicides at the country-year level from the United Nations Office on Drugs and Crime.
 
-For quality of government indicators, we included the Corruption Perceptions Index from Transparency International, covering the years 1995 to 2022, to capture the perceived level of corruption.
-We also used the Government Effectiveness indicator from the World Bank's Worldwide Governance Indicators, as it reflects the overall quality of public services, the civil service, and policy formulation and implementation.
-
-To further leverage our trust data, we collected the number of intentional homicides at the country-year level from the United Nations Office on Drugs and Crime, capturing outcomes in public safety, given that macroeconomic outcomes do not represent government performance in other critical fields [@VanRyzin2011; @Morelock2021].
-To account for the effect of democratic development on trust, we included the Liberal Democracy Index from the V-Dem dataset [@Coppedge2023; @Pemstein2023]. 
+For the process-oriented quality of government, we include corruption perceptions, government effectiveness, and democracy [see, e.g., @Houston2016; @Choi2018; @Morelock2025]. 
+To capture the perceived level of corruption, we use the Corruption Perceptions Index from Transparency International, covering the years 1995 to 2022.
+The World Bank's Worldwide Governance Indicators provides its measure of Government Effectiveness, which reflects the overall quality of public services, the civil service, and policy formulation and implementation.
+And to account for the effect of democratic development on trust, we included the Liberal Democracy Index from the V-Dem dataset [@Coppedge2023; @Pemstein2023]. 
 
 We adopted a Bayesian multilevel model with varying intercepts for each country and each year.
 The varying intercepts for each country account for heteroskedasticity across countries, while those for each year account for 'time shocks' that impact all countries simultaneously [@Shor2007].
@@ -1461,20 +1463,21 @@ load(here::here("data", "m_wgi_gee.rda"))
 
 named_vars <- tribble(~var_name, ~`.variable`, ~order,
                         "GDPpc, Mean", "b_gdppc_mean", 1,
-                        "GDPpc, Difference", "b_gdppc_diff", 2, 
-                        "Inflation Mean", "b_inf_mean", 3,
-                        "Inflation Difference", "b_inf_diff", 4,
-                        "Unemployment Mean", "b_unemploy_mean", 5, 
-                       "Unemployment Difference", "b_unemploy_diff", 6, 
-                        "Insecurity, Mean", "b_victims_mean", 7,
-                        "Insecurity, Difference", "b_victims_diff", 8,
-                       "Income Inequality, Mean", "bsp_megini_meangini_mean_se", 9,
-                        "Income Inequality, Difference",
-                                                  "bsp_megini_diffgini_diff_se", 10,
-                      "Government Effectiveness, Mean", "b_gee_mean",11,
-                      "Government Effectiveness, Difference", "b_gee_diff",12,
-                        "Corruption Perception Index, Mean", "bsp_mecpi_meancpi_mean_se", 13,
-                        "Corruption Perception Index, Difference", "bsp_mecpi_diffcpi_diff_se", 14,
+                      "GDPpc, Difference", "b_gdppc_diff", 2, 
+                      "Inflation, Mean", "b_inf_mean", 3,
+                      "Inflation, Difference", "b_inf_diff", 4,
+                      "Unemployment, Mean", "b_unemploy_mean", 5, 
+                      "Unemployment, Difference", "b_unemploy_diff", 6,
+                      "Income Inequality, Mean", "bsp_megini_meangini_mean_se", 7,
+                      "Income Inequality, Difference",
+                      "bsp_megini_diffgini_diff_se", 8,
+                                            
+                      "Physical Insecurity, Mean", "b_victims_mean", 9,
+                      "Physical Insecurity, Difference", "b_victims_diff", 10,
+                      "Corruption Perception Index, Mean", "bsp_mecpi_meancpi_mean_se", 11,
+                      "Corruption Perception Index, Difference", "bsp_mecpi_diffcpi_diff_se", 12,                      
+                      "Government Effectiveness, Mean", "b_gee_mean",13,
+                      "Government Effectiveness, Difference", "b_gee_diff",14,
                       "Level of Liberal Democracy, Mean", "b_libdem_mean",15,
                       "Level of Liberal Democracy, Difference",  "b_libdem_diff",16)
 
@@ -1540,26 +1543,30 @@ The results are presented in Figure\nobreakspace{}\ref{model}.
 In terms of economic outcomes, the increase in GDP per capita is associated with a higher level of trust in civil servants in the short term.
 A two-standard-deviation year-to-year change in per capita income increases trust by `r get_coef("b_gdppc_diff", results_df = coef_data_all) %>% str_remove("-")` point.
 This significant but relatively small effect suggests that GDP growth alone may not be sufficient to sustain high levels of trust in civil servants, given that economic growth may not transfer to effective resource management and service delivery.
+Still, it indicates that the null findings of the literature are the consequence of underpowered analyses: @Houston2016 examines only 21 country-year contexts and @Morelock2021 just 23, compared to the 1411 country-years that we are able to examine using the new TCS dataset.
 
 Unemployment exhibits a strong negative effect on trust in civil servants, with a two-standard-deviation year-to-year increase in unemployment decreasing trust in civil servants by `r get_coef("b_unemploy_diff", results_df = coef_data_all) %>% str_remove("-")` points.
-High unemployment rates can signal government inefficiency or failure to address critical economic challenges, eroding trust in civil servants.
+As @Houston2016 concludes---and contrary to null findings elsewhere [see, e.g., @Morelock2021]---high unemployment rates can signal government inefficiency or failure to address critical economic challenges, eroding trust in civil servants [see also @Choi2018, 124].
 
-In terms of public safety, the mean number of intentional homicides has a long-term negative impact on trust in civil servants.
+In terms of physical insecurity, the mean number of intentional homicides has a long-term negative impact on trust in civil servants.
 A two-standard deviation increase in a country's mean number of homicides is associated with `r get_coef("b_victims_mean", results_df = coef_data_all) %>% str_remove("-")` points less trust.
-High levels of violence and insecurity can undermine public confidence in the administration’s competence to uphold law and order, diminishing trust in its civil service [@Berg2016;@Uddin2024].
-We found no evidence that either inflation or income inequality significantly affects trust in civil servants in the short or long term, when other factors are controlled.
+This result bolsters confidence that the finding of @Uddin2025, made in the context of Bangladesh, is generalizable across countries: high levels of violence and insecurity undermine public confidence in the administration’s competence to uphold law and order, diminishing trust in its civil service.
 
-Regarding process, a higher government effectiveness score has a strong positive long-term effect on trust in civil servants.
+This analysis provides no evidence that either inflation or income inequality significantly affects trust in civil servants in the short or long term when other factors are controlled, reinforcing conclusions of, e.g., @Houston2016 and @Morelock2018.
+
+Regarding process, these results show that a higher government effectiveness score has a strong positive long-term effect on trust in civil servants.
 A two-standard deviation increase in a country's mean effectiveness score is associated with `r get_coef("b_gee_mean", results_df = coef_data_all) %>% str_remove("-")` points more trust across countries.
-This finding suggests that improving the perceived quality of public services and policy formulation can lead to a sustained increase in trust.
+This finding suggests that improving the perceived quality of public services and policy formulation can lead to a sustained increase in trust, replicating findings of @Houston2018 and @Morelock2021.
 Coproduction of public value provides a compelling explanation, emphasizing how involving individuals in policy-making processes can strengthen trust in the public sector [@Schmidthuber2021].
 
 Although democratic capacity is found to mediate the relationship between government openness and public trust [@Schmidthuber2021], we found the development of democracy is associated with less trust in civil servants, both in the long run and in the short term.
+This is contrary to the positive result found by @Choi2018.
 Critical citizens in more democratic countries may trust civil servant only critically and have higher expectations of them [@Norris1999].
-However, perceived corruption was not consistently associated with trust in civil servants in either the long term or short run; these estimates are close to zero.
+However, perceived corruption was not consistently associated with trust in civil servants in either the long term or short run when controlling for the other factors in our model; contrary to the smaller studies in this literature, which concomitantly test single variables at a time, the estimates presented here are close to zero.
 
-We find evidence for arguments on both government outcomes and government quality. 
-However, government quality, measured by mean government effectiveness—exert larger effects over long term than economic and public security outcomes like GDP per capita, unemployment, and insecurity.
+This conceptual replication of the literature on the causes of trust in civil servants sheds new light on some debates and reinforces some conclusions.
+It finds evidence for arguments on both government outcomes and government quality. 
+However, government quality, measured by mean government effectiveness—exerts larger effects over long term than economic and public security outcomes like GDP per capita, unemployment, and homicide rates.
 To sustain trust in civil servants, policymakers and practitioners should prioritize institutional reforms that enhance effectiveness and inclusiveness.
 
 # Discussion {.unlisted .unnumbered}
