@@ -12,8 +12,7 @@ We are grateful to the reviewers for their thoughtful reviews, their enthusiasm 
 Their feedback has substantially improved the paper.
 Below we address each comment point by point and indicate the corresponding changes in the revised manuscript.
 
-1.1. Reviewer 1 
-"The authors need to better justify the usefulness of this measure in comparison with more standard and broadly sampled survey-based measures of trust in government. Perhaps they could replicate existing studies by replacing previously applied measures with their own and compare the statistical significance of their results."
+1.1. Reviewer 1 suggested that it would help justify our dataset to use it to replicate existing studies.  We agree entirely.  We have revised and reframed our analysis of the sources of trust in civil servants as what @Walker2017 [, 1225-1226] calls a conceptual replication and extension.  That is, we investigate the same hypotheses as previous work using different measurement and analysis. While previous studies look at smaller samples and are therefore constrained to look at indicators of outcomes and process just one or a few at a time, the much larger number of country-years observed in the TCS data allow us to combine a wide range of contextual indicators of both outcome and quality in a single analysis. The results, which both support and conflict previous findings, underscore the value of our contribution, and we appreciate the suggestion to move in this direction.
 
 
 1.2. R1 suggested that we should provide more details about sampling of source data, survey items, and country-years, to reduce any confusion about our raw data collection. 
